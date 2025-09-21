@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import StreamInput from "../components/StreamInput.astro";
 ---
 
 <!doctype html>
@@ -12,6 +13,12 @@ import "../styles/global.css";
 		<title>Stream Mixer</title>
 	</head>
 	<body class="m-0 w-full h-full">
+		<div class="navbar justify-between bg-base-100 shadow-sm">
+			<div>
+				<a class="btn btn-ghost text-xl">Stream Mixer</a>
+			</div>
+			<StreamInput />
+		</div>
 		<slot />
 	</body>
 </html>
