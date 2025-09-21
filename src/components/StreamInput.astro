@@ -27,9 +27,10 @@
       required
       placeholder="https://"
       value="https://"
-      pattern="^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9\-].*[a-zA-Z0-9])?\.)+[a-zA-Z].*$"
+      pattern="https://.*"
       title="Must be valid URL"
       class="join-item"
+      id="stream-url"
     />
   </label>
   <select class="select join-item">
@@ -37,5 +38,17 @@
     <option>Stream</option>
     <option>Chat</option>
   </select>
-  <button class="btn btn-primary join-item">Add</button>
+  <button disabled class="btn btn-primary join-item" id="add-stream">Add</button
+  >
 </div>
+
+<script>
+  document.getElementById("stream-url")?.addEventListener("input", (e) => {
+    const addStreamBtn = document.getElementById(
+      "add-stream",
+    ) as HTMLButtonElement;
+    addStreamBtn.disabled = (
+      e.target as HTMLInputElement
+    ).validity.patternMismatch;
+  });
+</script>
