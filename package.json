@@ -1,7 +1,7 @@
 {
   "name": "stream-mixer",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -9,6 +9,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.13.9"
+    "astro": "5.13.9"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2",
+    "prettier-plugin-astro": "0.14.1"
   }
 }
