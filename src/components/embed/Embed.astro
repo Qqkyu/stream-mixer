@@ -1,0 +1,12 @@
+---
+import TwitchEmbed from "./twitch/TwitchEmbed.astro";
+import type { Embed } from "./EmbedTypes";
+
+interface Props {
+  embed: Embed;
+}
+
+const { embed } = Astro.props;
+---
+
+{embed.site === "twitch" && <TwitchEmbed type={embed.type} />}

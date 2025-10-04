@@ -1,8 +1,8 @@
 ---
-import Welcome from "../components/Welcome.astro";
+import Embed from "../components/embed/Embed.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-	<Welcome />
+	<Embed embed={{ site: "twitch", type: "everything" }} />
 </Layout>
