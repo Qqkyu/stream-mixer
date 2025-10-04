@@ -4,21 +4,41 @@ import type { Embed } from "../EmbedTypes";
 interface Props {
   type: Embed["type"];
 }
+
+const { type } = Astro.props;
+
+const playerOptions = {
+  width: 854,
+  height: 480,
+  channel: "gorgc",
+  parent: ["localhost"],
+};
 ---
 
-<!-- Add a placeholder for the Twitch embed -->
 <div id="twitch-embed"></div>
 
-<!-- Load the Twitch embed JavaScript file -->
 <script is:inline src="https://embed.twitch.tv/embed/v1.js"></script>
 
-<!-- Create a Twitch.Embed object that will render within the "twitch-embed" element -->
-<script is:inline type="text/javascript">
-  new Twitch.Embed("twitch-embed", {
-    width: 854,
-    height: 480,
-    channel: "monstercat",
-    // Only needed if this page is going to be embedded on other websites
-    parent: ["localhost"],
-  });
-</script>
+{
+  type === "chat" ? (
+    <iframe
+      src={`https://www.twitch.tv/embed/${playerOptions.channel}/chat?parent=localhost`}
+      height="854"
+      width="480"
+    />
+  ) : (
+    <script is:inline define:vars={{ playerOptions, type }} type="text/javascript">
+      switch (type) {
+        case "video":
+          const player = new Twitch.Player("twitch-embed", playerOptions);
+          player.setVolume(0.5);
+          break;
+        case "everything":
+          new Twitch.Embed("twitch-embed", playerOptions);
+          break;
+        default:
+          console.log("Unknown twitch embed type: ", type);
+      }
+    </script>
+  )
+}
