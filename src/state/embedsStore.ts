@@ -8,6 +8,7 @@ type Embeds = Record<
 
 export const embeds = map<Embeds>({
   twitch: [],
+  youtube: [],
 });
 
 export function addEmbed({ platform, type, channel }: Embed) {

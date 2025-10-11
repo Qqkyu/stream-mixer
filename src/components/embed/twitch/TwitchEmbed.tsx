@@ -3,11 +3,11 @@ import type { Embed } from "../EmbedTypes";
 
 type Props = Pick<Embed, "type" | "channel">;
 
-const TwitchEmbed: FC<Props> = ({ type }) => {
+const TwitchEmbed: FC<Props> = ({ type, channel }) => {
   const playerOptions = {
     width: 854,
     height: 480,
-    channel: "gorgc",
+    channel,
     parent: ["localhost"],
   };
 

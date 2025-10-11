@@ -15,6 +15,7 @@ const StreamInput: React.FC = () => {
         onChange={(e) => setPlatform(e.target.value as Embed["platform"])}
       >
         <option value="twitch">Twitch</option>
+        <option value="youtube">Youtube</option>
       </select>
       <label className="input">
         <svg
