@@ -11,41 +11,14 @@ const KickEmbed: FC<Props> = ({ type, channel }) => {
     parent: ["localhost"],
   };
 
-  if (type === "video") {
-    return (
-      <iframe
-        src={`https://player.kick.com/${channel}`}
-        width={playerOptions.width}
-        height={playerOptions.height}
-        allowFullScreen
-      ></iframe>
-    );
-  } else if (type === "chat") {
-    return (
-      <iframe
-        src={`https://kick.com/${channel}/chatroom`}
-        width="854"
-        height="480"
-      ></iframe>
-    );
-  } else {
-    return (
-      <div className="flex">
-        <iframe
-          src={`https://player.kick.com/${channel}`}
-          width={playerOptions.width}
-          height={playerOptions.height}
-          allowFullScreen
-        ></iframe>
-
-        <iframe
-          src={`https://kick.com/${channel}/chatroom`}
-          width="854"
-          height="480"
-        ></iframe>
-      </div>
-    );
-  }
+  return (
+    <iframe
+      src={`https://player.kick.com/${channel}`}
+      width={playerOptions.width}
+      height={playerOptions.height}
+      allowFullScreen
+    ></iframe>
+  );
 };
 
 export default KickEmbed;
