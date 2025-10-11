@@ -3,7 +3,10 @@
 ---
 
 <div class="join">
-  <label class="input validator">
+  <select class="select join-item">
+    <option>Twitch</option>
+  </select>
+  <label class="input">
     <svg
       class="h-[1em] opacity-50"
       xmlns="http://www.w3.org/2000/svg"
@@ -16,19 +19,14 @@
         fill="none"
         stroke="currentColor"
       >
-        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
-        ></path>
-        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
-        ></path>
+        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
       </g>
     </svg>
     <input
       type="url"
       required
-      placeholder="https://"
-      value="https://"
-      pattern="https://.*"
-      title="Must be valid URL"
+      placeholder="Channel"
       class="join-item"
       id="stream-url"
     />
@@ -47,8 +45,6 @@
     const addStreamBtn = document.getElementById(
       "add-stream",
     ) as HTMLButtonElement;
-    addStreamBtn.disabled = (
-      e.target as HTMLInputElement
-    ).validity.patternMismatch;
+    addStreamBtn.disabled = (e.target as HTMLInputElement).value === "";
   });
 </script>
