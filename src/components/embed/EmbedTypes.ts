@@ -1,4 +1,5 @@
 export type Embed = {
-  site: "twitch";
+  platform: "twitch";
   type: "everything" | "chat" | "video";
+  channel: string;
 };

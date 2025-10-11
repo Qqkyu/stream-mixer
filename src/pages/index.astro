@@ -1,8 +1,8 @@
 ---
-import Embed from "../components/embed/Embed.astro";
+import EmbedGrid from "../components/embed/EmbedGrid.tsx";
 import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-	<Embed embed={{ site: "twitch", type: "everything" }} />
+	<EmbedGrid client:idle />
 </Layout>

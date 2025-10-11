@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-import StreamInput from "../components/header/StreamInput.astro";
+import StreamInput from "../components/header/StreamInput.tsx";
 ---
 
 <!doctype html>
@@ -17,8 +17,9 @@ import StreamInput from "../components/header/StreamInput.astro";
 			<div>
 				<a class="btn btn-ghost text-xl">Stream Mixer</a>
 			</div>
-			<StreamInput />
+			<StreamInput client:load />
 		</div>
 		<slot />
+		<script is:inline src="https://embed.twitch.tv/embed/v1.js"></script>
 	</body>
 </html>
