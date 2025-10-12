@@ -5,8 +5,8 @@ type Props = Pick<Embed, "type" | "channel">;
 
 const TwitchEmbed: FC<Props> = ({ type, channel }) => {
   const playerOptions = {
-    width: 854,
-    height: 480,
+    width: "100%",
+    height: "100%",
     channel,
     parent: ["localhost"],
   };
@@ -25,17 +25,14 @@ const TwitchEmbed: FC<Props> = ({ type, channel }) => {
     }
   }, [type]);
 
-  return (
-    <>
-      <div id="twitch-embed"></div>
-      {type === "chat" && (
-        <iframe
-          src={`https://www.twitch.tv/embed/${playerOptions.channel}/chat?parent=localhost`}
-          height="854"
-          width="480"
-        />
-      )}
-    </>
+  return type === "chat" ? (
+    <iframe
+      src={`https://www.twitch.tv/embed/${playerOptions.channel}/chat?parent=localhost`}
+      height={playerOptions.height}
+      width={playerOptions.width}
+    />
+  ) : (
+    <div id="twitch-embed"></div>
   );
 };
 
