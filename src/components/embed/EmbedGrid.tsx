@@ -19,12 +19,9 @@ const EmbedGrid: FC = () => {
       breakpoints={{ lg: 1280, md: 992, sm: 767, xs: 480, xxs: 0 }}
       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
     >
-      {embedsStore.twitch.map((twitchEmbed) => {
+      {embedsStore.twitch.map((twitchEmbed, idx) => {
         return (
-          <div
-            key={twitchEmbed.channel + twitchEmbed.type}
-            className="grid-item"
-          >
+          <div key={`twitch-${idx}`} className="grid-item">
             <TwitchEmbed
               channel={twitchEmbed.channel}
               type={twitchEmbed.type}
@@ -32,12 +29,9 @@ const EmbedGrid: FC = () => {
           </div>
         );
       })}
-      {embedsStore.youtube.map((youtubeEmbed) => {
+      {embedsStore.youtube.map((youtubeEmbed, idx) => {
         return (
-          <div
-            key={youtubeEmbed.channel + youtubeEmbed.type}
-            className="grid-item"
-          >
+          <div key={`youtube-${idx}`} className="grid-item">
             <YoutubeEmbed
               channel={youtubeEmbed.channel}
               type={youtubeEmbed.type}
@@ -45,9 +39,9 @@ const EmbedGrid: FC = () => {
           </div>
         );
       })}
-      {embedsStore.kick.map((kickEmbed) => {
+      {embedsStore.kick.map((kickEmbed, idx) => {
         return (
-          <div key={kickEmbed.channel + kickEmbed.type} className="grid-item">
+          <div key={`kick-${idx}`} className="grid-item">
             <KickEmbed channel={kickEmbed.channel} type={kickEmbed.type} />
           </div>
         );
