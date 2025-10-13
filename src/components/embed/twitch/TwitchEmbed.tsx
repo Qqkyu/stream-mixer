@@ -32,7 +32,7 @@ const TwitchEmbed: FC<Props> = ({ type, channel }) => {
       width={playerOptions.width}
     />
   ) : (
-    <div id="twitch-embed"></div>
+    <div id="twitch-embed" className="h-full"></div>
   );
 };
 
