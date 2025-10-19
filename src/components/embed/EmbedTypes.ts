@@ -1,3 +1,8 @@
-export type EmbedPlatform = "twitch" | "youtube" | "kick";
-export type EmbedType = "everything" | "chat" | "video";
-export type EmbedChannel = string;
+import type { Layout } from "react-grid-layout";
+
+export type Embed = {
+  platform: "twitch" | "youtube" | "kick";
+  channel: string;
+  type: "everything" | "chat" | "video";
+  layout: Layout;
+};

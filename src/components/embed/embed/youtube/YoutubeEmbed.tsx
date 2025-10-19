@@ -1,10 +1,7 @@
 import type { FC } from "react";
-import type { EmbedType, EmbedChannel } from "../EmbedTypes";
+import type { Embed } from "../../EmbedTypes";
 
-type Props = {
-  type: EmbedType;
-  channel: EmbedChannel;
-};
+type Props = Pick<Embed, "type" | "channel">;
 
 const YoutubeEmbed: FC<Props> = ({ type, channel }) => {
   const playerOptions = {
@@ -32,7 +29,7 @@ const YoutubeEmbed: FC<Props> = ({ type, channel }) => {
     );
   } else {
     return (
-      <div className="flex">
+      <div className="flex h-full w-full">
         <iframe
           src={`https://www.youtube.com/embed/${channel}`}
           width={playerOptions.width}

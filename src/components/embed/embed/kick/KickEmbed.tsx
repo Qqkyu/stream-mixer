@@ -1,15 +1,12 @@
 import type { FC } from "react";
-import type { EmbedType, EmbedChannel } from "../EmbedTypes";
+import type { Embed } from "../../EmbedTypes";
 
-type Props = {
-  type: EmbedType;
-  channel: EmbedChannel;
-};
+type Props = Pick<Embed, "channel">;
 
-const KickEmbed: FC<Props> = ({ type, channel }) => {
+const KickEmbed: FC<Props> = ({ channel }) => {
   const playerOptions = {
-    width: 854,
-    height: 480,
+    width: "100%",
+    height: "100%",
     channel,
     parent: ["localhost"],
   };

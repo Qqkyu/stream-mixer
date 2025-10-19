@@ -1,56 +1,19 @@
-import { map } from "nanostores";
-import type {
-  EmbedPlatform,
-  EmbedType,
-  EmbedChannel,
-} from "../components/embed/EmbedTypes";
+import { atom } from "nanostores";
+import type { Embed } from "../components/embed/EmbedTypes";
 
-type Embed = { channel: EmbedChannel; type: EmbedType };
+export const embeds = atom<Array<Embed>>(getLocalStorageEmbeds());
 
-type Embeds = Record<EmbedPlatform, Array<Embed>>;
-
-export const embeds = map<Embeds>({
-  twitch: getLocalStorageEmbeds("twitch"),
-  youtube: getLocalStorageEmbeds("youtube"),
-  kick: getLocalStorageEmbeds("kick"),
-});
-
-export function addEmbed({
-  platform,
-  type,
-  channel,
-}: {
-  platform: EmbedPlatform;
-  type: EmbedType;
-  channel: EmbedChannel;
-}) {
-  const existingPlatformEmbeds = embeds.get()[platform];
-  embeds.setKey(
-    platform,
-    existingPlatformEmbeds.toSpliced(existingPlatformEmbeds.length, 0, {
-      type,
-      channel,
-    }),
-  );
-  setLocalStorageEmbeds({ platform, type, channel });
+export function addEmbed(embed: Embed) {
+  embeds.set(embeds.get().toSpliced(embeds.get().length, 0, embed));
+  setLocalStorageEmbeds(embed);
 }
 
-function getLocalStorageEmbedsKey(
-  platform: EmbedPlatform,
-): `${EmbedPlatform}-stream-embeds` {
-  return `${platform}-stream-embeds`;
-}
-
-function getLocalStorageEmbeds(
-  platform: EmbedPlatform,
-): Array<{ channel: string; type: Embed["type"] }> {
+function getLocalStorageEmbeds(): Array<Embed> {
   if (typeof window == "undefined") {
     return [];
   }
 
-  const localStorageEmbeds = localStorage.getItem(
-    getLocalStorageEmbedsKey(platform),
-  );
+  const localStorageEmbeds = localStorage.getItem("stream-embeds");
 
   if (localStorageEmbeds == null) {
     return [];
@@ -61,25 +24,14 @@ function getLocalStorageEmbeds(
   return Array.isArray(parsedStorageEmbeds) ? parsedStorageEmbeds : [];
 }
 
-function setLocalStorageEmbeds({
-  platform,
-  type,
-  channel,
-}: {
-  platform: EmbedPlatform;
-  type: EmbedType;
-  channel: EmbedChannel;
-}): void {
+function setLocalStorageEmbeds(embed: Embed): void {
   if (typeof window === "undefined") {
     return;
   }
 
-  const localStorageEmbeds = getLocalStorageEmbeds(platform);
+  const localStorageEmbeds = getLocalStorageEmbeds();
 
-  localStorageEmbeds.push({ type, channel });
+  localStorageEmbeds.push(embed);
 
-  localStorage.setItem(
-    getLocalStorageEmbedsKey(platform),
-    JSON.stringify(localStorageEmbeds),
-  );
+  localStorage.setItem("stream-embeds", JSON.stringify(localStorageEmbeds));
 }
