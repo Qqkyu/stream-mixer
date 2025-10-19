@@ -1,5 +1,3 @@
-export type Embed = {
-  platform: "twitch" | "youtube" | "kick";
-  type: "everything" | "chat" | "video";
-  channel: string;
-};
+export type EmbedPlatform = "twitch" | "youtube" | "kick";
+export type EmbedType = "everything" | "chat" | "video";
+export type EmbedChannel = string;

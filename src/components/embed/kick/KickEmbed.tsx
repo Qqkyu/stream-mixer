@@ -1,7 +1,10 @@
 import type { FC } from "react";
-import type { Embed } from "../EmbedTypes";
+import type { EmbedType, EmbedChannel } from "../EmbedTypes";
 
-type Props = Pick<Embed, "type" | "channel">;
+type Props = {
+  type: EmbedType;
+  channel: EmbedChannel;
+};
 
 const KickEmbed: FC<Props> = ({ type, channel }) => {
   const playerOptions = {

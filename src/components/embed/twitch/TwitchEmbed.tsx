@@ -1,7 +1,10 @@
 import { useEffect, type FC } from "react";
-import type { Embed } from "../EmbedTypes";
+import type { EmbedType, EmbedChannel } from "../EmbedTypes";
 
-type Props = Pick<Embed, "type" | "channel">;
+type Props = {
+  type: EmbedType;
+  channel: EmbedChannel;
+};
 
 const TwitchEmbed: FC<Props> = ({ type, channel }) => {
   const playerOptions = {

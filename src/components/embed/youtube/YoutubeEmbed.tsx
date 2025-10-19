@@ -1,12 +1,15 @@
 import type { FC } from "react";
-import type { Embed } from "../EmbedTypes";
+import type { EmbedType, EmbedChannel } from "../EmbedTypes";
 
-type Props = Pick<Embed, "type" | "channel">;
+type Props = {
+  type: EmbedType;
+  channel: EmbedChannel;
+};
 
 const YoutubeEmbed: FC<Props> = ({ type, channel }) => {
   const playerOptions = {
-    width: 854,
-    height: 480,
+    width: "100%",
+    height: "100%",
     channel,
     parent: ["localhost"],
   };
@@ -23,8 +26,8 @@ const YoutubeEmbed: FC<Props> = ({ type, channel }) => {
     return (
       <iframe
         src={`https://www.youtube.com/live_chat?v=${channel}&embed_domain=localhost`}
-        width="854"
-        height="480"
+        width={playerOptions.width}
+        height={playerOptions.height}
       ></iframe>
     );
   } else {
@@ -38,8 +41,8 @@ const YoutubeEmbed: FC<Props> = ({ type, channel }) => {
 
         <iframe
           src={`https://www.youtube.com/live_chat?v=${channel}&embed_domain=localhost`}
-          width="854"
-          height="480"
+          width={playerOptions.width}
+          height={playerOptions.height}
         ></iframe>
       </div>
     );
