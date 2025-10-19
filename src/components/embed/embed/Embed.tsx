@@ -1,10 +1,10 @@
 import type { FC } from "react";
-import type { Embed } from "../EmbedTypes";
+import type { Embed as EmbedType } from "../EmbedTypes";
 import TwitchEmbed from "./twitch/TwitchEmbed";
 import YoutubeEmbed from "./youtube/YoutubeEmbed";
 import KickEmbed from "./kick/KickEmbed";
 
-export const Embed: FC<Embed> = (embed) => {
+export const Embed: FC<EmbedType> = (embed) => {
   switch (embed.platform) {
     case "twitch":
       return <TwitchEmbed channel={embed.channel} type={embed.type} />;
