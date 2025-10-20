@@ -1,32 +1,45 @@
 import { useState, type FC, useEffect } from "react";
 import { useStore } from "@nanostores/react";
 import { embeds } from "../../state/embedsStore";
-import { Responsive, WidthProvider, type Layout } from "react-grid-layout";
+import {
+  Responsive,
+  WidthProvider,
+  type Layout,
+  type Layouts,
+} from "react-grid-layout";
 import { Embed } from "./embed/Embed";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const EmbedGrid: FC = () => {
   const embedsStore = useStore(embeds);
-  // const [layouts, setLayouts] = useState<Array<Layout>>([
-  //   ...embedsStore.map((embed, idx): Layout => {
-  //     return {
-  //       i: `embed-${idx}`,
-  //       x: 0,
-  //       y: 0,
-  //       w: 0,
-  //       h: 0,
-  //     };
-  //   }),
-  // ]);
+  const [layouts, setLayouts] = useState<Layouts>(() => {
+    if (typeof localStorage === "undefined") {
+      return {};
+    }
 
-  useEffect(() => {
-    console.log({ embedsStore: embedsStore });
-  }, [embedsStore]);
+    const localStorageLayouts = localStorage.getItem("embeds-layouts");
+    if (localStorageLayouts == null) {
+      return {};
+    }
+
+    try {
+      return JSON.parse(localStorageLayouts);
+    } catch (e) {
+      return {};
+    }
+  });
+
+  const onLayoutChange = (_: Array<Layout>, layouts: Layouts) => {
+    setLayouts({ ...layouts });
+    localStorage.setItem("embeds-layouts", JSON.stringify(layouts));
+  };
 
   return (
     <ResponsiveGridLayout
       className="layout"
+      layouts={layouts}
+      onLayoutChange={onLayoutChange}
       isDraggable
       isResizable
       compactType="horizontal"
