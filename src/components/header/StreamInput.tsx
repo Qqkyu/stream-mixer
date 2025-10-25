@@ -54,7 +54,14 @@ const StreamInput: React.FC = () => {
       </select>
       <button
         disabled={channel === ""}
-        onClick={() => addEmbed({ platform, channel, type })}
+        onClick={() =>
+          addEmbed({
+            platform,
+            channel,
+            type,
+            position: { x: 0, y: 0, w: 6, h: 6 },
+          })
+        }
         className="btn btn-primary join-item"
       >
         Add

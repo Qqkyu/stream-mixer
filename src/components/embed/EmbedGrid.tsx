@@ -1,59 +1,101 @@
-import { useState, type FC, useEffect } from "react";
+import { useState, type FC, useRef, useEffect } from "react";
 import { useStore } from "@nanostores/react";
-import { embeds } from "../../state/embedsStore";
-import {
-  Responsive,
-  WidthProvider,
-  type Layout,
-  type Layouts,
-} from "react-grid-layout";
+import { embeds, setEmbeds } from "../../state/embedsStore";
 import { Embed } from "./embed/Embed";
-
-const ResponsiveGridLayout = WidthProvider(Responsive);
+import type { GridStack as GridStackType } from "gridstack";
 
 const EmbedGrid: FC = () => {
   const embedsStore = useStore(embeds);
-  const [layouts, setLayouts] = useState<Layouts>(() => {
-    if (typeof localStorage === "undefined") {
-      return {};
-    }
+  const gridRef = useRef<HTMLDivElement>(null);
+  const gridInstanceRef = useRef<GridStackType | null>(null);
+  const [isGridReady, setIsGridReady] = useState(false);
 
-    const localStorageLayouts = localStorage.getItem("embeds-layouts");
-    if (localStorageLayouts == null) {
-      return {};
-    }
+  useEffect(() => {
+    const initGrid = async () => {
+      if (gridRef.current && !gridInstanceRef.current) {
+        const { GridStack } = await import("gridstack");
 
-    try {
-      return JSON.parse(localStorageLayouts);
-    } catch (e) {
-      return {};
-    }
-  });
+        const grid = GridStack.init(
+          {
+            cellHeight: 70,
+            float: true,
+            draggable: {
+              handle: ".grid-stack-item-content",
+            },
+            resizable: {
+              handles: "e, se, s, sw, w",
+            },
+          },
+          gridRef.current,
+        );
+        gridInstanceRef.current = grid;
 
-  const onLayoutChange = (_: Array<Layout>, layouts: Layouts) => {
-    setLayouts({ ...layouts });
-    localStorage.setItem("embeds-layouts", JSON.stringify(layouts));
-  };
+        grid.on("change", (_, nodes) => {
+          if (!gridInstanceRef.current) return;
+
+          setEmbeds(
+            embeds.get().map((embed, idx) => {
+              const node = nodes.find(({ el }) => el?.id === `embed-${idx}`);
+              if (node) {
+                return {
+                  ...embed,
+                  position: {
+                    x: node.x,
+                    y: node.y,
+                    w: node.w,
+                    h: node.h,
+                  },
+                };
+              }
+              return embed;
+            }),
+          );
+        });
+
+        setIsGridReady(true);
+
+        return () => {
+          grid.destroy();
+          gridInstanceRef.current = null;
+        };
+      }
+    };
+
+    initGrid();
+  }, []);
+
+  useEffect(() => {
+    if (!gridInstanceRef.current || !isGridReady) return;
+
+    const grid = gridInstanceRef.current;
+
+    grid.removeAll(false);
+
+    embedsStore.forEach(({ position }, idx) => {
+      const el = document.getElementById(`embed-${idx}`);
+      if (el) {
+        grid.makeWidget(el, {
+          ...position,
+          id: `embed-${idx}`,
+        });
+      }
+    });
+  }, [embedsStore, isGridReady]);
 
   return (
-    <ResponsiveGridLayout
-      className="layout"
-      layouts={layouts}
-      onLayoutChange={onLayoutChange}
-      isDraggable
-      isResizable
-      compactType="horizontal"
-      breakpoints={{ lg: 1280, md: 992, sm: 767, xs: 480, xxs: 0 }}
-      cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-    >
-      {embedsStore.map((embed, idx) => {
-        return (
-          <div key={`embed-${idx}`} className="grid-item">
+    <div ref={gridRef} className="grid-stack">
+      {embedsStore.map((embed, idx) => (
+        <div
+          key={`embed-${idx}`}
+          id={`embed-${idx}`}
+          className="grid-stack-item"
+        >
+          <div className="grid-stack-item-content">
             <Embed {...embed} />
           </div>
-        );
-      })}
-    </ResponsiveGridLayout>
+        </div>
+      ))}
+    </div>
   );
 };
 

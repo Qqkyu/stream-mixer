@@ -5,7 +5,12 @@ export const embeds = atom<Array<Embed>>(getLocalStorageEmbeds());
 
 export function addEmbed(embed: Embed) {
   embeds.set(embeds.get().toSpliced(embeds.get().length, 0, embed));
-  setLocalStorageEmbeds(embed);
+  setLocalStorageEmbeds();
+}
+
+export function setEmbeds(newEmbeds: Array<Embed>) {
+  embeds.set(newEmbeds);
+  setLocalStorageEmbeds();
 }
 
 function getLocalStorageEmbeds(): Array<Embed> {
@@ -24,14 +29,10 @@ function getLocalStorageEmbeds(): Array<Embed> {
   return Array.isArray(parsedStorageEmbeds) ? parsedStorageEmbeds : [];
 }
 
-function setLocalStorageEmbeds(embed: Embed): void {
+function setLocalStorageEmbeds(): void {
   if (typeof window === "undefined") {
     return;
   }
 
-  const localStorageEmbeds = getLocalStorageEmbeds();
-
-  localStorageEmbeds.push(embed);
-
-  localStorage.setItem("stream-embeds", JSON.stringify(localStorageEmbeds));
+  localStorage.setItem("stream-embeds", JSON.stringify(embeds.get()));
 }
