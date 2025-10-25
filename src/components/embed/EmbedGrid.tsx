@@ -3,6 +3,8 @@ import { useStore } from "@nanostores/react";
 import { embeds, setEmbeds } from "../../state/embedsStore";
 import { Embed } from "./embed/Embed";
 import type { GridStack as GridStackType } from "gridstack";
+import { DEFAULT_POSITION } from "./embed/position";
+import EmbedHeader from "./EmbedHeader";
 
 const EmbedGrid: FC = () => {
   const embedsStore = useStore(embeds);
@@ -19,8 +21,9 @@ const EmbedGrid: FC = () => {
           {
             cellHeight: 70,
             float: true,
+            margin: "24px 0 0 0",
             draggable: {
-              handle: ".grid-stack-item-content",
+              handle: ".grid-stack-item-drag-handle",
             },
             resizable: {
               handles: "e, se, s, sw, w",
@@ -40,10 +43,10 @@ const EmbedGrid: FC = () => {
                 return {
                   ...embed,
                   position: {
-                    x: node.x,
-                    y: node.y,
-                    w: node.w,
-                    h: node.h,
+                    x: node.x ?? DEFAULT_POSITION.x,
+                    y: node.y ?? DEFAULT_POSITION.y,
+                    w: node.w ?? DEFAULT_POSITION.w,
+                    h: node.h ?? DEFAULT_POSITION.h,
                   },
                 };
               }
@@ -90,6 +93,7 @@ const EmbedGrid: FC = () => {
           id={`embed-${idx}`}
           className="grid-stack-item"
         >
+          <EmbedHeader {...embed} />
           <div className="grid-stack-item-content">
             <Embed {...embed} />
           </div>

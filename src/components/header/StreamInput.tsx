@@ -2,6 +2,7 @@ import React, { useState, type ChangeEvent } from "react";
 import { addEmbed } from "../../state/embedsStore";
 import type { Embed } from "../embed/EmbedTypes";
 import UserIcon from "../icons/UserIcon";
+import { DEFAULT_POSITION } from "../embed/embed/position";
 
 const StreamInput: React.FC = () => {
   const [platform, setPlatform] = useState<Embed["platform"]>("twitch");
@@ -59,7 +60,7 @@ const StreamInput: React.FC = () => {
             platform,
             channel,
             type,
-            position: { x: 0, y: 0, w: 6, h: 6 },
+            position: DEFAULT_POSITION,
           })
         }
         className="btn btn-primary join-item"

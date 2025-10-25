@@ -12,6 +12,7 @@ import StreamInput from "../components/header/StreamInput.tsx";
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Stream Mixer</title>
+		<script is:inline src="https://embed.twitch.tv/embed/v1.js"></script>
 	</head>
 	<body class="m-0 w-full h-full">
 		<div class="navbar justify-between bg-base-100 shadow-sm">
@@ -21,6 +22,5 @@ import StreamInput from "../components/header/StreamInput.tsx";
 			<StreamInput client:load />
 		</div>
 		<slot />
-		<script is:inline src="https://embed.twitch.tv/embed/v1.js"></script>
 	</body>
 </html>
