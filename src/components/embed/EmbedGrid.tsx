@@ -4,7 +4,6 @@ import { embeds, setEmbeds } from "../../state/embedsStore";
 import { Embed } from "./embed/Embed";
 import type { GridStack as GridStackType } from "gridstack";
 import { DEFAULT_POSITION } from "./embed/position";
-import EmbedHeader from "./EmbedHeader";
 
 const EmbedGrid: FC = () => {
   const embedsStore = useStore(embeds);
@@ -21,7 +20,8 @@ const EmbedGrid: FC = () => {
           {
             cellHeight: 70,
             float: true,
-            margin: "24px 0 0 0",
+            margin: "44px 0 0 0",
+            removable: true,
             draggable: {
               handle: ".grid-stack-item-drag-handle",
             },
@@ -91,10 +91,17 @@ const EmbedGrid: FC = () => {
         <div
           key={`embed-${idx}`}
           id={`embed-${idx}`}
-          className="grid-stack-item"
+          className="grid-stack-item mockup-browser border-base-300 border"
         >
-          <EmbedHeader {...embed} />
-          <div className="grid-stack-item-content">
+          <div className="mockup-browser-toolbar !my-0 p-3 grid-stack-item-drag-handle cursor-move">
+            <div className="input">
+              {embed.platform === "twitch" && `twitch.tv/${embed.channel}`}
+              {embed.platform === "youtube" &&
+                `youtube.com/watch?v=${embed.channel}`}
+              {embed.platform === "kick" && `kick.com/${embed.channel}`}
+            </div>
+          </div>
+          <div className="grid-stack-item-content grid border-t border-base-300">
             <Embed {...embed} />
           </div>
         </div>
