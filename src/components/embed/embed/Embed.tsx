@@ -7,11 +7,11 @@ import KickEmbed from "./kick/KickEmbed";
 export const Embed: FC<EmbedType> = (embed) => {
   switch (embed.platform) {
     case "twitch":
-      return <TwitchEmbed channel={embed.channel} type={embed.type} />;
+      return <TwitchEmbed {...embed} />;
     case "youtube":
-      return <YoutubeEmbed channel={embed.channel} type={embed.type} />;
+      return <YoutubeEmbed {...embed} />;
     case "kick":
-      return <KickEmbed channel={embed.channel} />;
+      return <KickEmbed {...embed} />;
     default:
       const exhaustiveCheck: never = embed.platform;
       console.log(exhaustiveCheck);

@@ -1,4 +1,4 @@
-import { useState, type FC, useRef, useEffect } from "react";
+import { useState, type FC, useRef, useEffect, useEffectEvent } from "react";
 import { useStore } from "@nanostores/react";
 import { embeds, setEmbeds } from "../../state/embedsStore";
 import { Embed } from "./embed/Embed";

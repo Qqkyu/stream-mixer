@@ -12,10 +12,6 @@ const StreamInput: React.FC = () => {
   const handlePlatformSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as Embed["platform"];
     setPlatform(value);
-
-    if (value === "kick") {
-      setType("video");
-    }
   };
 
   return (
@@ -45,13 +41,9 @@ const StreamInput: React.FC = () => {
         value={type}
         onChange={(e) => setType(e.target.value as Embed["type"])}
       >
-        <option disabled={platform === "kick"} value="everything">
-          Stream + Chat
-        </option>
+        <option value="everything">Stream + Chat</option>
         <option value="video">Stream</option>
-        <option disabled={platform === "kick"} value="chat">
-          Chat
-        </option>
+        <option value="chat">Chat</option>
       </select>
       <button
         disabled={channel === ""}
