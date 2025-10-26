@@ -91,7 +91,7 @@ const EmbedGrid: FC = () => {
         <div
           key={`embed-${idx}`}
           id={`embed-${idx}`}
-          className="grid-stack-item mockup-browser border-base-300 border"
+          className="grid-stack-item mockup-browser overflow-hidden border-base-300 border"
         >
           <div className="mockup-browser-toolbar !my-0 p-3 grid-stack-item-drag-handle cursor-move">
             <div className="input">
@@ -101,7 +101,7 @@ const EmbedGrid: FC = () => {
               {embed.platform === "kick" && `kick.com/${embed.channel}`}
             </div>
           </div>
-          <div className="grid-stack-item-content grid border-t border-base-300">
+          <div className="grid-stack-item-content border-t border-base-300">
             <Embed {...embed} />
           </div>
         </div>
