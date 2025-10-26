@@ -26,7 +26,7 @@ const EmbedGrid: FC = () => {
               cancel: ".no-drag",
             },
             resizable: {
-              handles: "e, se, s, sw, w",
+              handles: "se, sw",
             },
           },
           gridRef.current,
@@ -83,6 +83,20 @@ const EmbedGrid: FC = () => {
         });
       }
     });
+
+    const seResizeHandle =
+      gridRef.current?.querySelectorAll(".ui-resizable-se");
+    const swResizeHandle =
+      gridRef.current?.querySelectorAll(".ui-resizable-sw");
+
+    seResizeHandle?.forEach((handle) => {
+      handle.innerHTML = "↘︎";
+      handle.classList.add("indicator-item");
+    });
+    swResizeHandle?.forEach((handle) => {
+      handle.innerHTML = "↙︎";
+      handle.classList.add("indicator-item");
+    });
   }, [embedsStore, isGridReady]);
 
   const removeEmbed = (idx: number) => {
@@ -95,7 +109,7 @@ const EmbedGrid: FC = () => {
         <div
           key={`embed-${idx}`}
           id={`embed-${idx}`}
-          className="grid-stack-item mockup-browser overflow-hidden border-base-300 border"
+          className="grid-stack-item mockup-browser indicator block overflow-visible border-base-300 border"
         >
           <div className="mockup-browser-toolbar before:!content-none !my-0 p-3 grid-stack-item-drag-handle cursor-move">
             <div className="flex pl-4 w-22 justify-evenly">

@@ -1,3 +1,36 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+@layer base {
+  .grid-stack-item > .ui-resizable-handle {
+    font-size: revert !important;
+  }
+
+  .grid-stack-item > .ui-resizable-se {
+    z-index: 1000;
+    background-image: none !important;
+    height: revert !important;
+    width: revert !important;
+    transform: revert !important;
+    bottom: 12px !important;
+    right: 17px !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    @apply indicator-bottom indicator-end badge badge-soft;
+  }
+
+  .grid-stack-item > .ui-resizable-sw {
+    z-index: 1000;
+    background-image: none !important;
+    height: revert !important;
+    width: revert !important;
+    transform: revert !important;
+    bottom: 12px !important;
+    left: 17px !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    @apply indicator-bottom indicator-start badge badge-soft;
+  }
+}
