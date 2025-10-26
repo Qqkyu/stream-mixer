@@ -24,6 +24,7 @@ const EmbedGrid: FC = () => {
             removable: true,
             draggable: {
               handle: ".grid-stack-item-drag-handle",
+              cancel: ".no-drag",
             },
             resizable: {
               handles: "e, se, s, sw, w",
@@ -95,11 +96,11 @@ const EmbedGrid: FC = () => {
         >
           <div className="mockup-browser-toolbar before:!content-none !my-0 p-3 grid-stack-item-drag-handle cursor-move">
             <div className="flex pl-4 w-22 justify-evenly">
-              <div className="w-3 h-3 rounded-full bg-red-500" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500" />
-              <div className="w-3 h-3 rounded-full bg-green-500" />
+              <button className="w-3 h-3 rounded-full bg-red-500 cursor-pointer no-drag" />
+              <button className="w-3 h-3 rounded-full bg-yellow-500 cursor-pointer no-drag" />
+              <button className="w-3 h-3 rounded-full bg-green-500 cursor-pointer no-drag" />
             </div>
-            <div className="input">
+            <div className="input no-drag">
               {embed.platform === "twitch" && `twitch.tv/${embed.channel}`}
               {embed.platform === "youtube" &&
                 `youtube.com/watch?v=${embed.channel}`}
