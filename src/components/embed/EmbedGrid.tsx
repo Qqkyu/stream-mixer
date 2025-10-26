@@ -93,7 +93,12 @@ const EmbedGrid: FC = () => {
           id={`embed-${idx}`}
           className="grid-stack-item mockup-browser overflow-hidden border-base-300 border"
         >
-          <div className="mockup-browser-toolbar !my-0 p-3 grid-stack-item-drag-handle cursor-move">
+          <div className="mockup-browser-toolbar before:!content-none !my-0 p-3 grid-stack-item-drag-handle cursor-move">
+            <div className="flex pl-4 w-22 justify-evenly">
+              <div className="w-3 h-3 rounded-full bg-red-500" />
+              <div className="w-3 h-3 rounded-full bg-yellow-500" />
+              <div className="w-3 h-3 rounded-full bg-green-500" />
+            </div>
             <div className="input">
               {embed.platform === "twitch" && `twitch.tv/${embed.channel}`}
               {embed.platform === "youtube" &&
