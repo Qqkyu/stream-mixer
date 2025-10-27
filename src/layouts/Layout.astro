@@ -2,6 +2,22 @@
 import "../styles/global.css";
 import "gridstack/dist/gridstack.min.css";
 import StreamInput from "../components/header/StreamInput.tsx";
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	url?: string;
+}
+
+const {
+	title = "Stream Mixer - Watch Multiple Streams Simultaneously",
+	description = "Stream Mixer allows you to watch multiple Twitch, YouTube, and Kick streams at the same time in a customizable grid layout. Perfect for multi-stream viewing and esports events.",
+	image = "/favicon.svg",
+	url = "https://streammix.app",
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || url);
 ---
 
 <!doctype html>
@@ -11,7 +27,52 @@ import StreamInput from "../components/header/StreamInput.tsx";
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Stream Mixer</title>
+
+		<title>{title}</title>
+		<meta name="title" content={title} />
+		<meta name="description" content={description} />
+		<meta
+			name="keywords"
+			content="stream mixer, multi-stream, twitch, youtube, kick, watch multiple streams, esports, streaming, live streams"
+		/>
+		<link rel="canonical" href={canonicalURL} />
+		<link rel="sitemap" href="/sitemap-index.xml" />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={new URL(image, canonicalURL)} />
+		<meta property="og:site_name" content="Stream Mixer" />
+
+		<meta name="robots" content="index, follow" />
+		<meta name="googlebot" content="index, follow" />
+
+		<script
+			type="application/ld+json"
+			set:html={JSON.stringify({
+				"@context": "https://schema.org",
+				"@type": "WebApplication",
+				name: "Stream Mixer",
+				description: description,
+				url: canonicalURL.toString(),
+				applicationCategory: "MultimediaApplication",
+				operatingSystem: "Web Browser",
+				offers: {
+					"@type": "Offer",
+					price: "0",
+					priceCurrency: "USD",
+				},
+				featureList: [
+					"Watch multiple streams simultaneously",
+					"Support for Twitch, YouTube, and Kick",
+					"Customizable grid layout",
+					"Drag and drop interface",
+					"Responsive design",
+				],
+			})}
+		/>
+
 		<script is:inline src="https://embed.twitch.tv/embed/v1.js"></script>
 	</head>
 	<body class="m-0 w-full h-full">

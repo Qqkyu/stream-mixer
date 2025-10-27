@@ -8,7 +8,7 @@ const KickEmbed: FC<Props> = ({ type, channel }) => {
     width: "100%",
     height: "100%",
     channel,
-    parent: ["localhost"],
+    parent: ["localhost", "streammix.app"],
   };
 
   if (type === "video") {

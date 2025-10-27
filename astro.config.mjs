@@ -4,10 +4,12 @@ import tailwindcss from "@tailwindcss/vite";
 
 import react from "@astrojs/react";
 
+import sitemap from "@astrojs/sitemap";
+
 export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-
-  integrations: [react()],
+  site: "https://www.streammix.app",
+  integrations: [react(), sitemap()],
 });
