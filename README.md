@@ -1,46 +1,44 @@
-# Astro Starter Kit: Basics
+# Stream Mix
 
-```sh
-pnpm create astro@latest -- --template basics
-```
+A web application for watching multiple live streams simultaneously in a customizable, draggable grid layout. Mix and match streams from different platforms and arrange them however you like.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Features
 
-## 🚀 Project Structure
+- **Multi-Platform Support**: Watch streams from Twitch, YouTube, and Kick simultaneously
+- **Flexible Content Display**: For each stream, choose to display:
+  - Stream + Chat (Everything)
+  - Stream Only (Video)
+  - Chat Only
+- **Drag-and-Drop Grid Layout**: Freely arrange streams using a dynamic grid powered by GridStack
+- **Resizable Stream Windows**: Adjust the size of each stream to your preference
+- **Mac-Style Window Controls**: Intuitive close, minimize, and maximize buttons for each stream
+- **Persistent State**: Your layout and stream selections are automatically saved to localStorage
+- **Responsive Design**: Works across different screen sizes
 
-Inside of your Astro project, you'll see the following folders and files:
+## Use Cases
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+- Watch multiple streamers simultaneously
+- Monitor esports events with multiple POVs
+- Compare different stream sources in real-time
+- Create custom multi-stream viewing experiences
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## Tech Stack
 
-## 🧞 Commands
+- [Astro](https://astro.build) - Web framework
+- [React](https://react.dev) - UI components
+- [GridStack](https://gridstackjs.com) - Drag-and-drop grid layout
+- [Tailwind CSS](https://tailwindcss.com) - Styling
+- [DaisyUI](https://daisyui.com) - UI components
+- [Nanostores](https://github.com/nanostores/nanostores) - State management
 
-All commands are run from the root of the project, from a terminal:
+## Usage
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+1. Select a platform (Twitch, YouTube, or Kick) from the dropdown
+2. Enter the channel name
+3. Choose what to display (Everything, Stream Only, or Chat Only)
+4. Click "Add Stream" to add it to your grid
+5. Drag streams by their title bar to rearrange
+6. Resize streams using the corner handles (↘︎ and ↙︎)
+7. Use the red button to remove a stream
 
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Your layout and stream selections are automatically saved and will be restored when you return.
