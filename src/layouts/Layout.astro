@@ -11,8 +11,8 @@ interface Props {
 }
 
 const {
-	title = "Stream Mixer - Watch Multiple Streams Simultaneously",
-	description = "Stream Mixer allows you to watch multiple Twitch, YouTube, and Kick streams at the same time in a customizable grid layout. Perfect for multi-stream viewing and esports events.",
+	title = "Stream Mix - watch multiple streams simultaneously",
+	description = "Stream Mix allows you to watch multiple Twitch, YouTube, and Kick streams at the same time in a customizable grid layout. Perfect for multi-stream viewing and esports events.",
 	image = "/favicon.svg",
 	url = "https://streammix.app",
 } = Astro.props;
@@ -33,7 +33,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || url);
 		<meta name="description" content={description} />
 		<meta
 			name="keywords"
-			content="stream mixer, multi-stream, twitch, youtube, kick, watch multiple streams, esports, streaming, live streams"
+			content="stream mix, multi-stream, twitch, youtube, kick, watch multiple streams, esports, streaming, live streams"
 		/>
 		<link rel="canonical" href={canonicalURL} />
 		<link rel="sitemap" href="/sitemap-index.xml" />
@@ -43,7 +43,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || url);
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:image" content={new URL(image, canonicalURL)} />
-		<meta property="og:site_name" content="Stream Mixer" />
+		<meta property="og:site_name" content="Stream Mix" />
 
 		<meta name="robots" content="index, follow" />
 		<meta name="googlebot" content="index, follow" />
@@ -53,7 +53,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || url);
 			set:html={JSON.stringify({
 				"@context": "https://schema.org",
 				"@type": "WebApplication",
-				name: "Stream Mixer",
+				name: "Stream Mix",
 				description: description,
 				url: canonicalURL.toString(),
 				applicationCategory: "MultimediaApplication",
@@ -78,7 +78,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || url);
 	<body class="m-0 w-full h-full">
 		<div class="navbar justify-between bg-base-100 shadow-sm">
 			<div>
-				<a class="btn btn-ghost text-xl">Stream Mixer</a>
+				<a class="btn btn-ghost text-xl">Stream Mix</a>
 			</div>
 			<StreamInput client:load />
 		</div>
