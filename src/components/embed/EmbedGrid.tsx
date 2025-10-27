@@ -9,6 +9,7 @@ const EmbedGrid: FC = () => {
   const embedsStore = useStore(embeds);
   const gridRef = useRef<HTMLDivElement>(null);
   const gridInstanceRef = useRef<GridStackType | null>(null);
+  const [showControlIcons, setShowControlIcons] = useState(false);
   const [isGridReady, setIsGridReady] = useState(false);
 
   useEffect(() => {
@@ -114,11 +115,27 @@ const EmbedGrid: FC = () => {
           <div className="mockup-browser-toolbar before:!content-none !my-0 p-3 grid-stack-item-drag-handle cursor-move">
             <div className="flex pl-4 w-22 justify-evenly">
               <button
-                className="w-3 h-3 rounded-full bg-red-500 cursor-pointer no-drag"
+                className="w-3 h-3 rounded-full bg-red-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
                 onClick={() => removeEmbed(idx)}
-              />
-              <button className="w-3 h-3 rounded-full bg-yellow-500 cursor-pointer no-drag" />
-              <button className="w-3 h-3 rounded-full bg-green-500 cursor-pointer no-drag" />
+                onMouseOver={() => setShowControlIcons(true)}
+                onMouseOut={() => setShowControlIcons(false)}
+              >
+                {showControlIcons && "✕"}
+              </button>
+              <button
+                className="w-3 h-3 rounded-full bg-yellow-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
+                onMouseOver={() => setShowControlIcons(true)}
+                onMouseOut={() => setShowControlIcons(false)}
+              >
+                {showControlIcons && "−"}
+              </button>
+              <button
+                className="w-3 h-3 rounded-full bg-green-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
+                onMouseOver={() => setShowControlIcons(true)}
+                onMouseOut={() => setShowControlIcons(false)}
+              >
+                {showControlIcons && "⤢"}
+              </button>
             </div>
             <div className="input no-drag">
               {embed.platform === "twitch" && `twitch.tv/${embed.channel}`}
