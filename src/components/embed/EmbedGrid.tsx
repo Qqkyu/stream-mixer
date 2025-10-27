@@ -105,7 +105,7 @@ const EmbedGrid: FC = () => {
   };
 
   return embedsStore.length > 0 ? (
-    <div ref={gridRef} className="grid-stack">
+    <div ref={gridRef} className="grid-stac bg-base-200 min-h-screen">
       {embedsStore.map((embed, idx) => (
         <div
           key={`embed-${idx}`}
