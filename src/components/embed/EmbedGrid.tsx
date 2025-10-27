@@ -104,7 +104,7 @@ const EmbedGrid: FC = () => {
     setEmbeds(embeds.get().toSpliced(idx, 1));
   };
 
-  return (
+  return embedsStore.length > 0 ? (
     <div ref={gridRef} className="grid-stack">
       {embedsStore.map((embed, idx) => (
         <div
@@ -149,6 +149,19 @@ const EmbedGrid: FC = () => {
           </div>
         </div>
       ))}
+    </div>
+  ) : (
+    <div className="hero bg-base-200 min-h-screen">
+      <div className="hero-content text-center">
+        <div className="max-w-md">
+          <h1 className="text-5xl font-bold">No Streams Yet</h1>
+          <p className="py-6">
+            Start mixing your favorite streams! Add Twitch, YouTube, or Kick
+            streams to watch multiple channels at once in a customizable grid
+            layout.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
