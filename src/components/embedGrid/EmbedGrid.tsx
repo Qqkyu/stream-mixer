@@ -1,72 +1,84 @@
 import { useState, type FC, useRef, useEffect, useEffectEvent } from "react";
 import { useStore } from "@nanostores/react";
 import { embeds, setEmbeds } from "../../state/embedsStore";
+import { fullscreenEmbed } from "../../state/layoutStore";
 import { Embed } from "./embed/Embed";
 import type { GridStack as GridStackType } from "gridstack";
 import { DEFAULT_POSITION } from "./embed/position";
 
 const EmbedGrid: FC = () => {
   const embedsStore = useStore(embeds);
+  const fullscreenEmbedStore = useStore(fullscreenEmbed);
+
   const gridRef = useRef<HTMLDivElement>(null);
   const gridInstanceRef = useRef<GridStackType | null>(null);
+
   const [showControlIcons, setShowControlIcons] = useState(false);
   const [isGridReady, setIsGridReady] = useState(false);
 
-  useEffect(() => {
-    const initGrid = async () => {
-      if (gridRef.current && !gridInstanceRef.current) {
-        const { GridStack } = await import("gridstack");
+  const initGrid = async () => {
+    if (gridRef.current && !gridInstanceRef.current) {
+      const { GridStack } = await import("gridstack");
 
-        const grid = GridStack.init(
-          {
-            cellHeight: 70,
-            float: true,
-            margin: "44px 0 0 0",
-            draggable: {
-              handle: ".grid-stack-item-drag-handle",
-              cancel: ".no-drag",
-            },
-            resizable: {
-              handles: "se, sw",
-            },
+      const grid = GridStack.init(
+        {
+          cellHeight: 70,
+          float: true,
+          margin: "44px 0 0 0",
+          draggable: {
+            handle: ".grid-stack-item-drag-handle",
+            cancel: ".no-drag",
           },
-          gridRef.current,
+          resizable: {
+            handles: "se, sw",
+          },
+        },
+        gridRef.current,
+      );
+      gridInstanceRef.current = grid;
+
+      grid.on("change", (_, nodes) => {
+        if (!gridInstanceRef.current) return;
+
+        setEmbeds(
+          embeds.get().map((embed, idx) => {
+            const node = nodes.find(({ el }) => el?.id === `embed-${idx}`);
+            if (node) {
+              return {
+                ...embed,
+                position: {
+                  x: node.x ?? DEFAULT_POSITION.x,
+                  y: node.y ?? DEFAULT_POSITION.y,
+                  w: node.w ?? DEFAULT_POSITION.w,
+                  h: node.h ?? DEFAULT_POSITION.h,
+                },
+              };
+            }
+            return embed;
+          }),
         );
-        gridInstanceRef.current = grid;
+      });
 
-        grid.on("change", (_, nodes) => {
-          if (!gridInstanceRef.current) return;
+      setIsGridReady(true);
 
-          setEmbeds(
-            embeds.get().map((embed, idx) => {
-              const node = nodes.find(({ el }) => el?.id === `embed-${idx}`);
-              if (node) {
-                return {
-                  ...embed,
-                  position: {
-                    x: node.x ?? DEFAULT_POSITION.x,
-                    y: node.y ?? DEFAULT_POSITION.y,
-                    w: node.w ?? DEFAULT_POSITION.w,
-                    h: node.h ?? DEFAULT_POSITION.h,
-                  },
-                };
-              }
-              return embed;
-            }),
-          );
-        });
+      return () => {
+        grid.destroy();
+        gridInstanceRef.current = null;
+      };
+    }
+  };
 
-        setIsGridReady(true);
-
-        return () => {
-          grid.destroy();
-          gridInstanceRef.current = null;
-        };
+  useEffect(() => {
+    if (fullscreenEmbedStore != null) {
+      if (gridInstanceRef.current) {
+        gridInstanceRef.current.destroy(false);
+        gridInstanceRef.current = null;
+        setIsGridReady(false);
       }
-    };
-
-    initGrid();
-  }, []);
+    } else {
+      initGrid();
+    }
+  }, [fullscreenEmbedStore]);
 
   useEffect(() => {
     if (!gridInstanceRef.current || !isGridReady) return;
@@ -104,13 +116,63 @@ const EmbedGrid: FC = () => {
     setEmbeds(embeds.get().toSpliced(idx, 1));
   };
 
+  if (fullscreenEmbedStore != null) {
+    const embed = embedsStore[fullscreenEmbedStore];
+    return (
+      <div key={fullscreenEmbedStore} className="bg-base-200 h-full w-screen">
+        <div className="mockup-browser indicator flex flex-col overflow-hidden border-base-300 border w-full h-full">
+          <div className="mockup-browser-toolbar before:!content-none !my-0 p-3 flex-shrink-0">
+            <div className="flex pl-4 w-22 justify-evenly">
+              <button
+                className="w-3 h-3 rounded-full bg-red-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
+                onClick={() => {
+                  fullscreenEmbed.set(undefined);
+                  removeEmbed(fullscreenEmbedStore);
+                }}
+                onMouseOver={() => setShowControlIcons(true)}
+                onMouseOut={() => setShowControlIcons(false)}
+              >
+                {showControlIcons && "✕"}
+              </button>
+              <button
+                className="w-3 h-3 rounded-full bg-gray-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
+                disabled
+              />
+              <button
+                className="w-3 h-3 rounded-full bg-green-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
+                onClick={() => fullscreenEmbed.set(undefined)}
+                onMouseOver={() => setShowControlIcons(true)}
+                onMouseOut={() => setShowControlIcons(false)}
+              >
+                {showControlIcons && "⤢"}
+              </button>
+            </div>
+            <div className="input no-drag">
+              {embed.platform === "twitch" && `twitch.tv/${embed.channel}`}
+              {embed.platform === "youtube" &&
+                `youtube.com/watch?v=${embed.channel}`}
+              {embed.platform === "kick" && `kick.com/${embed.channel}`}
+            </div>
+          </div>
+          <div className="flex-1 border-t border-base-300 min-h-0">
+            <Embed {...embed} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return embedsStore.length > 0 ? (
-    <div ref={gridRef} className="grid-stack bg-base-200 min-h-screen">
+    <div
+      key="grid-mode"
+      ref={gridRef}
+      className="grid-stack bg-base-200 min-h-screen"
+    >
       {embedsStore.map((embed, idx) => (
         <div
           key={`embed-${idx}`}
           id={`embed-${idx}`}
-          className="grid-stack-item mockup-browser indicator block overflow-visible border-base-300 border"
+          className="grid-stack-item mockup-browser indicator flex flex-col overflow-visible border-base-300 border"
         >
           <div className="mockup-browser-toolbar before:!content-none !my-0 p-3 grid-stack-item-drag-handle cursor-move">
             <div className="flex pl-4 w-22 justify-evenly">
@@ -131,6 +193,7 @@ const EmbedGrid: FC = () => {
               </button>
               <button
                 className="w-3 h-3 rounded-full bg-green-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
+                onClick={() => fullscreenEmbed.set(idx)}
                 onMouseOver={() => setShowControlIcons(true)}
                 onMouseOut={() => setShowControlIcons(false)}
               >

@@ -1,7 +1,6 @@
 ---
 import "../styles/global.css";
 import "gridstack/dist/gridstack.min.css";
-import StreamInput from "../components/header/StreamInput.tsx";
 
 interface Props {
 	title?: string;
@@ -75,13 +74,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || url);
 
 		<script is:inline src="https://embed.twitch.tv/embed/v1.js"></script>
 	</head>
-	<body class="m-0 w-full h-full">
-		<div class="navbar justify-between bg-base-100 shadow-sm">
-			<div>
-				<a class="btn btn-ghost text-xl">Stream Mix</a>
-			</div>
-			<StreamInput client:load />
-		</div>
+	<body class="m-0 w-full h-screen overflow-hidden">
 		<slot />
 	</body>
 </html>

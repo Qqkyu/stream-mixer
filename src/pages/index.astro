@@ -1,8 +1,10 @@
 ---
-import EmbedGrid from "../components/embed/EmbedGrid.tsx";
+import EmbedGrid from "../components/embedGrid/EmbedGrid.tsx";
 import Layout from "../layouts/Layout.astro";
+import Header from "../components/header/Header.tsx";
 ---
 
 <Layout>
+	<Header client:load />
 	<EmbedGrid client:idle />
 </Layout>
