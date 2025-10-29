@@ -128,6 +128,7 @@ const EmbedGrid: FC = () => {
                 onClick={() => {
                   fullscreenEmbed.set(undefined);
                   removeEmbed(fullscreenEmbedStore);
+                  setShowControlIcons(false);
                 }}
                 onMouseOver={() => setShowControlIcons(true)}
                 onMouseOut={() => setShowControlIcons(false)}
@@ -140,7 +141,10 @@ const EmbedGrid: FC = () => {
               />
               <button
                 className="w-3 h-3 rounded-full bg-green-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
-                onClick={() => fullscreenEmbed.set(undefined)}
+                onClick={() => {
+                  setShowControlIcons(false);
+                  fullscreenEmbed.set(undefined);
+                }}
                 onMouseOver={() => setShowControlIcons(true)}
                 onMouseOut={() => setShowControlIcons(false)}
               >
@@ -178,7 +182,10 @@ const EmbedGrid: FC = () => {
             <div className="flex pl-4 w-22 justify-evenly">
               <button
                 className="w-3 h-3 rounded-full bg-red-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
-                onClick={() => removeEmbed(idx)}
+                onClick={() => {
+                  setShowControlIcons(false);
+                  removeEmbed(idx);
+                }}
                 onMouseOver={() => setShowControlIcons(true)}
                 onMouseOut={() => setShowControlIcons(false)}
               >
@@ -193,7 +200,10 @@ const EmbedGrid: FC = () => {
               </button>
               <button
                 className="w-3 h-3 rounded-full bg-green-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
-                onClick={() => fullscreenEmbed.set(idx)}
+                onClick={() => {
+                  setShowControlIcons(false);
+                  fullscreenEmbed.set(idx);
+                }}
                 onMouseOver={() => setShowControlIcons(true)}
                 onMouseOut={() => setShowControlIcons(false)}
               >

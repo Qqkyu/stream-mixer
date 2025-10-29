@@ -1,5 +1,5 @@
 import { atom } from "nanostores";
-import type { Embed } from "../components/embed/EmbedTypes";
+import type { Embed } from "../components/embedGrid/EmbedTypes";
 
 export const embeds = atom<Array<Embed>>(getLocalStorageEmbeds());
 
