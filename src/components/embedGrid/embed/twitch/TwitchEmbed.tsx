@@ -27,7 +27,7 @@ const TwitchEmbed: FC<Props> = ({ type, channel }) => {
 
   return type === "chat" ? (
     <iframe
-      src={`https://www.twitch.tv/embed/${playerOptions.channel}/chat?parent=localhost`}
+      src={`https://www.twitch.tv/embed/${playerOptions.channel}/chat?parent=streammix.app`}
       height={playerOptions.height}
       width={playerOptions.width}
     />

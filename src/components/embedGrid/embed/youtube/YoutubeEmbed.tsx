@@ -22,7 +22,7 @@ const YoutubeEmbed: FC<Props> = ({ type, channel }) => {
   } else if (type === "chat") {
     return (
       <iframe
-        src={`https://www.youtube.com/live_chat?v=${channel}&embed_domain=localhost`}
+        src={`https://www.youtube.com/live_chat?v=${channel}&embed_domain=streammix.app`}
         width={playerOptions.width}
         height={playerOptions.height}
       ></iframe>
@@ -37,7 +37,7 @@ const YoutubeEmbed: FC<Props> = ({ type, channel }) => {
         ></iframe>
 
         <iframe
-          src={`https://www.youtube.com/live_chat?v=${channel}&embed_domain=localhost`}
+          src={`https://www.youtube.com/live_chat?v=${channel}&embed_domain=streammix.app`}
           width={playerOptions.width}
           height={playerOptions.height}
         ></iframe>
