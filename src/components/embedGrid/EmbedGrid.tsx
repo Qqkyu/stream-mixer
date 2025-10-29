@@ -1,4 +1,4 @@
-import { useState, type FC, useRef, useEffect, useEffectEvent } from "react";
+import { useState, type FC, useRef, useEffect } from "react";
 import { useStore } from "@nanostores/react";
 import { embeds, setEmbeds } from "../../state/embedsStore";
 import { fullscreenEmbed } from "../../state/layoutStore";
@@ -167,16 +167,12 @@ const EmbedGrid: FC = () => {
   }
 
   return embedsStore.length > 0 ? (
-    <div
-      key="grid-mode"
-      ref={gridRef}
-      className="grid-stack bg-base-200 min-h-screen"
-    >
+    <div ref={gridRef} className="grid-stack bg-base-200 min-h-screen">
       {embedsStore.map((embed, idx) => (
         <div
           key={`embed-${idx}`}
           id={`embed-${idx}`}
-          className="grid-stack-item mockup-browser indicator flex flex-col overflow-visible border-base-300 border"
+          className="grid-stack-item mockup-browser indicator block overflow-visible border-base-300 border"
         >
           <div className="mockup-browser-toolbar before:!content-none !my-0 p-3 grid-stack-item-drag-handle cursor-move">
             <div className="flex pl-4 w-22 justify-evenly">

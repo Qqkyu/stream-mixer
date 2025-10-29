@@ -61,7 +61,7 @@ const Header: React.FC = () => {
                 platform,
                 channel,
                 type,
-                position: DEFAULT_POSITION,
+                position: { ...DEFAULT_POSITION },
               })
             }
             className="btn btn-primary join-item"
