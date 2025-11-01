@@ -26,7 +26,7 @@ const Header: React.FC = () => {
         </div>
         <div className="join">
           <select
-            className="select join-item"
+            className="select join-item w-32"
             value={platform}
             onChange={handlePlatformSelect}
           >
@@ -46,7 +46,7 @@ const Header: React.FC = () => {
             />
           </label>
           <select
-            className="select join-item"
+            className="select join-item w-44"
             value={type}
             onChange={(e) => setType(e.target.value as Embed["type"])}
           >
