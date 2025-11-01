@@ -22,8 +22,9 @@ const EmbedGrid: FC = () => {
 
       const grid = GridStack.init(
         {
-          cellHeight: 70,
+          cellHeight: document.body.scrollHeight / 20,
           float: true,
+          maxRow: 19,
           margin: "44px 0 0 0",
           draggable: {
             handle: ".grid-stack-item-drag-handle",
@@ -167,7 +168,7 @@ const EmbedGrid: FC = () => {
   }
 
   return (
-    <div ref={gridRef} className="grid-stack bg-base-200 min-h-screen">
+    <div ref={gridRef} className="grid-stack bg-base-200 !h-[calc(100vh-64px)]">
       {embedsStore.length == 0 && (
         <div className="hero bg-base-200 min-h-screen">
           <div className="hero-content text-center">
