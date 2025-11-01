@@ -1,0 +1,73 @@
+---
+
+---
+
+<dialog id="help-modal" class="modal">
+  <div class="modal-box max-w-2xl">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+        ✕
+      </button>
+    </form>
+    <h3 class="font-bold text-lg mb-4">How to Embed Streams</h3>
+
+    <div class="space-y-6">
+      <div>
+        <h4 class="font-semibold text-md mb-2 text-(--color-twitch)">Twitch</h4>
+        <p class="text-sm mb-2">
+          Enter the channel name exactly as it appears in the URL. Example:
+        </p>
+        <div class="bg-base-200 p-3 rounded text-sm">
+          <p class="mb-1">
+            For:{" "}
+            <code class="text-accent">twitch.tv/lofigirl</code>
+          </p>
+          <p>
+            Enter:{" "}
+            <code class="text-accent font-semibold"> lofigirl </code>
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="font-semibold text-md mb-2 text-(--color-youtube)">
+          YouTube
+        </h4>
+        <p class="text-sm mb-2">
+          Enter the video ID from the URL (the part after{" "}
+          <span class="text-accent">?v=</span>). Example:
+        </p>
+        <div class="bg-base-200 p-3 rounded text-sm">
+          <p class="mb-1">
+            For:{" "}
+            <code class="text-accent"> youtube.com/watch?v=jfKfPfyJRdk </code>
+          </p>
+          <p>
+            Enter:{" "}
+            <code class="text-accent font-semibold"> jfKfPfyJRdk </code>
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="font-semibold text-md mb-2 text-(--color-kick)">Kick</h4>
+        <p class="text-sm mb-2">
+          Enter the channel name exactly as it appears in the URL. Example:
+        </p>
+        <div class="bg-base-200 p-3 rounded text-sm">
+          <p class="mb-1">
+            For:{" "}
+            <code class="text-accent">kick.com/lofigirl</code>
+          </p>
+          <p>
+            Enter:{" "}
+            <code class="text-accent font-semibold"> lofigirl </code>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>

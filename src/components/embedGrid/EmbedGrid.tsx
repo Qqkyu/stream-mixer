@@ -5,6 +5,7 @@ import { fullscreenEmbed } from "../../state/layoutStore";
 import { Embed } from "./embed/Embed";
 import type { GridStack as GridStackType } from "gridstack";
 import { DEFAULT_POSITION } from "./embed/position";
+import HelpModalButton from "../helpModal/HelpModalButton";
 
 const EmbedGrid: FC = () => {
   const embedsStore = useStore(embeds);
@@ -170,7 +171,7 @@ const EmbedGrid: FC = () => {
   return (
     <div ref={gridRef} className="grid-stack bg-base-200 !h-[calc(100vh-64px)]">
       {embedsStore.length == 0 && (
-        <div className="hero bg-base-200 min-h-screen">
+        <div className="hero bg-base-200 h-full">
           <div className="hero-content text-center">
             <div className="max-w-md">
               <h1 className="text-5xl font-bold">No Streams Yet</h1>
@@ -179,6 +180,7 @@ const EmbedGrid: FC = () => {
                 streams to watch multiple channels at once in a customizable
                 grid layout.
               </p>
+              <HelpModalButton type="big" />
             </div>
           </div>
         </div>
