@@ -22,9 +22,9 @@ const EmbedGrid: FC = () => {
 
       const grid = GridStack.init(
         {
-          cellHeight: document.body.scrollHeight / 20,
+          cellHeight: (document.body.scrollHeight - 64) / 20,
           float: true,
-          maxRow: 19,
+          maxRow: 20,
           margin: "44px 0 0 0",
           draggable: {
             handle: ".grid-stack-item-drag-handle",
