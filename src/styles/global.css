@@ -2,6 +2,10 @@
 @plugin "daisyui";
 
 @layer base {
+  html {
+    scrollbar-gutter: auto;
+  }
+
   .grid-stack-item > .ui-resizable-handle {
     font-size: revert !important;
   }
@@ -33,4 +37,10 @@
     border-bottom-right-radius: 0 !important;
     @apply indicator-bottom indicator-start badge badge-soft;
   }
+}
+
+@theme {
+  --color-twitch: #8956fb;
+  --color-youtube: #ff0000;
+  --color-kick: #00e701;
 }
