@@ -19,6 +19,14 @@ const Header: React.FC = () => {
     setPlatform(value);
   };
 
+  const toggleFullscreenMode = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.body.requestFullscreen();
+    }
+  };
+
   return (
     fullscreenEmbedStore == null && (
       <div className="navbar justify-between bg-base-100 shadow-sm">
@@ -27,6 +35,12 @@ const Header: React.FC = () => {
         </div>
         <div className="flex gap-2 items-center">
           <HelpModalButton type="small" />
+          <button
+            className="btn btn-sm btn-circle"
+            onClick={toggleFullscreenMode}
+          >
+            ⤢
+          </button>
           <div className="join">
             <select
               className="select join-item w-32"
