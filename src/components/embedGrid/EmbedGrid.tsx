@@ -83,6 +83,18 @@ const EmbedGrid: FC = () => {
   }, [fullscreenEmbedStore]);
 
   useEffect(() => {
+    function handleWindowResize() {
+      if (gridInstanceRef.current && gridRef.current) {
+        gridInstanceRef.current.cellHeight((window.innerHeight - 64) / 20);
+      }
+    }
+    window.addEventListener("resize", handleWindowResize);
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!gridInstanceRef.current || !isGridReady) return;
 
     const grid = gridInstanceRef.current;
@@ -169,7 +181,10 @@ const EmbedGrid: FC = () => {
   }
 
   return (
-    <div ref={gridRef} className="grid-stack bg-base-200 !h-[calc(100vh-64px)]">
+    <div
+      ref={gridRef}
+      className="grid-stack bg-base-200 !h-[calc(100dvh-64px)]"
+    >
       {embedsStore.length == 0 && (
         <div className="hero bg-base-200 h-full">
           <div className="hero-content text-center">
