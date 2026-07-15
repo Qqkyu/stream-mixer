@@ -43,8 +43,10 @@ const EmbedGrid: FC = () => {
         if (!gridInstanceRef.current) return;
 
         setEmbeds(
-          embeds.get().map((embed, idx) => {
-            const node = nodes.find(({ el }) => el?.id === `embed-${idx}`);
+          embeds.get().map((embed) => {
+            const node = nodes.find(
+              ({ el }) => el?.id === `embed-${embed.id}`,
+            );
             if (node) {
               return {
                 ...embed,
@@ -101,12 +103,12 @@ const EmbedGrid: FC = () => {
 
     grid.removeAll(false);
 
-    embedsStore.forEach(({ position }, idx) => {
-      const el = document.getElementById(`embed-${idx}`);
+    embedsStore.forEach(({ id, position }) => {
+      const el = document.getElementById(`embed-${id}`);
       if (el) {
         grid.makeWidget(el, {
           ...position,
-          id: `embed-${idx}`,
+          id: `embed-${id}`,
         });
       }
     });
@@ -133,7 +135,7 @@ const EmbedGrid: FC = () => {
   if (fullscreenEmbedStore != null) {
     const embed = embedsStore[fullscreenEmbedStore];
     return (
-      <div key={fullscreenEmbedStore} className="bg-base-200 h-full w-screen">
+      <div key={embed.id} className="bg-base-200 h-full w-screen">
         <div className="mockup-browser indicator flex flex-col overflow-hidden border-base-300 border w-full h-full">
           <div className="mockup-browser-toolbar before:!content-none !my-0 p-3 flex-shrink-0">
             <div className="flex pl-4 w-22 justify-evenly">
@@ -202,8 +204,8 @@ const EmbedGrid: FC = () => {
       )}
       {embedsStore.map((embed, idx) => (
         <div
-          key={`embed-${idx}`}
-          id={`embed-${idx}`}
+          key={embed.id}
+          id={`embed-${embed.id}`}
           className="grid-stack-item mockup-browser indicator block overflow-visible border-base-300 border"
         >
           <div className="mockup-browser-toolbar before:!content-none !my-0 p-3 grid-stack-item-drag-handle cursor-move">

@@ -24,9 +24,21 @@ function getLocalStorageEmbeds(): Array<Embed> {
     return [];
   }
 
-  const parsedStorageEmbeds = JSON.parse(localStorageEmbeds);
+  const parsedStorageEmbeds: Array<Omit<Embed, "id"> & { id?: string }> =
+    JSON.parse(localStorageEmbeds);
 
-  return Array.isArray(parsedStorageEmbeds) ? parsedStorageEmbeds : [];
+  if (!Array.isArray(parsedStorageEmbeds)) {
+    return [];
+  }
+
+  const storedEmbeds = parsedStorageEmbeds.map((embed) => ({
+    ...embed,
+    id: embed.id ?? crypto.randomUUID(),
+  }));
+
+  localStorage.setItem("stream-embeds", JSON.stringify(storedEmbeds));
+
+  return storedEmbeds;
 }
 
 function setLocalStorageEmbeds(): void {

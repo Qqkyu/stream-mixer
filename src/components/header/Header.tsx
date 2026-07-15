@@ -75,6 +75,7 @@ const Header: React.FC = () => {
               disabled={channel === ""}
               onClick={() =>
                 addEmbed({
+                  id: crypto.randomUUID(),
                   platform,
                   channel,
                   type,
