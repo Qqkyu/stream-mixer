@@ -1,9 +1,11 @@
-import { useEffect, type FC } from "react";
+import { useEffect, useId, type FC } from "react";
 import type { Embed } from "../../EmbedTypes";
 
 type Props = Pick<Embed, "type" | "channel">;
 
 const TwitchEmbed: FC<Props> = ({ type, channel }) => {
+  const embedId = useId();
+
   const playerOptions = {
     width: "100%",
     height: "100%",
@@ -14,16 +16,16 @@ const TwitchEmbed: FC<Props> = ({ type, channel }) => {
   useEffect(() => {
     switch (type) {
       case "video":
-        const player = new Twitch.Player("twitch-embed", playerOptions);
+        const player = new Twitch.Player(embedId, playerOptions);
         player.setVolume(0.5);
         break;
       case "everything":
-        new Twitch.Embed("twitch-embed", playerOptions);
+        new Twitch.Embed(embedId, playerOptions);
         break;
       default:
         console.log("Unknown twitch embed type: ", type);
     }
-  }, [type]);
+  }, [type, embedId]);
 
   return type === "chat" ? (
     <iframe
@@ -32,7 +34,7 @@ const TwitchEmbed: FC<Props> = ({ type, channel }) => {
       width={playerOptions.width}
     />
   ) : (
-    <div id="twitch-embed" className="h-full"></div>
+    <div id={embedId} className="h-full"></div>
   );
 };
 
