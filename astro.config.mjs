@@ -10,6 +10,6 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  site: "https://www.streammix.app",
+  site: "https://streammix.app",
   integrations: [react(), sitemap()],
 });
