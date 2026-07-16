@@ -151,7 +151,6 @@ const EmbedGrid: FC = () => {
                 className="w-3 h-3 rounded-full bg-red-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
                 onClick={() => {
                   fullscreenEmbed.set(undefined);
-                  removeEmbed(fullscreenEmbedStore);
                   setShowControlIcons(false);
                 }}
                 onMouseOver={() => setShowControlIcons(true)}
