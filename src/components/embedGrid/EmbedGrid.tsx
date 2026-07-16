@@ -6,10 +6,12 @@ import { Embed } from "./embed/Embed";
 import type { GridStack as GridStackType } from "gridstack";
 import { DEFAULT_POSITION } from "./embed/position";
 import HelpModalButton from "../helpModal/HelpModalButton";
+import { compactEmbedHeaders } from "../../state/preferencesStore";
 
 const EmbedGrid: FC = () => {
   const embedsStore = useStore(embeds);
   const fullscreenEmbedStore = useStore(fullscreenEmbed);
+  const compactEmbedHeadersStore = useStore(compactEmbedHeaders);
 
   const gridRef = useRef<HTMLDivElement>(null);
   const gridInstanceRef = useRef<GridStackType | null>(null);
@@ -26,7 +28,7 @@ const EmbedGrid: FC = () => {
           cellHeight: (document.body.scrollHeight - 64) / 20,
           float: true,
           maxRow: 20,
-          margin: "44px 0 0 0",
+          margin: compactEmbedHeadersStore ? 0 : "44px 0 0 0",
           draggable: {
             handle: ".grid-stack-item-drag-handle",
             cancel: ".no-drag",
@@ -83,6 +85,12 @@ const EmbedGrid: FC = () => {
       initGrid();
     }
   }, [fullscreenEmbedStore]);
+
+  useEffect(() => {
+    gridInstanceRef.current?.margin(
+      compactEmbedHeadersStore ? 0 : "44px 0 0 0",
+    );
+  }, [compactEmbedHeadersStore]);
 
   useEffect(() => {
     function handleWindowResize() {
@@ -208,7 +216,12 @@ const EmbedGrid: FC = () => {
           id={`embed-${embed.id}`}
           className="grid-stack-item mockup-browser indicator block overflow-visible border-base-300 border"
         >
-          <div className="mockup-browser-toolbar before:!content-none !my-0 p-3 grid-stack-item-drag-handle cursor-move">
+          {compactEmbedHeadersStore && (
+            <div className="compact-embed-header-trigger" />
+          )}
+          <div
+            className={`mockup-browser-toolbar before:!content-none !my-0 p-3 grid-stack-item-drag-handle cursor-move ${compactEmbedHeadersStore ? "compact-embed-header" : ""}`}
+          >
             <div className="flex pl-4 w-22 justify-evenly">
               <button
                 className="w-3 h-3 rounded-full bg-red-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
@@ -247,7 +260,9 @@ const EmbedGrid: FC = () => {
               {embed.platform === "kick" && `kick.com/${embed.channel}`}
             </div>
           </div>
-          <div className="grid-stack-item-content border-t border-base-300">
+          <div
+            className={`grid-stack-item-content ${compactEmbedHeadersStore ? "" : "border-t border-base-300"}`}
+          >
             <Embed {...embed} />
           </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState, type ChangeEvent } from "react";
+import React, { useEffect, useState, type ChangeEvent } from "react";
 import { addEmbed } from "../../state/embedsStore";
 import { fullscreenEmbed } from "../../state/layoutStore";
 import type { Embed } from "../embedGrid/EmbedTypes";
@@ -6,13 +6,23 @@ import UserIcon from "../icons/UserIcon";
 import { DEFAULT_POSITION } from "../embedGrid/embed/position";
 import { useStore } from "@nanostores/react";
 import HelpModalButton from "../helpModal/HelpModalButton";
+import {
+  compactEmbedHeaders,
+  hydratePreferences,
+  setCompactEmbedHeaders,
+} from "../../state/preferencesStore";
 
 const Header: React.FC = () => {
   const fullscreenEmbedStore = useStore(fullscreenEmbed);
+  const compactEmbedHeadersStore = useStore(compactEmbedHeaders);
 
   const [platform, setPlatform] = useState<Embed["platform"]>("twitch");
   const [channel, setChannel] = useState<Embed["channel"]>("");
   const [type, setType] = useState<Embed["type"]>("everything");
+
+  useEffect(() => {
+    hydratePreferences();
+  }, []);
 
   const handlePlatformSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as Embed["platform"];
@@ -35,6 +45,17 @@ const Header: React.FC = () => {
         </div>
         <div className="flex gap-2 items-center">
           <HelpModalButton type="small" />
+          <label className="label gap-2 cursor-pointer">
+            <span className="text-sm whitespace-nowrap">Compact headers</span>
+            <input
+              type="checkbox"
+              className="toggle toggle-sm"
+              checked={compactEmbedHeadersStore}
+              onChange={(event) =>
+                setCompactEmbedHeaders(event.target.checked)
+              }
+            />
+          </label>
           <button
             className="btn btn-sm btn-circle"
             onClick={toggleFullscreenMode}
