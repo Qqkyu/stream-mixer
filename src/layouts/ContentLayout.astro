@@ -1,0 +1,107 @@
+---
+import Layout from "./Layout.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  heading: string;
+}
+
+const { title, description, heading } = Astro.props;
+---
+
+<Layout title={title} description={description}>
+  <div class="min-h-screen bg-base-200 text-base-content">
+    <header class="navbar bg-base-100 shadow-sm px-4 md:px-8">
+      <a href="/" class="btn btn-ghost text-xl">Stream Mix</a>
+      <nav
+        class="ml-auto flex flex-wrap items-center justify-end gap-1"
+        aria-label="Main navigation"
+      >
+        <a href="/guides/watch-multiple-streams" class="btn btn-ghost btn-sm">
+          Guide
+        </a>
+        <a href="/faq" class="btn btn-ghost btn-sm">FAQ</a>
+        <a href="/about" class="btn btn-ghost btn-sm">About</a>
+        <a href="/" class="btn btn-primary btn-sm">Open mixer</a>
+      </nav>
+    </header>
+
+    <main class="mx-auto max-w-4xl px-6 py-12 md:py-16">
+      <h1 class="text-4xl font-bold tracking-tight md:text-5xl">{heading}</h1>
+      <div class="content mt-8 max-w-none">
+        <slot />
+      </div>
+    </main>
+
+    <footer class="border-t border-base-300 bg-base-100">
+      <div
+        class="mx-auto flex max-w-4xl flex-wrap gap-x-6 gap-y-2 px-6 py-8 text-sm"
+      >
+        <span class="font-semibold">Stream Mix</span>
+        <a href="/guides/watch-multiple-streams" class="link link-hover"
+          >Guide</a
+        >
+        <a href="/guides/watch-multiple-twitch-streams" class="link link-hover">
+          Twitch
+        </a>
+        <a
+          href="/guides/watch-multiple-youtube-streams"
+          class="link link-hover"
+        >
+          YouTube
+        </a>
+        <a href="/guides/watch-multiple-kick-streams" class="link link-hover">
+          Kick
+        </a>
+        <a href="/faq" class="link link-hover">FAQ</a>
+        <a href="/about" class="link link-hover">About</a>
+        <a href="/privacy" class="link link-hover">Privacy</a>
+        <a
+          href="https://github.com/Qqkyu/stream-mixer"
+          class="link link-hover"
+          rel="external">GitHub</a
+        >
+      </div>
+    </footer>
+  </div>
+</Layout>
+
+<style>
+  .content :global(p),
+  .content :global(ul),
+  .content :global(ol) {
+    margin-top: 1rem;
+    line-height: 1.75;
+  }
+
+  .content :global(h2) {
+    margin-top: 2.5rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+
+  .content :global(h3) {
+    margin-top: 1.75rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .content :global(ul),
+  .content :global(ol) {
+    padding-left: 1.5rem;
+  }
+
+  .content :global(ul) {
+    list-style: disc;
+  }
+
+  .content :global(ol) {
+    list-style: decimal;
+  }
+
+  .content :global(a:not(.btn)) {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+</style>

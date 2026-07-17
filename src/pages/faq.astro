@@ -1,0 +1,76 @@
+---
+import ContentLayout from "../layouts/ContentLayout.astro";
+
+const questions = [
+  {
+    question: "What is a multistream viewer?",
+    answer:
+      "A multistream viewer displays several live broadcasts in one browser page. It is useful for esports matches, multiple player perspectives, co-streams, and events spread across different platforms.",
+  },
+  {
+    question: "Which platforms does Stream Mix support?",
+    answer:
+      "Stream Mix currently supports Twitch channels, YouTube videos or live streams, and Kick channels. You can mix supported platforms in the same layout.",
+  },
+  {
+    question: "Does Stream Mix restream or rebroadcast video?",
+    answer:
+      "No. Stream Mix loads the official embedded player or chat supplied by each platform. Video and chat are delivered directly by Twitch, YouTube, or Kick.",
+  },
+  {
+    question: "Is an account required?",
+    answer:
+      "No Stream Mix account is required. A platform may still ask you to sign in inside its embedded player or chat for platform-specific features.",
+  },
+  {
+    question: "Where is my layout saved?",
+    answer:
+      "Your stream list, display modes, positions, and interface preferences are saved in localStorage in your browser. Clearing site data removes the saved layout.",
+  },
+  {
+    question: "Why does a video or chat fail to load?",
+    answer:
+      "The channel or video ID may be incorrect, the broadcast may be offline, live chat may be disabled, or the creator may not permit embedding. Platform outages, privacy extensions, and blocked third-party cookies can also interfere.",
+  },
+];
+---
+
+<ContentLayout
+  title="Multistream Viewer FAQ | Stream Mix"
+  description="Answers about using Stream Mix with Twitch, YouTube, and Kick, including saved layouts, official embeds, chats, and playback problems."
+  heading="Stream Mix frequently asked questions"
+>
+  {
+    questions.map(({ question, answer }) => (
+      <section>
+        <h2>{question}</h2>
+        <p>{answer}</p>
+      </section>
+    ))
+  }
+
+  <h2>How do I get started?</h2>
+  <p>
+    Follow the <a href="/guides/watch-multiple-streams"
+      >multistream setup guide</a
+    >
+    or open the mixer and add your first channel.
+  </p>
+  <p><a href="/" class="btn btn-primary">Open Stream Mix</a></p>
+</ContentLayout>
+
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: questions.map(({ question, answer }) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: answer,
+      },
+    })),
+  })}
+/>

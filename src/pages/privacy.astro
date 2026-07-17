@@ -1,0 +1,40 @@
+---
+import ContentLayout from "../layouts/ContentLayout.astro";
+---
+
+<ContentLayout
+  title="Privacy | Stream Mix"
+  description="Understand what Stream Mix stores in your browser and how embedded Twitch, YouTube, and Kick players interact with third-party services."
+  heading="Privacy"
+>
+  <p>
+    Stream Mix does not require an account and does not operate its own user
+    tracking or analytics system. Your mixer configuration is stored in your
+    browser so it can be restored when you return.
+  </p>
+
+  <h2>Information stored locally</h2>
+  <p>
+    Stream Mix uses localStorage to save the channels or video IDs you add,
+    their display modes, grid positions, and interface preferences. This data
+    remains on your device unless you clear your browser storage. It is not sent
+    to a Stream Mix server.
+  </p>
+
+  <h2>Embedded third-party services</h2>
+  <p>
+    When you add a stream, your browser connects directly to the selected
+    platform. Twitch, YouTube, or Kick may process network information, set
+    cookies, or apply their own privacy policies while serving video and chat.
+    Stream Mix does not control those services.
+  </p>
+
+  <h2>Removing saved layouts</h2>
+  <p>
+    Remove individual streams using their window controls, or clear the site’s
+    stored data through your browser settings to reset the entire layout and all
+    preferences.
+  </p>
+
+  <p><em>Last updated: July 17, 2026.</em></p>
+</ContentLayout>

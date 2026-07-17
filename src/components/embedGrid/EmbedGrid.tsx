@@ -46,9 +46,7 @@ const EmbedGrid: FC = () => {
 
         setEmbeds(
           embeds.get().map((embed) => {
-            const node = nodes.find(
-              ({ el }) => el?.id === `embed-${embed.id}`,
-            );
+            const node = nodes.find(({ el }) => el?.id === `embed-${embed.id}`);
             if (node) {
               return {
                 ...embed,
@@ -198,13 +196,34 @@ const EmbedGrid: FC = () => {
         <div className="hero bg-base-200 h-full">
           <div className="hero-content text-center">
             <div className="max-w-md">
-              <h1 className="text-5xl font-bold">No Streams Yet</h1>
+              <h1 className="text-5xl font-bold">
+                Watch multiple live streams at once
+              </h1>
               <p className="py-6">
-                Start mixing your favorite streams! Add Twitch, YouTube, or Kick
-                streams to watch multiple channels at once in a customizable
-                grid layout.
+                Build a customizable multistream viewer with Twitch, YouTube,
+                and Kick video and chats in one browser window.
               </p>
               <HelpModalButton type="big" />
+              <nav
+                className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm"
+                aria-label="Learn about Stream Mix"
+              >
+                <a
+                  className="link link-hover"
+                  href="/guides/watch-multiple-streams"
+                >
+                  Setup guide
+                </a>
+                <a className="link link-hover" href="/faq">
+                  FAQ
+                </a>
+                <a className="link link-hover" href="/about">
+                  About
+                </a>
+                <a className="link link-hover" href="/privacy">
+                  Privacy
+                </a>
+              </nav>
             </div>
           </div>
         </div>

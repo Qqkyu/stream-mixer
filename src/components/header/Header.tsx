@@ -41,7 +41,9 @@ const Header: React.FC = () => {
     fullscreenEmbedStore == null && (
       <div className="navbar justify-between bg-base-100 shadow-sm">
         <div>
-          <a className="btn btn-ghost text-xl">Stream Mix</a>
+          <a href="/" className="btn btn-ghost text-xl">
+            Stream Mix
+          </a>
         </div>
         <div className="flex gap-2 items-center">
           <HelpModalButton type="small" />
@@ -51,9 +53,7 @@ const Header: React.FC = () => {
               type="checkbox"
               className="toggle toggle-sm"
               checked={compactEmbedHeadersStore}
-              onChange={(event) =>
-                setCompactEmbedHeaders(event.target.checked)
-              }
+              onChange={(event) => setCompactEmbedHeaders(event.target.checked)}
             />
           </label>
           <button

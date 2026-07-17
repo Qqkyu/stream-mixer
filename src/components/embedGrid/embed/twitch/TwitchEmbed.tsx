@@ -1,6 +1,7 @@
 import { useEffect, useId, type FC } from "react";
 import { useEmbedHostname } from "../../../../hooks/useEmbedHostname";
 import type { Embed } from "../../EmbedTypes";
+import { loadTwitchEmbedSdk } from "./loadTwitchEmbedSdk";
 
 type Props = Pick<Embed, "type" | "channel">;
 
@@ -9,7 +10,9 @@ const TwitchEmbed: FC<Props> = ({ type, channel }) => {
   const hostname = useEmbedHostname();
 
   useEffect(() => {
-    if (!hostname) return;
+    if (!hostname || type === "chat") return;
+
+    let active = true;
 
     const playerOptions = {
       width: "100%",
@@ -18,17 +21,22 @@ const TwitchEmbed: FC<Props> = ({ type, channel }) => {
       parent: [hostname],
     };
 
-    switch (type) {
-      case "video":
-        const player = new Twitch.Player(embedId, playerOptions);
-        player.setVolume(0.5);
-        break;
-      case "everything":
-        new Twitch.Embed(embedId, playerOptions);
-        break;
-      default:
-        console.log("Unknown twitch embed type: ", type);
-    }
+    loadTwitchEmbedSdk()
+      .then(() => {
+        if (!active) return;
+
+        if (type === "video") {
+          const player = new Twitch.Player(embedId, playerOptions);
+          player.setVolume(0.5);
+        } else {
+          new Twitch.Embed(embedId, playerOptions);
+        }
+      })
+      .catch((error) => console.error(error));
+
+    return () => {
+      active = false;
+    };
   }, [channel, embedId, hostname, type]);
 
   if (!hostname) {

@@ -4,17 +4,17 @@ import "gridstack/dist/gridstack.min.css";
 import HelpModal from "../components/helpModal/HelpModal.astro";
 
 interface Props {
-	title?: string;
-	description?: string;
-	image?: string;
-	url?: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  url?: string;
 }
 
 const {
-	title = "Stream Mix - watch multiple streams simultaneously",
-	description = "Stream Mix allows you to watch multiple Twitch, YouTube, and Kick streams at the same time in a customizable grid layout. Perfect for multi-stream viewing and esports events.",
-	image = "/favicon.svg",
-	url = "https://streammix.app",
+  title = "Watch Multiple Twitch, YouTube & Kick Streams | Stream Mix",
+  description = "Watch multiple Twitch, YouTube, and Kick streams at once. Build a free customizable multistream viewer with draggable video and chat windows.",
+  image = "/og-image.png",
+  url = "https://streammix.app",
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || url);
@@ -22,61 +22,88 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || url);
 
 <!doctype html>
 <html lang="en" class="m-0 w-full h-full">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
 
-		<title>{title}</title>
-		<meta name="title" content={title} />
-		<meta name="description" content={description} />
-		<meta
-			name="keywords"
-			content="stream mix, multi-stream, twitch, youtube, kick, watch multiple streams, esports, streaming, live streams"
-		/>
-		<link rel="canonical" href={canonicalURL} />
-		<link rel="sitemap" href="/sitemap-index.xml" />
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
 
-		<meta property="og:type" content="website" />
-		<meta property="og:url" content={canonicalURL} />
-		<meta property="og:title" content={title} />
-		<meta property="og:description" content={description} />
-		<meta property="og:image" content={new URL(image, canonicalURL)} />
-		<meta property="og:site_name" content="Stream Mix" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, canonicalURL)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta
+      property="og:image:alt"
+      content="Stream Mix multistream viewer preview"
+    />
+    <meta property="og:site_name" content="Stream Mix" />
 
-		<meta name="robots" content="index, follow" />
-		<meta name="googlebot" content="index, follow" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(image, canonicalURL)} />
+    <meta
+      name="twitter:image:alt"
+      content="Stream Mix multistream viewer preview"
+    />
 
-		<script
-			type="application/ld+json"
-			set:html={JSON.stringify({
-				"@context": "https://schema.org",
-				"@type": "WebApplication",
-				name: "Stream Mix",
-				description: description,
-				url: canonicalURL.toString(),
-				applicationCategory: "MultimediaApplication",
-				operatingSystem: "Web Browser",
-				offers: {
-					"@type": "Offer",
-					price: "0",
-					priceCurrency: "USD",
-				},
-				featureList: [
-					"Watch multiple streams simultaneously",
-					"Support for Twitch, YouTube, and Kick",
-					"Customizable grid layout",
-					"Drag and drop interface",
-					"Responsive design",
-				],
-			})}
-		/>
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
 
-		<script is:inline src="https://embed.twitch.tv/embed/v1.js"></script>
-	</head>
-	<body class="m-0 w-full h-screen">
-		<slot />
-		<HelpModal />
-	</body>
+    {
+      Astro.url.pathname === "/" && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "WebSite",
+                "@id": "https://streammix.app/#website",
+                name: "Stream Mix",
+                alternateName: "StreamMix",
+                url: "https://streammix.app/",
+              },
+              {
+                "@type": "WebApplication",
+                "@id": "https://streammix.app/#application",
+                name: "Stream Mix",
+                description,
+                url: "https://streammix.app/",
+                applicationCategory: "MultimediaApplication",
+                browserRequirements: "Requires a modern web browser",
+                operatingSystem: "Any",
+                offers: {
+                  "@type": "Offer",
+                  price: "0",
+                  priceCurrency: "USD",
+                },
+                featureList: [
+                  "Watch multiple streams simultaneously",
+                  "Support for Twitch, YouTube, and Kick",
+                  "Customizable draggable grid layout",
+                  "Stream and chat display modes",
+                  "Local layout persistence",
+                ],
+              },
+            ],
+          })}
+        />
+      )
+    }
+  </head>
+  <body class="m-0 w-full h-screen">
+    <slot />
+    <HelpModal />
+  </body>
 </html>
