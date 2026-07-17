@@ -6,4 +6,5 @@ export type Embed = {
   channel: string;
   type: "everything" | "chat" | "video";
   position: Required<GridStackPosition>;
+  minimized?: boolean;
 };

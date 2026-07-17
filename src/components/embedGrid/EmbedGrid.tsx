@@ -7,6 +7,7 @@ import type { GridStack as GridStackType, GridStackWidget } from "gridstack";
 import { DEFAULT_POSITION } from "./embed/position";
 import HelpModalButton from "../helpModal/HelpModalButton";
 import { compactMode } from "../../state/preferencesStore";
+import type { Embed as EmbedType } from "./EmbedTypes";
 
 const GRID_ROW_HEIGHT = 48;
 
@@ -15,6 +16,18 @@ function getViewportRowCount(pageHeaderHeight: number): number {
     1,
     Math.ceil((window.innerHeight - pageHeaderHeight) / GRID_ROW_HEIGHT),
   );
+}
+
+function getEmbedLabel(embed: EmbedType): string {
+  if (embed.platform === "youtube") {
+    return `youtube.com/watch?v=${embed.channel}`;
+  }
+
+  if (embed.platform === "kick") {
+    return `kick.com/${embed.channel}`;
+  }
+
+  return `${embed.platform}.tv/${embed.channel}`;
 }
 
 const EmbedGrid: FC = () => {
@@ -29,9 +42,32 @@ const EmbedGrid: FC = () => {
   const gridRef = useRef<HTMLDivElement>(null);
   const gridInstanceRef = useRef<GridStackType | null>(null);
   const registeredEmbedIdsRef = useRef(new Set<string>());
+  const restoringEmbedIdsRef = useRef(new Set<string>());
 
   const [showControlIcons, setShowControlIcons] = useState(false);
   const [isGridReady, setIsGridReady] = useState(false);
+  const [showMinimizedShelf, setShowMinimizedShelf] = useState(false);
+
+  useEffect(() => {
+    const hasMinimizedEmbeds = embedsStore.some(({ minimized }) => minimized);
+    if (!hasMinimizedEmbeds) {
+      setShowMinimizedShelf(false);
+      return;
+    }
+
+    const handlePointerMove = (event: PointerEvent) => {
+      const pointerIsOverShelf =
+        event.target instanceof Element &&
+        event.target.closest("[data-minimized-shelf]") != null;
+
+      setShowMinimizedShelf(
+        pointerIsOverShelf || event.clientY >= window.innerHeight - 64,
+      );
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    return () => window.removeEventListener("pointermove", handlePointerMove);
+  }, [embedsStore]);
 
   useEffect(() => {
     if (fullscreenEmbedStore != null) return;
@@ -63,7 +99,10 @@ const EmbedGrid: FC = () => {
         initializedGrid = grid;
         gridInstanceRef.current = grid;
         registeredEmbedIdsRef.current = new Set(
-          embeds.get().map(({ id }) => id),
+          embeds
+            .get()
+            .filter(({ minimized }) => !minimized)
+            .map(({ id }) => id),
         );
 
         const persistLayout = () => {
@@ -148,9 +187,10 @@ const EmbedGrid: FC = () => {
     if (!gridInstanceRef.current || !isGridReady) return;
 
     const grid = gridInstanceRef.current;
-    const currentEmbedIds = new Set(embedsStore.map(({ id }) => id));
+    const visibleEmbeds = embedsStore.filter(({ minimized }) => !minimized);
+    const currentEmbedIds = new Set(visibleEmbeds.map(({ id }) => id));
 
-    embedsStore.forEach(({ id, position }) => {
+    visibleEmbeds.forEach(({ id, position }) => {
       if (registeredEmbedIdsRef.current.has(id)) return;
 
       const el = document.getElementById(`embed-${id}`);
@@ -158,8 +198,9 @@ const EmbedGrid: FC = () => {
         grid.makeWidget(el, {
           ...position,
           id: `embed-${id}`,
-          autoPosition: true,
+          autoPosition: !restoringEmbedIdsRef.current.has(id),
         });
+        restoringEmbedIdsRef.current.delete(id);
       }
     });
 
@@ -185,6 +226,47 @@ const EmbedGrid: FC = () => {
     const element = embed ? document.getElementById(`embed-${embed.id}`) : null;
     if (element) gridInstanceRef.current?.removeWidget(element, false);
     setEmbeds(embeds.get().toSpliced(idx, 1));
+  };
+
+  const minimizeEmbed = (idx: number) => {
+    const embed = embeds.get()[idx];
+    if (!embed) return;
+
+    const element = document.getElementById(`embed-${embed.id}`);
+    const savedNode = (
+      gridInstanceRef.current?.save(false) as GridStackWidget[] | undefined
+    )?.find(({ id }) => id === `embed-${embed.id}`);
+    const position = savedNode
+      ? {
+          x: savedNode.x ?? embed.position.x,
+          y: savedNode.y ?? embed.position.y,
+          w: savedNode.w ?? embed.position.w,
+          h: savedNode.h ?? embed.position.h,
+        }
+      : embed.position;
+
+    if (element) gridInstanceRef.current?.removeWidget(element, false);
+    registeredEmbedIdsRef.current.delete(embed.id);
+    setEmbeds(
+      embeds
+        .get()
+        .map((currentEmbed, currentIdx) =>
+          currentIdx === idx
+            ? { ...currentEmbed, position, minimized: true }
+            : currentEmbed,
+        ),
+    );
+  };
+
+  const restoreEmbed = (id: string) => {
+    restoringEmbedIdsRef.current.add(id);
+    setEmbeds(
+      embeds
+        .get()
+        .map((embed) =>
+          embed.id === id ? { ...embed, minimized: false } : embed,
+        ),
+    );
   };
 
   if (fullscreenEmbedStore != null) {
@@ -236,108 +318,166 @@ const EmbedGrid: FC = () => {
     );
   }
 
+  const minimizedEmbeds = embedsStore.filter(({ minimized }) => minimized);
+
   return (
-    <div
-      ref={gridRef}
-      className={`grid-stack stream-embed-grid bg-base-200 ${workspaceMinHeightClass}`}
-    >
-      {embedsStore.length == 0 && (
-        <div className={`hero bg-base-200 ${workspaceMinHeightClass}`}>
-          <div className="hero-content text-center">
-            <div className="max-w-md">
-              <h1 className="text-5xl font-bold">
-                Watch multiple live streams at once
-              </h1>
-              <p className="py-6">
-                Build a customizable multistream viewer with Twitch, YouTube,
-                and Kick video and chats in one browser window.
-              </p>
-              <HelpModalButton type="big" />
-              <nav
-                className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm"
-                aria-label="Learn about Stream Mix"
-              >
-                <a
-                  className="link link-hover"
-                  href="/guides/watch-multiple-streams"
+    <>
+      <div
+        ref={gridRef}
+        className={`grid-stack stream-embed-grid bg-base-200 ${workspaceMinHeightClass}`}
+      >
+        {embedsStore.length == 0 && (
+          <div className={`hero bg-base-200 ${workspaceMinHeightClass}`}>
+            <div className="hero-content text-center">
+              <div className="max-w-md">
+                <h1 className="text-5xl font-bold">
+                  Watch multiple live streams at once
+                </h1>
+                <p className="py-6">
+                  Build a customizable multistream viewer with Twitch, YouTube,
+                  and Kick video and chats in one browser window.
+                </p>
+                <HelpModalButton type="big" />
+                <nav
+                  className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm"
+                  aria-label="Learn about Stream Mix"
                 >
-                  Setup guide
-                </a>
-                <a className="link link-hover" href="/faq">
-                  FAQ
-                </a>
-                <a className="link link-hover" href="/about">
-                  About
-                </a>
-                <a className="link link-hover" href="/privacy">
-                  Privacy
-                </a>
-              </nav>
+                  <a
+                    className="link link-hover"
+                    href="/guides/watch-multiple-streams"
+                  >
+                    Setup guide
+                  </a>
+                  <a className="link link-hover" href="/faq">
+                    FAQ
+                  </a>
+                  <a className="link link-hover" href="/about">
+                    About
+                  </a>
+                  <a className="link link-hover" href="/privacy">
+                    Privacy
+                  </a>
+                </nav>
+              </div>
             </div>
           </div>
-        </div>
+        )}
+        {embedsStore.map((embed, idx) =>
+          embed.minimized ? null : (
+            <div
+              key={embed.id}
+              id={`embed-${embed.id}`}
+              className="grid-stack-item mockup-browser indicator block overflow-visible border-base-300 border"
+              gs-id={`embed-${embed.id}`}
+              gs-x={embed.position.x}
+              gs-y={embed.position.y}
+              gs-w={embed.position.w}
+              gs-h={embed.position.h}
+            >
+              {compactModeStore && (
+                <div className="compact-embed-header-trigger" />
+              )}
+              <div
+                className={`mockup-browser-toolbar before:!content-none !my-0 p-3 grid-stack-item-drag-handle cursor-move ${compactModeStore ? "compact-embed-header" : ""}`}
+              >
+                <div className="flex pl-4 w-22 justify-evenly">
+                  <button
+                    className="w-3 h-3 rounded-full bg-red-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
+                    onClick={() => {
+                      setShowControlIcons(false);
+                      removeEmbed(idx);
+                    }}
+                    onMouseOver={() => setShowControlIcons(true)}
+                    onMouseOut={() => setShowControlIcons(false)}
+                  >
+                    {showControlIcons && "✕"}
+                  </button>
+                  <button
+                    className="w-3 h-3 rounded-full bg-yellow-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
+                    onClick={() => {
+                      setShowControlIcons(false);
+                      minimizeEmbed(idx);
+                    }}
+                    onMouseOver={() => setShowControlIcons(true)}
+                    onMouseOut={() => setShowControlIcons(false)}
+                  >
+                    {showControlIcons && "−"}
+                  </button>
+                  <button
+                    className="w-3 h-3 rounded-full bg-green-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
+                    onClick={() => {
+                      setShowControlIcons(false);
+                      fullscreenEmbed.set(idx);
+                    }}
+                    onMouseOver={() => setShowControlIcons(true)}
+                    onMouseOut={() => setShowControlIcons(false)}
+                  >
+                    {showControlIcons && "⤢"}
+                  </button>
+                </div>
+                <div className="input no-drag">
+                  {embed.platform === "twitch" && `twitch.tv/${embed.channel}`}
+                  {embed.platform === "youtube" &&
+                    `youtube.com/watch?v=${embed.channel}`}
+                  {embed.platform === "kick" && `kick.com/${embed.channel}`}
+                </div>
+              </div>
+              <div
+                className={`grid-stack-item-content ${compactModeStore ? "" : "border-t border-base-300"}`}
+              >
+                <Embed {...embed} />
+              </div>
+            </div>
+          ),
+        )}
+      </div>
+      {minimizedEmbeds.length > 0 && (
+        <>
+          <div
+            aria-hidden="true"
+            className="fixed inset-x-0 bottom-0 z-[1999] h-6"
+            onPointerEnter={() => setShowMinimizedShelf(true)}
+          />
+          <aside
+            aria-label="Minimized streams"
+            data-minimized-shelf
+            className={`fixed inset-x-0 bottom-3 z-[2000] flex justify-center px-3 pointer-events-none transition-all duration-150 ${
+              showMinimizedShelf
+                ? "translate-y-0 opacity-100"
+                : "translate-y-[calc(100%+1rem)] opacity-0"
+            }`}
+            onFocusCapture={() => setShowMinimizedShelf(true)}
+            onBlurCapture={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                setShowMinimizedShelf(false);
+              }
+            }}
+          >
+            <div className="flex max-w-full gap-2 overflow-x-auto rounded-box border border-base-content/20 bg-base-100/95 p-2 shadow-xl backdrop-blur pointer-events-auto">
+              {minimizedEmbeds.map((embed) => (
+                <button
+                  key={embed.id}
+                  className="btn btn-sm max-w-64 flex-nowrap justify-start"
+                  title={`Restore ${getEmbedLabel(embed)}`}
+                  onClick={() => restoreEmbed(embed.id)}
+                >
+                  <span
+                    className={`size-2 shrink-0 rounded-full ${
+                      embed.platform === "twitch"
+                        ? "bg-twitch"
+                        : embed.platform === "youtube"
+                          ? "bg-youtube"
+                          : "bg-kick"
+                    }`}
+                  />
+                  <span className="truncate">{getEmbedLabel(embed)}</span>
+                </button>
+              ))}
+            </div>
+          </aside>
+        </>
       )}
-      {embedsStore.map((embed, idx) => (
-        <div
-          key={embed.id}
-          id={`embed-${embed.id}`}
-          className="grid-stack-item mockup-browser indicator block overflow-visible border-base-300 border"
-          gs-id={`embed-${embed.id}`}
-          gs-x={embed.position.x}
-          gs-y={embed.position.y}
-          gs-w={embed.position.w}
-          gs-h={embed.position.h}
-        >
-          {compactModeStore && <div className="compact-embed-header-trigger" />}
-          <div
-            className={`mockup-browser-toolbar before:!content-none !my-0 p-3 grid-stack-item-drag-handle cursor-move ${compactModeStore ? "compact-embed-header" : ""}`}
-          >
-            <div className="flex pl-4 w-22 justify-evenly">
-              <button
-                className="w-3 h-3 rounded-full bg-red-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
-                onClick={() => {
-                  setShowControlIcons(false);
-                  removeEmbed(idx);
-                }}
-                onMouseOver={() => setShowControlIcons(true)}
-                onMouseOut={() => setShowControlIcons(false)}
-              >
-                {showControlIcons && "✕"}
-              </button>
-              <button
-                className="w-3 h-3 rounded-full bg-yellow-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
-                onMouseOver={() => setShowControlIcons(true)}
-                onMouseOut={() => setShowControlIcons(false)}
-              >
-                {showControlIcons && "−"}
-              </button>
-              <button
-                className="w-3 h-3 rounded-full bg-green-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
-                onClick={() => {
-                  setShowControlIcons(false);
-                  fullscreenEmbed.set(idx);
-                }}
-                onMouseOver={() => setShowControlIcons(true)}
-                onMouseOut={() => setShowControlIcons(false)}
-              >
-                {showControlIcons && "⤢"}
-              </button>
-            </div>
-            <div className="input no-drag">
-              {embed.platform === "twitch" && `twitch.tv/${embed.channel}`}
-              {embed.platform === "youtube" &&
-                `youtube.com/watch?v=${embed.channel}`}
-              {embed.platform === "kick" && `kick.com/${embed.channel}`}
-            </div>
-          </div>
-          <div
-            className={`grid-stack-item-content ${compactModeStore ? "" : "border-t border-base-300"}`}
-          >
-            <Embed {...embed} />
-          </div>
-        </div>
-      ))}
-    </div>
+    </>
   );
 };
 
