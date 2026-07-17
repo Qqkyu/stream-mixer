@@ -342,6 +342,7 @@ const EmbedGrid: FC = () => {
   }
 
   const minimizedEmbeds = embedsStore.filter(({ minimized }) => minimized);
+  const hasVisibleEmbeds = embedsStore.some(({ minimized }) => !minimized);
 
   return (
     <>
@@ -349,7 +350,7 @@ const EmbedGrid: FC = () => {
         ref={gridRef}
         className={`grid-stack stream-embed-grid bg-base-200 ${workspaceMinHeightClass}`}
       >
-        {embedsStore.length == 0 && (
+        {!hasVisibleEmbeds && (
           <div className={`hero bg-base-200 ${workspaceMinHeightClass}`}>
             <div className="hero-content text-center">
               <div className="max-w-md">
