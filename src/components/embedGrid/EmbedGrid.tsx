@@ -15,7 +15,7 @@ const GRID_ROW_HEIGHT = 48;
 function getViewportRowCount(pageHeaderHeight: number): number {
   return Math.max(
     1,
-    Math.ceil((window.innerHeight - pageHeaderHeight) / GRID_ROW_HEIGHT),
+    Math.floor((window.innerHeight - pageHeaderHeight) / GRID_ROW_HEIGHT),
   );
 }
 
