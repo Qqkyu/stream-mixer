@@ -6,11 +6,11 @@
     scrollbar-gutter: auto;
   }
 
-  .grid-stack-item > .ui-resizable-handle {
+  .stream-embed-grid > .grid-stack-item > .ui-resizable-handle {
     font-size: revert !important;
   }
 
-  .grid-stack-item > .ui-resizable-se {
+  .stream-embed-grid > .grid-stack-item > .ui-resizable-se {
     z-index: 1000;
     background-image: none !important;
     height: revert !important;
@@ -24,7 +24,7 @@
     @apply indicator-bottom indicator-end badge badge-soft;
   }
 
-  .grid-stack-item > .ui-resizable-sw {
+  .stream-embed-grid > .grid-stack-item > .ui-resizable-sw {
     z-index: 1000;
     background-image: none !important;
     height: revert !important;
@@ -36,6 +36,10 @@
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
     @apply indicator-bottom indicator-start badge badge-soft;
+  }
+
+  .stream-embed-grid.grid-stack-interacting iframe {
+    pointer-events: none;
   }
 
   .compact-embed-header-trigger {
