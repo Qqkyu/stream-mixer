@@ -19,25 +19,10 @@ const Header: React.FC = () => {
   const [platform, setPlatform] = useState<Embed["platform"]>("twitch");
   const [channel, setChannel] = useState<Embed["channel"]>("");
   const [type, setType] = useState<Embed["type"]>("everything");
-  const [showCompactModeExit, setShowCompactModeExit] = useState(false);
 
   useEffect(() => {
     hydratePreferences();
   }, []);
-
-  useEffect(() => {
-    if (!compactModeStore) {
-      setShowCompactModeExit(false);
-      return;
-    }
-
-    const handlePointerMove = (event: PointerEvent) => {
-      setShowCompactModeExit(event.clientY <= 48);
-    };
-
-    window.addEventListener("pointermove", handlePointerMove);
-    return () => window.removeEventListener("pointermove", handlePointerMove);
-  }, [compactModeStore]);
 
   const handlePlatformSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as Embed["platform"];
@@ -129,20 +114,6 @@ const Header: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
-      )}
-      {compactModeStore && (
-        <div className="pointer-events-none fixed top-0 left-1/2 z-[2000] -translate-x-1/2">
-          <button
-            className={`btn btn-primary btn-sm btn-circle text-lg font-bold shadow-md transition-[opacity,transform] duration-150 ${showCompactModeExit ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-full opacity-0"}`}
-            onClick={() => setCompactMode(false)}
-            onFocus={() => setShowCompactModeExit(true)}
-            onBlur={() => setShowCompactModeExit(false)}
-            aria-label="Exit compact mode"
-            title="Exit compact mode"
-          >
-            ↓
-          </button>
         </div>
       )}
     </>

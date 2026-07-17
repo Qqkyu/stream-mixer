@@ -6,7 +6,7 @@ import { Embed } from "./embed/Embed";
 import type { GridStack as GridStackType, GridStackWidget } from "gridstack";
 import { DEFAULT_POSITION } from "./embed/position";
 import HelpModalButton from "../helpModal/HelpModalButton";
-import { compactMode } from "../../state/preferencesStore";
+import { compactMode, setCompactMode } from "../../state/preferencesStore";
 import type { Embed as EmbedType } from "./EmbedTypes";
 
 const GRID_ROW_HEIGHT = 48;
@@ -43,10 +43,30 @@ const EmbedGrid: FC = () => {
   const gridInstanceRef = useRef<GridStackType | null>(null);
   const registeredEmbedIdsRef = useRef(new Set<string>());
   const restoringEmbedIdsRef = useRef(new Set<string>());
+  const compactModeExitTimerRef = useRef<number>();
 
   const [showControlIcons, setShowControlIcons] = useState(false);
   const [isGridReady, setIsGridReady] = useState(false);
   const [showMinimizedShelf, setShowMinimizedShelf] = useState(false);
+  const [showCompactModeExit, setShowCompactModeExit] = useState(false);
+
+  const revealCompactModeExit = () => {
+    window.clearTimeout(compactModeExitTimerRef.current);
+    setShowCompactModeExit(true);
+    compactModeExitTimerRef.current = window.setTimeout(
+      () => setShowCompactModeExit(false),
+      1500,
+    );
+  };
+
+  useEffect(() => {
+    if (!compactModeStore) {
+      window.clearTimeout(compactModeExitTimerRef.current);
+      setShowCompactModeExit(false);
+    }
+
+    return () => window.clearTimeout(compactModeExitTimerRef.current);
+  }, [compactModeStore]);
 
   useEffect(() => {
     const hasMinimizedEmbeds = embedsStore.some(({ minimized }) => minimized);
@@ -431,6 +451,32 @@ const EmbedGrid: FC = () => {
           ),
         )}
       </div>
+      {compactModeStore && (
+        <>
+          <div
+            aria-hidden="true"
+            className="fixed inset-x-0 top-0 z-[2199] h-12"
+            onPointerEnter={revealCompactModeExit}
+            onPointerMove={revealCompactModeExit}
+            onPointerLeave={() => setShowCompactModeExit(false)}
+          />
+          <div className="pointer-events-none fixed top-0 left-1/2 z-[2300] -translate-x-1/2">
+            <button
+              className={`btn btn-primary btn-sm btn-circle text-lg font-bold shadow-md transition-[opacity,transform] duration-200 ease-out active:!translate-y-2 active:!scale-100 ${showCompactModeExit ? "pointer-events-auto translate-y-2 scale-100 opacity-100" : "pointer-events-none -translate-y-[calc(100%+0.75rem)] scale-90 opacity-0"}`}
+              onClick={() => setCompactMode(false)}
+              onFocus={revealCompactModeExit}
+              onBlur={() => setShowCompactModeExit(false)}
+              onPointerEnter={revealCompactModeExit}
+              onPointerMove={revealCompactModeExit}
+              onPointerLeave={() => setShowCompactModeExit(false)}
+              aria-label="Exit compact mode"
+              title="Exit compact mode"
+            >
+              ↓
+            </button>
+          </div>
+        </>
+      )}
       {minimizedEmbeds.length > 0 && (
         <>
           <div
