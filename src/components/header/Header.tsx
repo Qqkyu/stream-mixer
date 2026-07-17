@@ -39,7 +39,7 @@ const Header: React.FC = () => {
 
   return (
     fullscreenEmbedStore == null && (
-      <div className="navbar justify-between bg-base-100 shadow-sm">
+      <div className="navbar justify-between bg-base-100 px-2 shadow-sm">
         <div>
           <a href="/" className="btn btn-ghost text-xl">
             Stream Mix

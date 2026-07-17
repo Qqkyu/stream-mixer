@@ -12,8 +12,10 @@ const { title, description, heading } = Astro.props;
 
 <Layout title={title} description={description}>
   <div class="min-h-screen bg-base-200 text-base-content">
-    <header class="navbar bg-base-100 shadow-sm px-4 md:px-8">
-      <a href="/" class="btn btn-ghost text-xl">Stream Mix</a>
+    <header class="navbar bg-base-100 px-2 shadow-sm">
+      <div>
+        <a href="/" class="btn btn-ghost text-xl">Stream Mix</a>
+      </div>
       <nav
         class="ml-auto flex flex-wrap items-center justify-end gap-1"
         aria-label="Main navigation"
