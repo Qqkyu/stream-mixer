@@ -1,19 +1,17 @@
 import { atom } from "nanostores";
 
-const COMPACT_EMBED_HEADERS_KEY = "compact-embed-headers";
+const COMPACT_MODE_KEY = "compact-mode";
 
-export const compactEmbedHeaders = atom(false);
+export const compactMode = atom(false);
 
 export function hydratePreferences(): void {
-  compactEmbedHeaders.set(
-    localStorage.getItem(COMPACT_EMBED_HEADERS_KEY) === "true",
-  );
+  compactMode.set(localStorage.getItem(COMPACT_MODE_KEY) === "true");
 }
 
-export function setCompactEmbedHeaders(compact: boolean): void {
-  compactEmbedHeaders.set(compact);
+export function setCompactMode(compact: boolean): void {
+  compactMode.set(compact);
 
   if (typeof window !== "undefined") {
-    localStorage.setItem(COMPACT_EMBED_HEADERS_KEY, String(compact));
+    localStorage.setItem(COMPACT_MODE_KEY, String(compact));
   }
 }

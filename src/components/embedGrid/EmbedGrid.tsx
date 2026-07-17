@@ -6,12 +6,13 @@ import { Embed } from "./embed/Embed";
 import type { GridStack as GridStackType } from "gridstack";
 import { DEFAULT_POSITION } from "./embed/position";
 import HelpModalButton from "../helpModal/HelpModalButton";
-import { compactEmbedHeaders } from "../../state/preferencesStore";
+import { compactMode } from "../../state/preferencesStore";
 
 const EmbedGrid: FC = () => {
   const embedsStore = useStore(embeds);
   const fullscreenEmbedStore = useStore(fullscreenEmbed);
-  const compactEmbedHeadersStore = useStore(compactEmbedHeaders);
+  const compactModeStore = useStore(compactMode);
+  const pageHeaderHeight = compactModeStore ? 0 : 64;
 
   const gridRef = useRef<HTMLDivElement>(null);
   const gridInstanceRef = useRef<GridStackType | null>(null);
@@ -25,10 +26,10 @@ const EmbedGrid: FC = () => {
 
       const grid = GridStack.init(
         {
-          cellHeight: (document.body.scrollHeight - 64) / 20,
+          cellHeight: (window.innerHeight - pageHeaderHeight) / 20,
           float: true,
           maxRow: 20,
-          margin: compactEmbedHeadersStore ? 0 : "44px 0 0 0",
+          margin: compactModeStore ? 0 : "44px 0 0 0",
           draggable: {
             handle: ".grid-stack-item-drag-handle",
             cancel: ".no-drag",
@@ -85,22 +86,24 @@ const EmbedGrid: FC = () => {
   }, [fullscreenEmbedStore]);
 
   useEffect(() => {
-    gridInstanceRef.current?.margin(
-      compactEmbedHeadersStore ? 0 : "44px 0 0 0",
-    );
-  }, [compactEmbedHeadersStore]);
+    gridInstanceRef.current?.margin(compactModeStore ? 0 : "44px 0 0 0");
+  }, [compactModeStore]);
 
   useEffect(() => {
-    function handleWindowResize() {
+    function updateGridHeight() {
       if (gridInstanceRef.current && gridRef.current) {
-        gridInstanceRef.current.cellHeight((window.innerHeight - 64) / 20);
+        gridInstanceRef.current.cellHeight(
+          (window.innerHeight - pageHeaderHeight) / 20,
+        );
       }
     }
-    window.addEventListener("resize", handleWindowResize);
+
+    updateGridHeight();
+    window.addEventListener("resize", updateGridHeight);
     return () => {
-      window.removeEventListener("resize", handleWindowResize);
+      window.removeEventListener("resize", updateGridHeight);
     };
-  }, []);
+  }, [pageHeaderHeight]);
 
   useEffect(() => {
     if (!gridInstanceRef.current || !isGridReady) return;
@@ -190,7 +193,7 @@ const EmbedGrid: FC = () => {
   return (
     <div
       ref={gridRef}
-      className="grid-stack bg-base-200 !h-[calc(100dvh-64px)]"
+      className={`grid-stack bg-base-200 ${compactModeStore ? "!h-dvh" : "!h-[calc(100dvh-64px)]"}`}
     >
       {embedsStore.length == 0 && (
         <div className="hero bg-base-200 h-full">
@@ -234,11 +237,9 @@ const EmbedGrid: FC = () => {
           id={`embed-${embed.id}`}
           className="grid-stack-item mockup-browser indicator block overflow-visible border-base-300 border"
         >
-          {compactEmbedHeadersStore && (
-            <div className="compact-embed-header-trigger" />
-          )}
+          {compactModeStore && <div className="compact-embed-header-trigger" />}
           <div
-            className={`mockup-browser-toolbar before:!content-none !my-0 p-3 grid-stack-item-drag-handle cursor-move ${compactEmbedHeadersStore ? "compact-embed-header" : ""}`}
+            className={`mockup-browser-toolbar before:!content-none !my-0 p-3 grid-stack-item-drag-handle cursor-move ${compactModeStore ? "compact-embed-header" : ""}`}
           >
             <div className="flex pl-4 w-22 justify-evenly">
               <button
@@ -279,7 +280,7 @@ const EmbedGrid: FC = () => {
             </div>
           </div>
           <div
-            className={`grid-stack-item-content ${compactEmbedHeadersStore ? "" : "border-t border-base-300"}`}
+            className={`grid-stack-item-content ${compactModeStore ? "" : "border-t border-base-300"}`}
           >
             <Embed {...embed} />
           </div>
