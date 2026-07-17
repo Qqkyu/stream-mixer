@@ -1,44 +1,79 @@
 # Stream Mix
 
-A web application for watching multiple live streams simultaneously in a customizable, draggable grid layout. Mix and match streams from different platforms and arrange them however you like.
+Stream Mix is a browser-based multistream viewer for watching Twitch, YouTube,
+and Kick streams together in a customizable workspace.
+
+The production app is available at [streammix.app](https://streammix.app).
 
 ## Features
 
-- **Multi-Platform Support**: Watch streams from Twitch, YouTube, and Kick simultaneously
-- **Flexible Content Display**: For each stream, choose to display:
-  - Stream + Chat (Everything)
-  - Stream Only (Video)
-  - Chat Only
-- **Drag-and-Drop Grid Layout**: Freely arrange streams using a dynamic grid powered by GridStack
-- **Resizable Stream Windows**: Adjust the size of each stream to your preference
-- **Mac-Style Window Controls**: Intuitive close, minimize, and maximize buttons for each stream
-- **Persistent State**: Your layout and stream selections are automatically saved to localStorage
-- **Responsive Design**: Works across different screen sizes
+- Mix Twitch, YouTube, and Kick embeds in one workspace.
+- Show a stream with chat, video only, or chat only.
+- Drag and resize windows in an expanding, automatically compacted grid.
+- Use compact mode to hide the site and embed headers while watching.
+- Open an embed in a fullscreen workspace view.
+- Minimize embeds to an auto-hiding shelf and restore them later.
+- Preserve streams, positions, sizes, minimized state, and interface preferences
+  in browser `localStorage`.
+- Fill available grid space automatically when adding or restoring windows.
 
-## Use Cases
+Stream Mix uses each platform's official embedded player and chat. Playback,
+authentication, advertisements, and chat are provided by the respective
+platform rather than proxied by Stream Mix.
 
-- Watch multiple streamers simultaneously
-- Monitor esports events with multiple POVs
-- Compare different stream sources in real-time
-- Create custom multi-stream viewing experiences
+## Local development
 
-## Tech Stack
+Requirements:
 
-- [Astro](https://astro.build) - Web framework
-- [React](https://react.dev) - UI components
-- [GridStack](https://gridstackjs.com) - Drag-and-drop grid layout
-- [Tailwind CSS](https://tailwindcss.com) - Styling
-- [DaisyUI](https://daisyui.com) - UI components
-- [Nanostores](https://github.com/nanostores/nanostores) - State management
+- Node.js 20 or newer
+- [pnpm](https://pnpm.io/)
 
-## Usage
+Install dependencies and start the development server:
 
-1. Select a platform (Twitch, YouTube, or Kick) from the dropdown
-2. Enter the channel name
-3. Choose what to display (Everything, Stream Only, or Chat Only)
-4. Click "Add Stream" to add it to your grid
-5. Drag streams by their title bar to rearrange
-6. Resize streams using the corner handles (↘︎ and ↙︎)
-7. Use the red button to remove a stream
+```sh
+pnpm install
+pnpm dev
+```
 
-Your layout and stream selections are automatically saved and will be restored when you return.
+The app is served at `http://localhost:4321` by default. Twitch and YouTube
+embed URLs use the active hostname, so embeds work both locally and on the
+production domain.
+
+Create a production build with:
+
+```sh
+pnpm build
+```
+
+## Using the app
+
+1. Select Twitch, YouTube, or Kick.
+2. Enter a Twitch/Kick channel name or YouTube video ID.
+3. Choose **Stream + Chat**, **Stream**, or **Chat**.
+4. Select **Add**.
+5. Drag a window by its header and resize it using either bottom corner.
+
+The window controls follow the familiar desktop convention:
+
+- Red removes the embed.
+- Yellow minimizes it to the bottom shelf.
+- Green opens and closes the fullscreen workspace view.
+
+Move the pointer to the bottom edge to reveal minimized windows. In compact
+mode, move the pointer to the top edge to reveal the button that restores the
+site header.
+
+## Tech stack
+
+- [Astro](https://astro.build)
+- [React](https://react.dev)
+- [GridStack](https://gridstackjs.com)
+- [Tailwind CSS](https://tailwindcss.com)
+- [DaisyUI](https://daisyui.com)
+- [Nanostores](https://github.com/nanostores/nanostores)
+
+## Data and privacy
+
+Layouts and preferences stay in the current browser's `localStorage`. Stream
+Mix does not provide accounts or synchronize layouts between devices. Clearing
+site data resets the workspace.
