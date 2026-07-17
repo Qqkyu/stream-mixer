@@ -1,5 +1,5 @@
 ---
-
+import { PLATFORM_STYLES } from "../embedGrid/platformStyles";
 ---
 
 <dialog id="help-modal" class="modal">
@@ -13,7 +13,14 @@
 
     <div class="space-y-6">
       <div>
-        <h4 class="font-semibold text-md mb-2 text-(--color-twitch)">Twitch</h4>
+        <h4
+          class:list={[
+            "font-semibold text-md mb-2",
+            PLATFORM_STYLES.twitch.text,
+          ]}
+        >
+          Twitch
+        </h4>
         <p class="text-sm mb-2">
           Enter the channel name exactly as it appears in the URL. Example:
         </p>
@@ -30,7 +37,12 @@
       </div>
 
       <div>
-        <h4 class="font-semibold text-md mb-2 text-(--color-youtube)">
+        <h4
+          class:list={[
+            "font-semibold text-md mb-2",
+            PLATFORM_STYLES.youtube.text,
+          ]}
+        >
           YouTube
         </h4>
         <p class="text-sm mb-2">
@@ -50,7 +62,11 @@
       </div>
 
       <div>
-        <h4 class="font-semibold text-md mb-2 text-(--color-kick)">Kick</h4>
+        <h4
+          class:list={["font-semibold text-md mb-2", PLATFORM_STYLES.kick.text]}
+        >
+          Kick
+        </h4>
         <p class="text-sm mb-2">
           Enter the channel name exactly as it appears in the URL. Example:
         </p>

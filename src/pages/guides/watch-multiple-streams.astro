@@ -1,5 +1,6 @@
 ---
 import ContentLayout from "../../layouts/ContentLayout.astro";
+import { PLATFORM_STYLES } from "../../components/embedGrid/platformStyles";
 ---
 
 <ContentLayout
@@ -9,17 +10,26 @@ import ContentLayout from "../../layouts/ContentLayout.astro";
 >
   <p>
     Stream Mix places multiple live broadcasts in one browser workspace. You can
-    combine Twitch channels, YouTube live streams, and Kick channels, then
-    choose whether each window shows its video, chat, or both.
+    combine <span class={PLATFORM_STYLES.twitch.text}>Twitch</span> channels,
+    <span class={PLATFORM_STYLES.youtube.text}>YouTube</span> live streams, and
+    <span class={PLATFORM_STYLES.kick.text}>Kick</span> channels, then choose whether
+    each window shows its video, chat, or both.
   </p>
 
   <h2>1. Find the channel or video identifier</h2>
   <ul>
     <li>
-      For Twitch, use the channel name from <code>twitch.tv/channel</code>.
+      For <span class={PLATFORM_STYLES.twitch.text}>Twitch</span>, use the
+      channel name from <code>twitch.tv/channel</code>.
     </li>
-    <li>For YouTube, use the video ID after <code>watch?v=</code>.</li>
-    <li>For Kick, use the channel name from <code>kick.com/channel</code>.</li>
+    <li>
+      For <span class={PLATFORM_STYLES.youtube.text}>YouTube</span>, use the
+      video ID after <code>watch?v=</code>.
+    </li>
+    <li>
+      For <span class={PLATFORM_STYLES.kick.text}>Kick</span>, use the channel
+      name from <code>kick.com/channel</code>.
+    </li>
   </ul>
 
   <h2>2. Add the stream</h2>
@@ -38,9 +48,9 @@ import ContentLayout from "../../layouts/ContentLayout.astro";
 
   <h2>4. Reclaim viewing space</h2>
   <p>
-    Enable Compact headers to let video and chat use the entire window. Move the
-    pointer to the top edge of a window whenever you need its drag, close, or
-    maximize controls.
+    Enable Compact mode to hide the site header and let video and chat use more
+    of the workspace. Move the pointer to the top edge of a window whenever you
+    need its drag, close, minimize, or fullscreen controls.
   </p>
 
   <h2>Common multistream use cases</h2>

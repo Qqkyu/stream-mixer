@@ -8,6 +8,7 @@ import { DEFAULT_POSITION } from "./embed/position";
 import HelpModalButton from "../helpModal/HelpModalButton";
 import { compactMode, setCompactMode } from "../../state/preferencesStore";
 import type { Embed as EmbedType } from "./EmbedTypes";
+import { PLATFORM_STYLES } from "./platformStyles";
 
 const GRID_ROW_HEIGHT = 48;
 
@@ -323,7 +324,9 @@ const EmbedGrid: FC = () => {
                 {showControlIcons && "⤢"}
               </button>
             </div>
-            <div className="input no-drag">
+            <div
+              className={`input no-drag border-l-4 ${PLATFORM_STYLES[embed.platform].border}`}
+            >
               {embed.platform === "twitch" && `twitch.tv/${embed.channel}`}
               {embed.platform === "youtube" &&
                 `youtube.com/watch?v=${embed.channel}`}
@@ -435,7 +438,9 @@ const EmbedGrid: FC = () => {
                     {showControlIcons && "⤢"}
                   </button>
                 </div>
-                <div className="input no-drag">
+                <div
+                  className={`input no-drag border-l-4 ${PLATFORM_STYLES[embed.platform].border}`}
+                >
                   {embed.platform === "twitch" && `twitch.tv/${embed.channel}`}
                   {embed.platform === "youtube" &&
                     `youtube.com/watch?v=${embed.channel}`}
@@ -509,11 +514,7 @@ const EmbedGrid: FC = () => {
                 >
                   <span
                     className={`size-2 shrink-0 rounded-full ${
-                      embed.platform === "twitch"
-                        ? "bg-twitch"
-                        : embed.platform === "youtube"
-                          ? "bg-youtube"
-                          : "bg-kick"
+                      PLATFORM_STYLES[embed.platform].background
                     }`}
                   />
                   <span className="truncate">{getEmbedLabel(embed)}</span>

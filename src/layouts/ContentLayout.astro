@@ -1,13 +1,17 @@
 ---
 import Layout from "./Layout.astro";
+import type { Embed } from "../components/embedGrid/EmbedTypes";
+import { PLATFORM_STYLES } from "../components/embedGrid/platformStyles";
 
 interface Props {
   title: string;
   description: string;
   heading: string;
+  platform?: Embed["platform"];
 }
 
-const { title, description, heading } = Astro.props;
+const { title, description, heading, platform } = Astro.props;
+const platformStyle = platform ? PLATFORM_STYLES[platform] : undefined;
 ---
 
 <Layout title={title} description={description}>
@@ -30,7 +34,14 @@ const { title, description, heading } = Astro.props;
     </header>
 
     <main class="mx-auto max-w-4xl px-6 py-12 md:py-16">
-      <h1 class="text-4xl font-bold tracking-tight md:text-5xl">{heading}</h1>
+      <h1
+        class:list={[
+          "text-4xl font-bold tracking-tight md:text-5xl",
+          platformStyle && `border-l-4 pl-4 ${platformStyle.border}`,
+        ]}
+      >
+        {heading}
+      </h1>
       <div class="content mt-8 max-w-none">
         <slot />
       </div>
@@ -44,16 +55,22 @@ const { title, description, heading } = Astro.props;
         <a href="/guides/watch-multiple-streams" class="link link-hover"
           >Guide</a
         >
-        <a href="/guides/watch-multiple-twitch-streams" class="link link-hover">
+        <a
+          href="/guides/watch-multiple-twitch-streams"
+          class:list={["link link-hover", PLATFORM_STYLES.twitch.text]}
+        >
           Twitch
         </a>
         <a
           href="/guides/watch-multiple-youtube-streams"
-          class="link link-hover"
+          class:list={["link link-hover", PLATFORM_STYLES.youtube.text]}
         >
           YouTube
         </a>
-        <a href="/guides/watch-multiple-kick-streams" class="link link-hover">
+        <a
+          href="/guides/watch-multiple-kick-streams"
+          class:list={["link link-hover", PLATFORM_STYLES.kick.text]}
+        >
           Kick
         </a>
         <a href="/faq" class="link link-hover">FAQ</a>

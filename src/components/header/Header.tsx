@@ -6,6 +6,7 @@ import UserIcon from "../icons/UserIcon";
 import { DEFAULT_POSITION } from "../embedGrid/embed/position";
 import { useStore } from "@nanostores/react";
 import HelpModalButton from "../helpModal/HelpModalButton";
+import { PLATFORM_STYLES } from "../embedGrid/platformStyles";
 import {
   compactMode,
   hydratePreferences,
@@ -19,6 +20,7 @@ const Header: React.FC = () => {
   const [platform, setPlatform] = useState<Embed["platform"]>("twitch");
   const [channel, setChannel] = useState<Embed["channel"]>("");
   const [type, setType] = useState<Embed["type"]>("everything");
+  const platformStyle = PLATFORM_STYLES[platform];
 
   useEffect(() => {
     hydratePreferences();
@@ -69,7 +71,7 @@ const Header: React.FC = () => {
             </button>
             <div className="join">
               <select
-                className="select join-item w-32"
+                className={`select join-item w-32 border-l-4 ${platformStyle.border}`}
                 value={platform}
                 onChange={handlePlatformSelect}
               >
