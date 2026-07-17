@@ -47,8 +47,8 @@ pnpm build
 
 ## Using the app
 
-1. Select Twitch, YouTube, or Kick.
-2. Enter a Twitch/Kick channel name or YouTube video ID.
+1. Paste a Twitch, YouTube, or Kick URL. The platform is detected automatically.
+2. Alternatively, select a platform and enter its channel name or video ID.
 3. Choose **Stream + Chat**, **Stream**, or **Chat**.
 4. Select **Add**.
 5. Drag a window by its header and resize it using either bottom corner.

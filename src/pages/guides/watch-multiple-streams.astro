@@ -16,27 +16,37 @@ import { PLATFORM_STYLES } from "../../components/embedGrid/platformStyles";
     each window shows its video, chat, or both.
   </p>
 
-  <h2>1. Find the channel or video identifier</h2>
+  <h2>1. Paste a URL or enter the identifier</h2>
+  <p>
+    The quickest option is to paste the complete stream URL. Stream Mix detects
+    the supported platform and extracts the identifier automatically.
+  </p>
   <ul>
     <li>
-      For <span class={PLATFORM_STYLES.twitch.text}>Twitch</span>, use the
-      channel name from <code>twitch.tv/channel</code>.
+      For <span class={PLATFORM_STYLES.twitch.text}>Twitch</span>, paste
+      <code>https://twitch.tv/channel</code>.
     </li>
     <li>
-      For <span class={PLATFORM_STYLES.youtube.text}>YouTube</span>, use the
-      video ID after <code>watch?v=</code>.
+      For <span class={PLATFORM_STYLES.youtube.text}>YouTube</span>, paste
+      <code>https://youtube.com/watch?v=VIDEO_ID</code> or
+      <code>https://youtu.be/VIDEO_ID</code>.
     </li>
     <li>
-      For <span class={PLATFORM_STYLES.kick.text}>Kick</span>, use the channel
-      name from <code>kick.com/channel</code>.
+      For <span class={PLATFORM_STYLES.kick.text}>Kick</span>, paste
+      <code>https://kick.com/channel</code>.
     </li>
   </ul>
+  <p>
+    If you prefer, select the platform manually and enter only the Twitch or
+    Kick channel name, or the YouTube video ID.
+  </p>
 
   <h2>2. Add the stream</h2>
   <p>
-    Open <a href="/">Stream Mix</a>, choose the platform, enter the identifier,
-    and select Stream + Chat, Stream, or Chat. Select Add to create a new
-    window. Repeat the process for every perspective you want to follow.
+    Open <a href="/">Stream Mix</a> and paste the URL. The platform selector updates
+    automatically. Then choose Stream + Chat, Stream, or Chat and select Add to create
+    a new window. You can still select a platform and enter its identifier manually.
+    Repeat the process for every perspective you want to follow.
   </p>
 
   <h2>3. Arrange the grid</h2>

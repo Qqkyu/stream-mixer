@@ -7,6 +7,7 @@ import { DEFAULT_POSITION } from "../embedGrid/embed/position";
 import { useStore } from "@nanostores/react";
 import HelpModalButton from "../helpModal/HelpModalButton";
 import { PLATFORM_STYLES } from "../embedGrid/platformStyles";
+import { parseStreamInput } from "./parseStreamInput";
 import {
   compactMode,
   hydratePreferences,
@@ -20,6 +21,7 @@ const Header: React.FC = () => {
   const [platform, setPlatform] = useState<Embed["platform"]>("twitch");
   const [channel, setChannel] = useState<Embed["channel"]>("");
   const [type, setType] = useState<Embed["type"]>("everything");
+  const [streamInputInvalid, setStreamInputInvalid] = useState(false);
   const platformStyle = PLATFORM_STYLES[platform];
 
   useEffect(() => {
@@ -29,6 +31,33 @@ const Header: React.FC = () => {
   const handlePlatformSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as Embed["platform"];
     setPlatform(value);
+  };
+
+  const handleStreamInput = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    const parsedInput = parseStreamInput(value, platform);
+
+    setChannel(value);
+    setStreamInputInvalid(false);
+
+    if (parsedInput && parsedInput.platform !== platform) {
+      setPlatform(parsedInput.platform);
+    }
+  };
+
+  const addStream = () => {
+    const parsedInput = parseStreamInput(channel, platform);
+    if (!parsedInput) {
+      setStreamInputInvalid(true);
+      return;
+    }
+
+    addEmbed({
+      id: crypto.randomUUID(),
+      ...parsedInput,
+      type,
+      position: { ...DEFAULT_POSITION },
+    });
   };
 
   const toggleFullscreenMode = () => {
@@ -79,15 +108,26 @@ const Header: React.FC = () => {
                 <option value="youtube">Youtube</option>
                 <option value="kick">Kick</option>
               </select>
-              <label className="input">
+              <label
+                className={`input ${streamInputInvalid ? "input-error" : ""}`}
+              >
                 <UserIcon />
                 <input
-                  type="url"
+                  type="text"
                   required
-                  placeholder="Channel"
+                  placeholder="Channel, video ID, or URL"
                   className="join-item"
                   value={channel}
-                  onChange={(e) => setChannel(e.target.value)}
+                  onChange={handleStreamInput}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") addStream();
+                  }}
+                  aria-invalid={streamInputInvalid}
+                  title={
+                    streamInputInvalid
+                      ? "Enter a Twitch or Kick channel, YouTube video ID, or a supported stream URL"
+                      : undefined
+                  }
                 />
               </label>
               <select
@@ -100,16 +140,8 @@ const Header: React.FC = () => {
                 <option value="chat">Chat</option>
               </select>
               <button
-                disabled={channel === ""}
-                onClick={() =>
-                  addEmbed({
-                    id: crypto.randomUUID(),
-                    platform,
-                    channel,
-                    type,
-                    position: { ...DEFAULT_POSITION },
-                  })
-                }
+                disabled={channel.trim() === ""}
+                onClick={addStream}
                 className="btn btn-primary join-item"
               >
                 Add
