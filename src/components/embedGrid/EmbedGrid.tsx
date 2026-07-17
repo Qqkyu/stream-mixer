@@ -22,6 +22,9 @@ const EmbedGrid: FC = () => {
   const fullscreenEmbedStore = useStore(fullscreenEmbed);
   const compactModeStore = useStore(compactMode);
   const pageHeaderHeight = compactModeStore ? 0 : 64;
+  const workspaceMinHeightClass = compactModeStore
+    ? "min-h-dvh"
+    : "min-h-[calc(100dvh-64px)]";
 
   const gridRef = useRef<HTMLDivElement>(null);
   const gridInstanceRef = useRef<GridStackType | null>(null);
@@ -236,10 +239,10 @@ const EmbedGrid: FC = () => {
   return (
     <div
       ref={gridRef}
-      className={`grid-stack stream-embed-grid bg-base-200 ${compactModeStore ? "min-h-dvh" : "min-h-[calc(100dvh-64px)]"}`}
+      className={`grid-stack stream-embed-grid bg-base-200 ${workspaceMinHeightClass}`}
     >
       {embedsStore.length == 0 && (
-        <div className="hero bg-base-200 h-full">
+        <div className={`hero bg-base-200 ${workspaceMinHeightClass}`}>
           <div className="hero-content text-center">
             <div className="max-w-md">
               <h1 className="text-5xl font-bold">
