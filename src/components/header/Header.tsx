@@ -13,6 +13,8 @@ import {
   hydratePreferences,
   setCompactMode,
 } from "../../state/preferencesStore";
+import ShareWorkspaceButton from "../shareWorkspace/ShareWorkspaceButton";
+import SharedLayoutImporter from "../shareWorkspace/SharedLayoutImporter";
 
 const Header: React.FC = () => {
   const fullscreenEmbedStore = useStore(fullscreenEmbed);
@@ -80,6 +82,7 @@ const Header: React.FC = () => {
             </a>
           </div>
           <div className="flex gap-2 items-center">
+            <ShareWorkspaceButton />
             <HelpModalButton type="small" />
             <label className="label gap-2 cursor-pointer">
               <span className="text-sm whitespace-nowrap">Compact mode</span>
@@ -150,6 +153,7 @@ const Header: React.FC = () => {
           </div>
         </div>
       )}
+      <SharedLayoutImporter />
     </>
   );
 };

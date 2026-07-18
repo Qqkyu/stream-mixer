@@ -13,6 +13,12 @@ export function setEmbeds(newEmbeds: Array<Embed>) {
   setLocalStorageEmbeds();
 }
 
+export function hydrateEmbeds(): void {
+  if (typeof window === "undefined") return;
+
+  embeds.set(getLocalStorageEmbeds());
+}
+
 function getLocalStorageEmbeds(): Array<Embed> {
   if (typeof window == "undefined") {
     return [];

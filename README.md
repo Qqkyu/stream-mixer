@@ -13,6 +13,7 @@ The production app is available at [streammix.app](https://streammix.app).
 - Use compact mode to hide the site and embed headers while watching.
 - Open an embed in a fullscreen workspace view.
 - Minimize embeds to an auto-hiding shelf and restore them later.
+- Copy a link that recreates the current streams and grid layout.
 - Preserve streams, positions, sizes, minimized state, and interface preferences
   in browser `localStorage`.
 - Fill available grid space automatically when adding or restoring windows.
@@ -52,6 +53,7 @@ pnpm build
 3. Choose **Stream + Chat**, **Stream**, or **Chat**.
 4. Select **Add**.
 5. Drag a window by its header and resize it using either bottom corner.
+6. Use the share button to copy a link to the current workspace.
 
 The window controls follow the familiar desktop convention:
 
@@ -74,6 +76,8 @@ site header.
 
 ## Data and privacy
 
-Layouts and preferences stay in the current browser's `localStorage`. Stream
-Mix does not provide accounts or synchronize layouts between devices. Clearing
+Layouts and preferences stay in the current browser's `localStorage`. Shared
+workspace links encode stream identifiers, display modes, and positions in the
+URL fragment; Stream Mix does not upload that data to a server. Stream Mix does
+not provide accounts or automatic synchronization between devices. Clearing
 site data resets the workspace.
