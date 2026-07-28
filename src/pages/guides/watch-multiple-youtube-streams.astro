@@ -4,32 +4,127 @@ import ContentLayout from "../../layouts/ContentLayout.astro";
 
 <ContentLayout
   title="Watch Multiple YouTube Live Streams at Once | Stream Mix"
-  description="Arrange multiple YouTube live streams and live chats in one customizable browser grid with Stream Mix."
+  description="Watch multiple YouTube live streams and chats at once. Learn which URLs work, how live chat behaves, and how to troubleshoot embedded videos."
   heading="Watch multiple YouTube live streams at once"
   platform="youtube"
 >
   <p>
-    Use Stream Mix to arrange several YouTube broadcasts in one browser page.
-    You can keep an official event feed beside alternate perspectives, creator
-    coverage, or separate live chats.
+    Stream Mix arranges multiple YouTube live broadcasts in one browser
+    workspace. Keep an official event feed beside alternate camera angles,
+    creator commentary, or several live chats, then resize each window around
+    the perspectives that matter most.
   </p>
-  <h2>Add a YouTube stream</h2>
+
+  <h2>How to add multiple YouTube live streams</h2>
+  <ol>
+    <li>Open the watch page for the live stream you want to add.</li>
+    <li>
+      Copy its URL, such as
+      <code>https://www.youtube.com/watch?v=VIDEO_ID</code>.
+    </li>
+    <li>
+      Paste the URL into the Stream Mix header. YouTube is selected
+      automatically and the video ID is extracted.
+    </li>
+    <li>Choose Stream + Chat, Stream, or Chat and select Add.</li>
+    <li>Repeat for the other broadcasts, then drag and resize the windows.</li>
+  </ol>
+
   <p>
-    Paste the complete YouTube URL and Stream Mix will extract its video ID. You
-    can also enter the ID directly; in a standard YouTube URL, it is the value
-    after <code>watch?v=</code>. Choose the display mode and add the window to
-    your grid.
+    Stream Mix recognizes standard <code>youtube.com/watch?v=</code> links, shortened
+    <code>youtu.be/</code> links, and YouTube <code>/live/</code> or
+    <code>/embed/</code> URLs. You can also select YouTube manually and enter the
+    video ID directly. A channel homepage is not enough because each YouTube broadcast
+    has its own video ID.
   </p>
-  <h2>Using YouTube live chat</h2>
+
+  <h2>Choose video, chat, or both</h2>
+  <ul>
+    <li>
+      <strong>Stream + Chat</strong> places the embedded player and live chat side
+      by side in one resizable window.
+    </li>
+    <li>
+      <strong>Stream</strong> gives the video the full window and is the best choice
+      for small secondary feeds.
+    </li>
+    <li>
+      <strong>Chat</strong> shows only the conversation for that video, which can
+      be useful beside one large primary broadcast.
+    </li>
+  </ul>
+
   <p>
-    Chat is available only when the video is live and its creator has enabled
-    live chat. Recorded videos, scheduled broadcasts, made-for-kids content, and
-    streams with disabled chat may show an unavailable message.
+    YouTube players remain independent: play, pause, quality, captions, volume,
+    and fullscreen are controlled inside each embed. Stream Mix does not
+    synchronize broadcasts, and live feeds may naturally be several seconds
+    apart because their creators and YouTube delivery settings differ.
   </p>
+
+  <h2>When YouTube live chat is available</h2>
   <p>
-    For mixed-platform events, read the complete
-    <a href="/guides/watch-multiple-streams">multistream viewing guide</a>.
+    The Chat and Stream + Chat modes are intended for a currently live broadcast
+    or Premiere whose creator has enabled live chat. Chat is disabled for
+    made-for-kids content, and a creator can turn it off for any stream.
+    Scheduled broadcasts that have not started and videos without an active
+    embeddable chat may show an unavailable message.
   </p>
+
+  <p>
+    YouTube requires the chat embed to include the domain of the page displaying
+    it. Stream Mix supplies that value automatically for both
+    <code>streammix.app</code> and local development. YouTube also states that embedded
+    live chat is not available on mobile web, so the chat-focused workspace is best
+    used in a desktop browser. Read YouTube’s
+    <a href="https://support.google.com/youtube/answer/2524549" rel="external"
+      >official live chat instructions</a
+    >
+    for the platform rules.
+  </p>
+
+  <h2>Troubleshoot a YouTube stream or chat</h2>
+  <h3>The URL adds the wrong item or is not accepted</h3>
+  <p>
+    Use the URL of the individual video rather than a channel or search page. In
+    a standard watch URL, copy the value after <code>v=</code> if you want to enter
+    the ID manually.
+  </p>
+
+  <h3>The player says the video is unavailable</h3>
+  <p>
+    First open the same video directly on YouTube. The broadcast may have ended,
+    be private, have a regional or age restriction, or have embedding disabled
+    by its owner. Those restrictions are enforced by YouTube and cannot be
+    bypassed by Stream Mix.
+  </p>
+
+  <h3>Video works but live chat does not</h3>
+  <p>
+    Confirm that the broadcast is live and that chat appears on its YouTube
+    watch page. If it does, check browser tracking protection and
+    content-blocking extensions. Chat may also require signing in to YouTube
+    before you can send messages.
+  </p>
+
+  <h3>Playback becomes slow with several videos</h3>
+  <p>
+    Multiple high-resolution players can use substantial CPU, memory, and
+    bandwidth. Lower the quality of secondary feeds, pause video windows you are
+    not watching, switch some panels to Chat only, or minimize them to the
+    bottom shelf.
+  </p>
+
+  <h2>Mix YouTube with Twitch and Kick</h2>
+  <p>
+    You are not limited to one platform. Add
+    <a href="/guides/watch-multiple-twitch-streams">Twitch channels</a> and
+    <a href="/guides/watch-multiple-kick-streams">Kick channels</a> to the same layout,
+    or follow the complete
+    <a href="/guides/watch-multiple-streams">multistream viewing guide</a> to learn
+    about sharing and Compact mode. The <a href="/faq">FAQ</a> covers saved layouts,
+    privacy, and common embed behavior.
+  </p>
+
   <p>
     <a href="/" class="btn btn-primary">Open the YouTube multistream viewer</a>
   </p>

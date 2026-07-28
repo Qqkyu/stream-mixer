@@ -4,35 +4,133 @@ import ContentLayout from "../../layouts/ContentLayout.astro";
 
 <ContentLayout
   title="Watch Multiple Twitch Streams at Once | Stream Mix"
-  description="Watch multiple Twitch channels and chats at once in a draggable, resizable browser grid with Stream Mix."
+  description="Watch multiple Twitch streams and chats at once. Learn how to add channels, arrange the grid, and troubleshoot Twitch embeds in Stream Mix."
   heading="Watch multiple Twitch streams at once"
   platform="twitch"
 >
   <p>
-    Stream Mix lets you place several Twitch channels in one customizable grid.
-    This is useful for tournaments with multiple player perspectives, watch
-    parties, speedrunning events, and creators covering the same live event.
+    Stream Mix lets you watch several Twitch channels and chats in one
+    customizable browser workspace. You can keep an official tournament
+    broadcast beside player perspectives, compare creators covering the same
+    event, or follow several speedruns without managing a stack of tabs.
   </p>
-  <h2>Add a Twitch channel</h2>
+
+  <h2>How to add multiple Twitch streams</h2>
   <ol>
-    <li>Copy the Twitch channel URL and paste it into Stream Mix.</li>
-    <li>Alternatively, choose Twitch and enter only the channel name.</li>
-    <li>Select video and chat, video only, or chat only.</li>
-    <li>Add more channels, then drag and resize their windows.</li>
+    <li>
+      Copy a creator’s channel URL, such as
+      <code>https://www.twitch.tv/twitch</code>.
+    </li>
+    <li>
+      Paste the URL into the Stream Mix header. Twitch is selected automatically
+      and the channel name is extracted for you.
+    </li>
+    <li>
+      Choose Stream + Chat, Stream, or Chat depending on what you want the
+      window to contain.
+    </li>
+    <li>Select Add, then repeat the process for every Twitch channel.</li>
+    <li>
+      Drag windows by their title bars and resize them from either lower corner.
+    </li>
   </ol>
-  <h2>Twitch embed limitations</h2>
+
   <p>
-    Stream Mix uses Twitch’s official embedded experiences. A channel must be
-    available for embedding, and chat or account features can depend on Twitch
-    authentication, browser privacy settings, and Twitch service availability.
-    Each active player also consumes bandwidth and system resources.
+    You can also select Twitch manually and enter only the channel name. Both
+    <code>twitch</code> and <code>twitch.tv/twitch</code> identify the same channel.
+    Stream Mix is designed for live channel pages; Twitch clips and video-on-demand
+    URLs are not currently supported.
   </p>
+
+  <h2>Choose the right Twitch display mode</h2>
+  <ul>
+    <li>
+      <strong>Stream + Chat</strong> loads Twitch’s combined experience so you can
+      watch and participate in the same window.
+    </li>
+    <li>
+      <strong>Stream</strong> keeps the window focused on video and works well for
+      secondary perspectives where you do not need chat.
+    </li>
+    <li>
+      <strong>Chat</strong> is useful when the main broadcast is already open elsewhere
+      or when you want several community conversations beside one primary stream.
+    </li>
+  </ul>
+
   <p>
-    You can also <a href="/guides/watch-multiple-streams"
-      >mix Twitch with YouTube and Kick</a
+    A practical tournament layout is one large Stream + Chat window for the
+    official broadcast, with smaller Stream windows for player perspectives. If
+    the workspace becomes crowded, minimize channels you want to keep for later
+    or enable Compact mode to reclaim the space used by site and window headers.
+  </p>
+
+  <h2>How Twitch embeds work</h2>
+  <p>
+    Stream Mix uses Twitch’s official player and chat embeds rather than
+    restreaming the video. Twitch requires embedded experiences to know the
+    domain that contains them, so Stream Mix supplies the current hostname
+    automatically. This is why production embeds use
+    <code>streammix.app</code> while local testing uses
+    <code>localhost</code>.
+  </p>
+
+  <p>
+    Account actions and chat can still depend on Twitch authentication, browser
+    cookie settings, privacy extensions, and Twitch service availability. The
+    embedded player also needs enough room to display its controls, so a very
+    small window may be difficult to use. See Twitch’s
+    <a href="https://dev.twitch.tv/docs/embed/" rel="external"
+      >official embed requirements</a
     >
-    in the same layout.
+    for the platform-level rules.
   </p>
+
+  <h2>Troubleshoot a Twitch stream or chat</h2>
+  <h3>The URL is not accepted</h3>
+  <p>
+    Use the channel’s main URL rather than a clip, category, search, or VOD
+    page. If necessary, select Twitch and enter the channel name shown after
+    <code>twitch.tv/</code>.
+  </p>
+
+  <h3>The channel is offline</h3>
+  <p>
+    Twitch’s player will show the channel’s offline experience instead of live
+    video. The window is still valid and can remain in your saved layout for the
+    next broadcast.
+  </p>
+
+  <h3>Video works but chat or account controls do not</h3>
+  <p>
+    Check whether the same channel works directly on Twitch, then temporarily
+    disable strict tracking protection or content-blocking extensions for Stream
+    Mix. Some authenticated Twitch features require cookies that a
+    privacy-focused browser may block inside an iframe.
+  </p>
+
+  <h3>Several streams stutter</h3>
+  <p>
+    Every active player decodes its own video and uses additional bandwidth.
+    Lower the quality of secondary channels inside the Twitch player, mute audio
+    you do not need, use Chat-only windows where appropriate, or minimize
+    streams until you need them again.
+  </p>
+
+  <h2>Mix Twitch with other platforms</h2>
+  <p>
+    A workspace can combine Twitch with
+    <a href="/guides/watch-multiple-youtube-streams"
+      >multiple YouTube live streams</a
+    >
+    and <a href="/guides/watch-multiple-kick-streams">multiple Kick streams</a>.
+    The complete <a href="/guides/watch-multiple-streams"
+      >multistream viewing guide</a
+    >
+    explains layout sharing, Compact mode, and mixed-platform workflows. For broader
+    playback and privacy answers, visit the <a href="/faq">FAQ</a>.
+  </p>
+
   <p>
     <a href="/" class="btn btn-primary">Open the Twitch multistream viewer</a>
   </p>
