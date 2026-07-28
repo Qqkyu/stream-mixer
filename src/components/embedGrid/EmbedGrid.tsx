@@ -353,17 +353,55 @@ const EmbedGrid: FC = () => {
         {!hasVisibleEmbeds && (
           <div className={`hero bg-base-200 ${workspaceMinHeightClass}`}>
             <div className="hero-content text-center">
-              <div className="max-w-md">
-                <h1 className="text-5xl font-bold">
+              <div className="max-w-4xl">
+                <h1 className="text-4xl font-bold md:text-5xl">
                   Watch multiple live streams at once
                 </h1>
-                <p className="py-6">
-                  Build a customizable multistream viewer with Twitch, YouTube,
-                  and Kick video and chats in one browser window.
+                <p className="mx-auto max-w-2xl py-5">
+                  Combine Twitch channels, YouTube live streams, and Kick
+                  channels in one customizable multistream viewer. Arrange video
+                  and live chat exactly how you want—no account or download
+                  required.
                 </p>
                 <HelpModalButton type="big" />
+
+                <section
+                  className="mt-7 grid gap-3 text-left sm:grid-cols-3"
+                  aria-labelledby="stream-mix-features"
+                >
+                  <h2 id="stream-mix-features" className="sr-only">
+                    Stream Mix features
+                  </h2>
+                  <div className="rounded-box border border-base-300 bg-base-100/60 p-4">
+                    <h3 className="font-semibold">Mix platforms</h3>
+                    <p className="mt-1 text-sm leading-relaxed">
+                      Place Twitch, YouTube, and Kick streams together. Show
+                      video, chat, or both in each window.
+                    </p>
+                  </div>
+                  <div className="rounded-box border border-base-300 bg-base-100/60 p-4">
+                    <h3 className="font-semibold">Build your layout</h3>
+                    <p className="mt-1 text-sm leading-relaxed">
+                      Drag, resize, minimize, and focus windows. Your workspace
+                      is saved locally in your browser.
+                    </p>
+                  </div>
+                  <div className="rounded-box border border-base-300 bg-base-100/60 p-4">
+                    <h3 className="font-semibold">Share and focus</h3>
+                    <p className="mt-1 text-sm leading-relaxed">
+                      Copy a layout link for friends, then use Compact mode to
+                      give embedded players more screen space.
+                    </p>
+                  </div>
+                </section>
+
+                <p className="mt-4 text-sm text-base-content/75">
+                  Useful for esports tournaments, co-streams, watch parties,
+                  live coverage, and several creator perspectives.
+                </p>
+
                 <nav
-                  className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm"
+                  className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm"
                   aria-label="Learn about Stream Mix"
                 >
                   <a
@@ -371,6 +409,24 @@ const EmbedGrid: FC = () => {
                     href="/guides/watch-multiple-streams"
                   >
                     Setup guide
+                  </a>
+                  <a
+                    className={`link link-hover ${PLATFORM_STYLES.twitch.text}`}
+                    href="/guides/watch-multiple-twitch-streams"
+                  >
+                    Twitch
+                  </a>
+                  <a
+                    className={`link link-hover ${PLATFORM_STYLES.youtube.text}`}
+                    href="/guides/watch-multiple-youtube-streams"
+                  >
+                    YouTube
+                  </a>
+                  <a
+                    className={`link link-hover ${PLATFORM_STYLES.kick.text}`}
+                    href="/guides/watch-multiple-kick-streams"
+                  >
+                    Kick
                   </a>
                   <a className="link link-hover" href="/faq">
                     FAQ
