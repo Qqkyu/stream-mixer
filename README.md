@@ -10,8 +10,6 @@ download is required.
 
 [![Stream Mix demo showing streams being added, resized, arranged, and shared](docs/assets/stream-mix-demo.webp)](https://streammix.app)
 
-[Watch the full-quality MP4 demo](docs/assets/stream-mix-demo.mp4)
-
 ## Features
 
 - Mix Twitch, YouTube, and Kick embeds in one workspace.
