@@ -6,6 +6,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "capture:demo": "node scripts/capture-demo.mjs",
     "astro": "astro"
   },
   "dependencies": {

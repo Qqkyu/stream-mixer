@@ -8,7 +8,9 @@ download is required.
 [Setup guide](https://streammix.app/guides/watch-multiple-streams/) ·
 [FAQ](https://streammix.app/faq/)
 
-[![Stream Mix workspace showing two live streams and chats](docs/assets/stream-mix-workspace.webp)](https://streammix.app)
+[![Stream Mix demo showing streams being added, resized, arranged, and shared](docs/assets/stream-mix-demo.webp)](https://streammix.app)
+
+[Watch the full-quality MP4 demo](docs/assets/stream-mix-demo.mp4)
 
 ## Features
 
@@ -76,6 +78,16 @@ Create a production build with:
 ```sh
 pnpm build
 ```
+
+To regenerate the README demo, leave the local server running and use:
+
+```sh
+pnpm capture:demo
+```
+
+The capture command requires Google Chrome and FFmpeg. Set `CHROME_BIN`,
+`FFMPEG_BIN`, or `STREAM_MIX_DEMO_URL` to override their default commands or
+the local app URL.
 
 ## Tech stack
 
