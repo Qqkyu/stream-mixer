@@ -1,9 +1,14 @@
 # Stream Mix
 
-Stream Mix is a browser-based multistream viewer for watching Twitch, YouTube,
-and Kick streams together in a customizable workspace.
+Stream Mix is a free browser-based multistream viewer for watching Twitch,
+YouTube, and Kick streams together in a customizable workspace. No account or
+download is required.
 
-The production app is available at [streammix.app](https://streammix.app).
+[Open Stream Mix](https://streammix.app) ·
+[Setup guide](https://streammix.app/guides/watch-multiple-streams/) ·
+[FAQ](https://streammix.app/faq/)
+
+[![Stream Mix workspace showing two live streams and chats](docs/assets/stream-mix-workspace.webp)](https://streammix.app)
 
 ## Features
 
@@ -21,6 +26,32 @@ The production app is available at [streammix.app](https://streammix.app).
 Stream Mix uses each platform's official embedded player and chat. Playback,
 authentication, advertisements, and chat are provided by the respective
 platform rather than proxied by Stream Mix.
+
+## Using the app
+
+1. Paste a Twitch, YouTube, or Kick URL. The platform is detected automatically.
+2. Alternatively, select a platform and enter its channel name or video ID.
+3. Choose **Stream + Chat**, **Stream**, or **Chat**.
+4. Select **Add**.
+5. Drag a window by its header and resize it using either bottom corner.
+6. Use the share button to copy a link to the current workspace.
+
+The window controls follow the familiar desktop convention:
+
+- Red removes the embed.
+- Yellow minimizes it to the bottom shelf.
+- Green opens and closes the fullscreen workspace view.
+
+Move the pointer to the bottom edge to reveal minimized windows. In compact
+mode, move the pointer to the top edge to reveal the button that restores the
+site header.
+
+## Guides
+
+- [Watch multiple Twitch streams](https://streammix.app/guides/watch-multiple-twitch-streams/)
+- [Watch multiple YouTube live streams](https://streammix.app/guides/watch-multiple-youtube-streams/)
+- [Watch multiple Kick streams](https://streammix.app/guides/watch-multiple-kick-streams/)
+- [Read the complete setup guide](https://streammix.app/guides/watch-multiple-streams/)
 
 ## Local development
 
@@ -45,25 +76,6 @@ Create a production build with:
 ```sh
 pnpm build
 ```
-
-## Using the app
-
-1. Paste a Twitch, YouTube, or Kick URL. The platform is detected automatically.
-2. Alternatively, select a platform and enter its channel name or video ID.
-3. Choose **Stream + Chat**, **Stream**, or **Chat**.
-4. Select **Add**.
-5. Drag a window by its header and resize it using either bottom corner.
-6. Use the share button to copy a link to the current workspace.
-
-The window controls follow the familiar desktop convention:
-
-- Red removes the embed.
-- Yellow minimizes it to the bottom shelf.
-- Green opens and closes the fullscreen workspace view.
-
-Move the pointer to the bottom edge to reveal minimized windows. In compact
-mode, move the pointer to the top edge to reveal the button that restores the
-site header.
 
 ## Tech stack
 
