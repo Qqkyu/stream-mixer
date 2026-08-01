@@ -1,4 +1,5 @@
-import { spawn } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
+import { existsSync } from "node:fs";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
@@ -8,7 +9,17 @@ const WIDTH = 1440;
 const HEIGHT = 810;
 const FRAME_RATE = 10;
 const APP_URL = process.env.STREAM_MIX_DEMO_URL ?? "http://localhost:4321/";
-const CHROME_BIN = process.env.CHROME_BIN ?? "google-chrome";
+const WINDOWS_CHROME =
+  "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe";
+const CHROME_BIN =
+  process.env.CHROME_BIN ??
+  (existsSync(WINDOWS_CHROME) ? WINDOWS_CHROME : "google-chrome");
+const USING_WINDOWS_CHROME = CHROME_BIN.toLowerCase().endsWith(".exe");
+const DEBUG_HOST = USING_WINDOWS_CHROME
+  ? execFileSync("ip", ["route", "show", "default"], {
+      encoding: "utf8",
+    }).match(/\bvia\s+(\S+)/)?.[1]
+  : "127.0.0.1";
 const FFMPEG_BIN = process.env.FFMPEG_BIN ?? "ffmpeg";
 const OUTPUT_DIRECTORY = resolve("docs/assets");
 const MP4_OUTPUT = join(OUTPUT_DIRECTORY, "stream-mix-demo.mp4");
@@ -93,7 +104,7 @@ async function findAvailablePort() {
   return port;
 }
 
-async function waitForChrome(port, chromeProcess) {
+async function waitForChrome(host, port, chromeProcess, getDiagnostics) {
   const deadline = Date.now() + 15_000;
 
   while (Date.now() < deadline) {
@@ -102,10 +113,15 @@ async function waitForChrome(port, chromeProcess) {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:${port}/json/list`);
+      const response = await fetch(`http://${host}:${port}/json/list`);
       const targets = await response.json();
       const page = targets.find(({ type }) => type === "page");
-      if (page?.webSocketDebuggerUrl) return page.webSocketDebuggerUrl;
+      if (page?.webSocketDebuggerUrl) {
+        const webSocketUrl = new URL(page.webSocketDebuggerUrl);
+        webSocketUrl.hostname = host;
+        webSocketUrl.port = String(port);
+        return webSocketUrl.toString();
+      }
     } catch {
       // Chrome is still starting.
     }
@@ -113,7 +129,62 @@ async function waitForChrome(port, chromeProcess) {
     await sleep(100);
   }
 
-  throw new Error("Timed out while starting Chrome");
+  const diagnostics = getDiagnostics().trim();
+  throw new Error(
+    `Timed out while starting Chrome${diagnostics ? `\n${diagnostics}` : ""}`,
+  );
+}
+
+function startWindowsDebugProxy(listenPort, targetPort) {
+  const source = `
+using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+
+public static class StreamMixTcpProxy
+{
+    public static void Run(int listenPort, int targetPort)
+    {
+        var listener = new TcpListener(IPAddress.Any, listenPort);
+        listener.Start();
+        while (true)
+        {
+            Handle(listener.AcceptTcpClient(), targetPort);
+        }
+    }
+
+    private static async void Handle(TcpClient client, int targetPort)
+    {
+        var target = new TcpClient();
+        try
+        {
+            await target.ConnectAsync(IPAddress.Loopback, targetPort);
+            var clientStream = client.GetStream();
+            var targetStream = target.GetStream();
+            await Task.WhenAny(
+                clientStream.CopyToAsync(targetStream),
+                targetStream.CopyToAsync(clientStream)
+            );
+        }
+        catch
+        {
+        }
+        finally
+        {
+            client.Close();
+            target.Close();
+        }
+    }
+}
+`;
+  const command = `Add-Type -TypeDefinition @'\n${source}\n'@\n[StreamMixTcpProxy]::Run(${listenPort}, ${targetPort})`;
+  const encodedCommand = Buffer.from(command, "utf16le").toString("base64");
+  return spawn(
+    "powershell.exe",
+    ["-NoProfile", "-EncodedCommand", encodedCommand],
+    { stdio: ["ignore", "ignore", "pipe"] },
+  );
 }
 
 function runCommand(command, args) {
@@ -134,9 +205,34 @@ async function main() {
   }
 
   const debugPort = await findAvailablePort();
+  const connectionPort = USING_WINDOWS_CHROME
+    ? await findAvailablePort()
+    : debugPort;
+  if (!DEBUG_HOST) throw new Error("Could not determine the Chrome host");
   const captureDirectory = await mkdtemp(join(tmpdir(), "stream-mix-demo-"));
-  const profileDirectory = join(captureDirectory, "chrome-profile");
   const frameDirectory = join(captureDirectory, "frames");
+  let profileDirectory = join(captureDirectory, "chrome-profile");
+  let chromeProfileDirectory = profileDirectory;
+
+  if (USING_WINDOWS_CHROME) {
+    const windowsTempDirectory = execFileSync(
+      "powershell.exe",
+      ["-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()"],
+      { encoding: "utf8" },
+    ).trim();
+    const wslTempDirectory = execFileSync(
+      "wslpath",
+      ["-u", windowsTempDirectory],
+      { encoding: "utf8" },
+    ).trim();
+    profileDirectory = await mkdtemp(
+      join(wslTempDirectory, "stream-mix-demo-chrome-"),
+    );
+    chromeProfileDirectory = execFileSync("wslpath", ["-w", profileDirectory], {
+      encoding: "utf8",
+    }).trim();
+  }
+
   await mkdir(frameDirectory, { recursive: true });
   await mkdir(OUTPUT_DIRECTORY, { recursive: true });
 
@@ -154,20 +250,33 @@ async function main() {
       "--no-first-run",
       "--no-default-browser-check",
       "--autoplay-policy=no-user-gesture-required",
+      `--remote-debugging-address=${DEBUG_HOST}`,
       `--remote-debugging-port=${debugPort}`,
-      `--user-data-dir=${profileDirectory}`,
+      "--remote-allow-origins=*",
+      `--user-data-dir=${chromeProfileDirectory}`,
       `--window-size=${WIDTH},${HEIGHT}`,
       "about:blank",
     ],
     { stdio: ["ignore", "ignore", "pipe"] },
   );
-  chromeProcess.stderr.on("data", () => {});
+  let chromeDiagnostics = "";
+  chromeProcess.stderr.on("data", (data) => {
+    chromeDiagnostics = `${chromeDiagnostics}${data}`.slice(-4_000);
+  });
+  const debugProxy = USING_WINDOWS_CHROME
+    ? startWindowsDebugProxy(connectionPort, debugPort)
+    : undefined;
 
   let client;
   let frameNumber = 0;
 
   try {
-    const webSocketUrl = await waitForChrome(debugPort, chromeProcess);
+    const webSocketUrl = await waitForChrome(
+      DEBUG_HOST,
+      connectionPort,
+      chromeProcess,
+      () => chromeDiagnostics,
+    );
     client = await DevToolsClient.connect(webSocketUrl);
 
     await client.call("Page.enable");
@@ -350,7 +459,7 @@ async function main() {
       );
     };
 
-    const replaceInput = async (text) => {
+    const replaceInput = async (text, animateTyping = true) => {
       await clickElement(
         `document.querySelector(${JSON.stringify(inputSelector)})`,
       );
@@ -363,10 +472,27 @@ async function main() {
         setValue.call(input, "");
         input.dispatchEvent(new Event("input", { bubbles: true }));
       })()`);
-      for (const character of text) {
-        await client.call("Input.insertText", { text: character });
+      const chunks = animateTyping ? [...text] : [text];
+      for (const chunk of chunks) {
+        await client.call("Input.insertText", { text: chunk });
         await captureFrame();
       }
+    };
+
+    const chooseSelectValue = async (index, value) => {
+      const elementExpression = `document.querySelectorAll("select")[${index}]`;
+      const rect = await getRect(elementExpression);
+      await moveTo(rect.x + rect.width / 2, rect.y + rect.height / 2);
+      await evaluate(`(() => {
+        const select = ${elementExpression};
+        const setValue = Object.getOwnPropertyDescriptor(
+          HTMLSelectElement.prototype,
+          "value",
+        ).set;
+        setValue.call(select, ${JSON.stringify(value)});
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+      })()`);
+      await captureFrame();
     };
 
     const drag = async (
@@ -374,10 +500,14 @@ async function main() {
       offsetX,
       offsetY,
       duration = 900,
+      anchor = {},
     ) => {
       const rect = await getRect(elementExpression);
-      const startX = rect.x + rect.width / 2;
-      const startY = rect.y + rect.height / 2;
+      const startX = rect.x + rect.width * (anchor.xRatio ?? 0.5);
+      const startY =
+        anchor.yOffset == null
+          ? rect.y + rect.height * (anchor.yRatio ?? 0.5)
+          : rect.y + anchor.yOffset;
       const endX = startX + offsetX;
       const endY = startY + offsetY;
       const steps = Math.max(4, Math.round((duration / 1000) * FRAME_RATE));
@@ -421,6 +551,7 @@ async function main() {
       });
       await setCursor(endX, endY);
       await captureFrame();
+      await evaluate("window.getSelection()?.removeAllRanges()");
     };
 
     const addButton = `Array.from(document.querySelectorAll("button")).find((button) => button.textContent.trim() === "Add")`;
@@ -432,7 +563,9 @@ async function main() {
     await waitFor("document.querySelectorAll('.grid-stack-item').length === 1");
     await hold(3_000);
 
-    await replaceInput("LCK");
+    await replaceInput("https://www.youtube.com/watch?v=aqz-KE-bpKQ", false);
+    await waitFor('document.querySelectorAll("select")[0].value === "youtube"');
+    await chooseSelectValue(1, "video");
     await clickElement(addButton);
     await waitFor("document.querySelectorAll('.grid-stack-item').length === 2");
     await hold(3_000);
@@ -450,6 +583,7 @@ async function main() {
       -600,
       0,
       1_100,
+      { yOffset: 6 },
     );
     await hold(700);
 
@@ -526,6 +660,7 @@ async function main() {
     console.log(`Created ${WEBP_OUTPUT}`);
   } finally {
     client?.close();
+    debugProxy?.kill("SIGTERM");
     if (chromeProcess.exitCode == null) {
       chromeProcess.kill("SIGTERM");
       await Promise.race([
@@ -536,12 +671,41 @@ async function main() {
     if (chromeProcess.exitCode == null) {
       chromeProcess.kill("SIGKILL");
     }
-    await rm(captureDirectory, {
+
+    if (USING_WINDOWS_CHROME) {
+      const profileName = profileDirectory.split("/").at(-1);
+      try {
+        execFileSync(
+          "powershell.exe",
+          [
+            "-NoProfile",
+            "-Command",
+            `Get-CimInstance Win32_Process -Filter \"Name = 'chrome.exe'\" | Where-Object { $_.CommandLine -like '*${profileName}*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }`,
+          ],
+          { stdio: "ignore" },
+        );
+      } catch {
+        // The browser may already have exited.
+      }
+      await sleep(500);
+    }
+
+    const cleanupOptions = {
       recursive: true,
       force: true,
       maxRetries: 5,
       retryDelay: 200,
-    });
+    };
+    try {
+      await rm(profileDirectory, cleanupOptions);
+    } catch (error) {
+      console.warn(`Could not remove ${profileDirectory}: ${error.message}`);
+    }
+    try {
+      await rm(captureDirectory, cleanupOptions);
+    } catch (error) {
+      console.warn(`Could not remove ${captureDirectory}: ${error.message}`);
+    }
   }
 }
 
