@@ -9,109 +9,82 @@ import { PLATFORM_STYLES } from "../../components/embedGrid/platformStyles";
   heading="How to watch multiple live streams at once"
 >
   <p>
-    Stream Mix places multiple live broadcasts in one browser workspace. You can
-    combine <span class={PLATFORM_STYLES.twitch.text}>Twitch</span> channels,
-    <span class={PLATFORM_STYLES.youtube.text}>YouTube</span> live streams, and
-    <span class={PLATFORM_STYLES.kick.text}>Kick</span> channels, then choose whether
-    each window shows its video, chat, or both.
+    Stream Mix puts <span class={PLATFORM_STYLES.twitch.text}>Twitch</span>,{
+      " "
+    }
+    <span class={PLATFORM_STYLES.youtube.text}>YouTube</span>, and{" "}
+    <span class={PLATFORM_STYLES.kick.text}>Kick</span> broadcasts in one draggable
+    browser workspace. No account or download is required.
   </p>
 
-  <h2>1. Paste a URL or enter the identifier</h2>
+  <h2>1. Add your streams</h2>
+  <ol>
+    <li>
+      Paste a URL such as <code>twitch.tv/channel</code>,{" "}
+      <code>youtube.com/watch?v=VIDEO_ID</code>, or{" "}
+      <code>kick.com/channel</code>. Stream Mix detects the platform
+      automatically.
+    </li>
+    <li>
+      Choose Stream + Chat, Stream, or Chat and select <strong>Add</strong>.
+    </li>
+    <li>Repeat for every perspective you want to follow.</li>
+  </ol>
   <p>
-    The quickest option is to paste the complete stream URL. Stream Mix detects
-    the supported platform and extracts the identifier automatically.
+    You can also select a platform manually and enter a Twitch or Kick channel
+    name, or a YouTube video ID.
   </p>
+
+  <h2>2. Choose what each window shows</h2>
   <ul>
     <li>
-      For <span class={PLATFORM_STYLES.twitch.text}>Twitch</span>, paste
-      <code>https://twitch.tv/channel</code>.
+      <strong>Stream + Chat</strong> keeps video and conversation together.
     </li>
-    <li>
-      For <span class={PLATFORM_STYLES.youtube.text}>YouTube</span>, paste
-      <code>https://youtube.com/watch?v=VIDEO_ID</code> or
-      <code>https://youtu.be/VIDEO_ID</code>.
-    </li>
-    <li>
-      For <span class={PLATFORM_STYLES.kick.text}>Kick</span>, paste
-      <code>https://kick.com/channel</code>.
-    </li>
-  </ul>
-  <p>
-    If you prefer, select the platform manually and enter only the Twitch or
-    Kick channel name, or the YouTube video ID.
-  </p>
-
-  <h2>2. Add the stream</h2>
-  <p>
-    Open <a href="/">Stream Mix</a> and paste the URL. The platform selector updates
-    automatically. Then choose Stream + Chat, Stream, or Chat and select Add to create
-    a new window. You can still select a platform and enter its identifier manually.
-    Repeat the process for every perspective you want to follow.
-  </p>
-
-  <h2>3. Arrange the grid</h2>
-  <p>
-    Drag a window using its title bar and resize it from either lower corner.
-    Make the primary broadcast larger and keep secondary perspectives or chats
-    nearby. Window positions are saved automatically in your browser.
-  </p>
-
-  <h2>4. Share the workspace</h2>
-  <p>
-    Select the share button in the site header to copy a link containing the
-    streams, display modes, and grid positions. A recipient with an empty
-    workspace can open it immediately. If they already have streams saved,
-    Stream Mix asks before replacing their current workspace.
-  </p>
-
-  <h2>5. Reclaim viewing space</h2>
-  <p>
-    Enable Compact mode to hide the site header and let video and chat use more
-    of the workspace. Move the pointer to the top edge of a window whenever you
-    need its drag, close, minimize, or fullscreen controls.
-  </p>
-
-  <h2>Common multistream use cases</h2>
-  <ul>
-    <li>Follow several players’ perspectives during an esports tournament.</li>
-    <li>Watch an official broadcast alongside creator co-streams.</li>
-    <li>Monitor live coverage occurring on more than one platform.</li>
-    <li>Keep a main video large while following one or more chats.</li>
+    <li><strong>Stream</strong> gives the full panel to video.</li>
+    <li><strong>Chat</strong> shows only the platform’s conversation.</li>
   </ul>
 
-  <h2>Playback considerations</h2>
+  <h2>3. Arrange and save the workspace</h2>
   <p>
-    Every additional stream uses bandwidth and processing power. If playback
-    stutters, reduce the quality inside secondary players, show chat without
-    video where appropriate, or close streams you are not actively watching.
-    Streams may also have slightly different broadcast delays because each
-    platform delivers its own player independently.
+    Drag windows by their headers and resize them from either lower corner.
+    Positions are saved automatically in your browser. Minimize panels to the
+    bottom shelf, or enable Compact mode to hide the site and window headers.
+  </p>
+  <p>
+    The share button copies a link containing the streams, display modes, and
+    grid positions. Opening it replaces an existing workspace only after
+    confirmation.
   </p>
 
-  <h2>Platform-specific setup and troubleshooting</h2>
+  <h2>Playback and platform help</h2>
+  <p>
+    Several video players can use significant bandwidth and processing power. If
+    playback stutters, lower the quality of secondary streams, switch some
+    panels to Chat, or minimize streams you do not need continuously.
+  </p>
   <ul>
     <li>
       <a href="/guides/watch-multiple-twitch-streams"
         >Watch multiple Twitch streams</a
-      >
-      for live channel inputs, display modes, and Twitch embed troubleshooting.
+      >{" "}
+      for channel URLs and Twitch embed troubleshooting.
     </li>
     <li>
       <a href="/guides/watch-multiple-youtube-streams"
         >Watch multiple YouTube live streams</a
-      >
-      for supported video URLs, video IDs, and live chat availability.
+      >{" "}
+      for supported URLs and live chat availability.
     </li>
     <li>
       <a href="/guides/watch-multiple-kick-streams"
         >Watch multiple Kick streams</a
-      >
-      for channel inputs, Kick player behavior, and chat troubleshooting.
+      >{" "}
+      for channel inputs and Kick player behavior.
     </li>
   </ul>
   <p>
-    You can also review the <a href="/faq">Stream Mix FAQ</a> for answers about saved
-    layouts, privacy, sharing, and common playback issues.
+    The <a href="/faq">FAQ</a> covers saved layouts, privacy, sharing, and common
+    playback issues.
   </p>
 
   <p><a href="/" class="btn btn-primary">Watch multiple streams</a></p>

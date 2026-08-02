@@ -9,115 +9,73 @@ import ContentLayout from "../../layouts/ContentLayout.astro";
   platform="kick"
 >
   <p>
-    Stream Mix displays multiple Kick channels and chats in one customizable
-    browser workspace. Arrange creators covering the same game, event, or
-    conversation side by side without switching between tabs or manually
-    positioning separate browser windows.
+    Stream Mix puts multiple Kick channels and chats in one draggable browser
+    workspace, with each panel showing video, chat, or both.
   </p>
 
   <h2>How to add multiple Kick streams</h2>
   <ol>
-    <li>Open the creator’s Kick channel page.</li>
     <li>
-      Copy its URL, such as <code>https://kick.com/xqc</code>, and paste it into
-      the Stream Mix header.
+      Paste a channel URL such as <code>https://kick.com/xqc</code> into the Stream
+      Mix header.
     </li>
     <li>
-      Stream Mix selects Kick automatically and extracts the creator’s channel
-      name.
+      Kick is selected automatically. Choose Stream + Chat, Stream, or Chat.
     </li>
-    <li>Select Stream + Chat, Stream, or Chat and choose Add.</li>
-    <li>Repeat for the remaining channels, then arrange their windows.</li>
+    <li>Select <strong>Add</strong> and repeat for the remaining channels.</li>
+    <li>Drag and resize the resulting windows to arrange your layout.</li>
   </ol>
 
   <p>
-    You can also choose Kick manually and enter only the channel name. Both
-    <code>xqc</code> and <code>kick.com/xqc</code> produce the same channel window.
-    Stream Mix currently targets live channel pages rather than Kick clips or VODs.
+    You can also select Kick manually and enter only the channel name. Channel
+    URLs and names are supported; clips and VOD pages are not.
   </p>
 
-  <h2>Choose the right Kick display mode</h2>
-  <ul>
-    <li>
-      <strong>Stream + Chat</strong> puts Kick’s player and pop-out chat beside each
-      other in one window.
-    </li>
-    <li>
-      <strong>Stream</strong> uses the full panel for video and is useful for secondary
-      viewpoints.
-    </li>
-    <li>
-      <strong>Chat</strong> keeps only the conversation visible when you are already
-      watching the broadcast elsewhere.
-    </li>
-  </ul>
-
+  <h2>Kick embed behavior</h2>
   <p>
-    Start with the most important broadcast in a large window, then place
-    smaller Stream or Chat panels around it. Windows compact upward after they
-    are moved or resized, so you can reorganize the layout without leaving
-    unnecessary gaps. Compact mode hides interface chrome, while minimize moves
-    a channel to the shelf until you need it again.
-  </p>
-
-  <h2>How Kick embeds work</h2>
-  <p>
-    Video is loaded from Kick’s official
-    <code>player.kick.com/CHANNEL</code> embed and chat is loaded from Kick’s pop-out
-    chat page. Stream Mix does not copy or restream the broadcast; Kick remains responsible
-    for the player, playback controls, chat, account access, and content availability.
+    Stream Mix uses Kick’s official player and pop-out chat—it does not restream
+    broadcasts. Kick remains responsible for playback controls, chat, account
+    access, and content availability.
   </p>
 
   <p>
-    Kick’s official player supports fullscreen and controls its own autoplay and
-    audio behavior. Account or chat features may depend on Kick authentication,
-    browser cookie settings, and content-blocking extensions. Kick documents the
-    player URL in its
+    Chat and account features can depend on Kick authentication, cookies, and
+    content-blocking extensions. Kick documents its player in the{" "}
     <a
       href="https://help.kick.com/en/articles/8010826-how-to-embed-your-kick-livestream"
       rel="external">official embedding guide</a
     >.
   </p>
 
-  <h2>Troubleshoot a Kick stream or chat</h2>
-  <h3>The channel is not accepted</h3>
-  <p>
-    Use the creator’s main channel URL, not a category, search, dashboard, clip,
-    or VOD page. You can always select Kick manually and enter the channel name
-    that appears directly after <code>kick.com/</code>.
-  </p>
+  <h2>Kick troubleshooting</h2>
+  <ul>
+    <li>
+      <strong>URL rejected:</strong> use the main channel URL or channel name, not
+      a category, search, dashboard, clip, or VOD page.
+    </li>
+    <li>
+      <strong>Channel appears offline:</strong> the window remains saved and can
+      stay in your layout for the creator’s next broadcast.
+    </li>
+    <li>
+      <strong>Chat or account controls fail:</strong> check the channel directly
+      on Kick, then test without strict tracking protection or content blockers.
+    </li>
+    <li>
+      <strong>Several streams stutter:</strong> lower secondary stream quality, mute
+      unused audio, use Chat-only panels, or minimize some streams.
+    </li>
+  </ul>
 
-  <h3>The player shows an offline channel</h3>
+  <h2>Related guides</h2>
   <p>
-    The creator may not be live. You can leave the panel in place because Stream
-    Mix saves the channel and its grid position locally for the next session.
-  </p>
-
-  <h3>Chat or account controls do not load</h3>
-  <p>
-    Open the channel directly on Kick to confirm that the service and chat are
-    available. If they work there, test Stream Mix without aggressive tracking
-    protection or content-blocking extensions. Sending messages may also require
-    an authenticated Kick session.
-  </p>
-
-  <h3>Several Kick players stutter</h3>
-  <p>
-    Each live player adds its own video decoding and network load. Mute
-    secondary streams, reduce their quality using Kick’s controls, switch some
-    windows to Chat only, or minimize panels that you do not need continuously.
-  </p>
-
-  <h2>Mix Kick with Twitch and YouTube</h2>
-  <p>
-    The same layout can contain
-    <a href="/guides/watch-multiple-twitch-streams">Twitch channels</a> and
-    <a href="/guides/watch-multiple-youtube-streams">YouTube live broadcasts</a
-    >. Read the complete <a href="/guides/watch-multiple-streams"
-      >multistream viewing guide</a
-    >
-    for sharing and workspace tips, or visit the <a href="/faq">FAQ</a> for answers
-    about saved layouts, privacy, and embeds.
+    See the <a href="/guides/watch-multiple-streams">setup guide</a>, or add{
+      " "
+    }
+    <a href="/guides/watch-multiple-twitch-streams">Twitch</a> and{" "}
+    <a href="/guides/watch-multiple-youtube-streams">YouTube</a> streams to the same
+    workspace. The <a href="/faq">FAQ</a> covers saved layouts, privacy, and common
+    embed behavior.
   </p>
 
   <p>

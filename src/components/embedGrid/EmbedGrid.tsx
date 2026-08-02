@@ -11,6 +11,7 @@ import type { Embed as EmbedType } from "./EmbedTypes";
 import { PLATFORM_STYLES } from "./platformStyles";
 
 const GRID_ROW_HEIGHT = 48;
+const MINIMIZED_SHELF_HINT_DURATION = 3000;
 
 function getViewportRowCount(pageHeaderHeight: number): number {
   return Math.max(
@@ -45,10 +46,13 @@ const EmbedGrid: FC = () => {
   const registeredEmbedIdsRef = useRef(new Set<string>());
   const restoringEmbedIdsRef = useRef(new Set<string>());
   const compactModeExitTimerRef = useRef<number>();
+  const minimizedShelfHintRevealTimerRef = useRef<number>();
+  const minimizedShelfHintHideTimerRef = useRef<number>();
 
   const [showControlIcons, setShowControlIcons] = useState(false);
   const [isGridReady, setIsGridReady] = useState(false);
   const [showMinimizedShelf, setShowMinimizedShelf] = useState(false);
+  const [showMinimizedShelfHint, setShowMinimizedShelfHint] = useState(false);
   const [showCompactModeExit, setShowCompactModeExit] = useState(false);
 
   const revealCompactModeExit = () => {
@@ -58,6 +62,19 @@ const EmbedGrid: FC = () => {
       () => setShowCompactModeExit(false),
       1500,
     );
+  };
+
+  const revealMinimizedShelfHint = () => {
+    window.clearTimeout(minimizedShelfHintRevealTimerRef.current);
+    window.clearTimeout(minimizedShelfHintHideTimerRef.current);
+
+    minimizedShelfHintRevealTimerRef.current = window.setTimeout(() => {
+      setShowMinimizedShelfHint(true);
+      minimizedShelfHintHideTimerRef.current = window.setTimeout(
+        () => setShowMinimizedShelfHint(false),
+        MINIMIZED_SHELF_HINT_DURATION,
+      );
+    }, 0);
   };
 
   useEffect(() => {
@@ -72,7 +89,10 @@ const EmbedGrid: FC = () => {
   useEffect(() => {
     const hasMinimizedEmbeds = embedsStore.some(({ minimized }) => minimized);
     if (!hasMinimizedEmbeds) {
+      window.clearTimeout(minimizedShelfHintRevealTimerRef.current);
+      window.clearTimeout(minimizedShelfHintHideTimerRef.current);
       setShowMinimizedShelf(false);
+      setShowMinimizedShelfHint(false);
       return;
     }
 
@@ -89,6 +109,14 @@ const EmbedGrid: FC = () => {
     window.addEventListener("pointermove", handlePointerMove);
     return () => window.removeEventListener("pointermove", handlePointerMove);
   }, [embedsStore]);
+
+  useEffect(
+    () => () => {
+      window.clearTimeout(minimizedShelfHintRevealTimerRef.current);
+      window.clearTimeout(minimizedShelfHintHideTimerRef.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (fullscreenEmbedStore != null) return;
@@ -277,6 +305,7 @@ const EmbedGrid: FC = () => {
             : currentEmbed,
         ),
     );
+    revealMinimizedShelfHint();
   };
 
   const restoreEmbed = (id: string) => {
@@ -343,6 +372,7 @@ const EmbedGrid: FC = () => {
 
   const minimizedEmbeds = embedsStore.filter(({ minimized }) => minimized);
   const hasVisibleEmbeds = embedsStore.some(({ minimized }) => !minimized);
+  const minimizedShelfIsVisible = showMinimizedShelf || showMinimizedShelfHint;
 
   return (
     <>
@@ -399,45 +429,6 @@ const EmbedGrid: FC = () => {
                   Useful for esports tournaments, co-streams, watch parties,
                   live coverage, and several creator perspectives.
                 </p>
-
-                <nav
-                  className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm"
-                  aria-label="Learn about Stream Mix"
-                >
-                  <a
-                    className="link link-hover"
-                    href="/guides/watch-multiple-streams"
-                  >
-                    Setup guide
-                  </a>
-                  <a
-                    className={`link link-hover ${PLATFORM_STYLES.twitch.text}`}
-                    href="/guides/watch-multiple-twitch-streams"
-                  >
-                    Twitch
-                  </a>
-                  <a
-                    className={`link link-hover ${PLATFORM_STYLES.youtube.text}`}
-                    href="/guides/watch-multiple-youtube-streams"
-                  >
-                    YouTube
-                  </a>
-                  <a
-                    className={`link link-hover ${PLATFORM_STYLES.kick.text}`}
-                    href="/guides/watch-multiple-kick-streams"
-                  >
-                    Kick
-                  </a>
-                  <a className="link link-hover" href="/faq">
-                    FAQ
-                  </a>
-                  <a className="link link-hover" href="/about">
-                    About
-                  </a>
-                  <a className="link link-hover" href="/privacy">
-                    Privacy
-                  </a>
-                </nav>
               </div>
             </div>
           </div>
@@ -550,7 +541,7 @@ const EmbedGrid: FC = () => {
             aria-label="Minimized streams"
             data-minimized-shelf
             className={`fixed inset-x-0 bottom-3 z-[2000] flex justify-center px-3 pointer-events-none transition-all duration-150 ${
-              showMinimizedShelf
+              minimizedShelfIsVisible
                 ? "translate-y-0 opacity-100"
                 : "translate-y-[calc(100%+1rem)] opacity-0"
             }`}
@@ -561,22 +552,33 @@ const EmbedGrid: FC = () => {
               }
             }}
           >
-            <div className="flex max-w-full gap-2 overflow-x-auto rounded-box border border-base-content/20 bg-base-100/95 p-2 shadow-xl backdrop-blur pointer-events-auto">
-              {minimizedEmbeds.map((embed) => (
-                <button
-                  key={embed.id}
-                  className="btn btn-sm max-w-64 flex-nowrap justify-start"
-                  title={`Restore ${getEmbedLabel(embed)}`}
-                  onClick={() => restoreEmbed(embed.id)}
+            <div className="flex max-w-full flex-col items-center gap-2">
+              {showMinimizedShelfHint && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="rounded-full border border-base-content/20 bg-base-100/95 px-3 py-1 text-xs shadow-lg backdrop-blur motion-safe:animate-pulse"
                 >
-                  <span
-                    className={`size-2 shrink-0 rounded-full ${
-                      PLATFORM_STYLES[embed.platform].background
-                    }`}
-                  />
-                  <span className="truncate">{getEmbedLabel(embed)}</span>
-                </button>
-              ))}
+                  Stream minimized — hover at the bottom to restore it
+                </div>
+              )}
+              <div className="flex max-w-full gap-2 overflow-x-auto rounded-box border border-base-content/20 bg-base-100/95 p-2 shadow-xl backdrop-blur pointer-events-auto">
+                {minimizedEmbeds.map((embed) => (
+                  <button
+                    key={embed.id}
+                    className="btn btn-sm max-w-64 flex-nowrap justify-start"
+                    title={`Restore ${getEmbedLabel(embed)}`}
+                    onClick={() => restoreEmbed(embed.id)}
+                  >
+                    <span
+                      className={`size-2 shrink-0 rounded-full ${
+                        PLATFORM_STYLES[embed.platform].background
+                      }`}
+                    />
+                    <span className="truncate">{getEmbedLabel(embed)}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </aside>
         </>
