@@ -3,8 +3,9 @@ import { defineConfig } from "@playwright/test";
 
 const systemChrome = [
   process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
-  "/usr/bin/google-chrome",
-  "/usr/bin/google-chrome-stable",
+  ...(process.env.CI
+    ? []
+    : ["/usr/bin/google-chrome", "/usr/bin/google-chrome-stable"]),
 ].find((path): path is string => Boolean(path && existsSync(path)));
 
 export default defineConfig({
