@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState, type FC } from "react";
-import { embeds, hydrateEmbeds, setEmbeds } from "../../state/embedsStore";
+import {
+  embeds,
+  hydrateEmbeds,
+  setEmbeds,
+  workspaceHydrated,
+} from "../../state/embedsStore";
 import {
   createEmbedsFromSharedStreams,
   parseSharedLayoutHash,
@@ -18,29 +23,33 @@ const SharedLayoutImporter: FC = () => {
 
   useEffect(() => {
     const readSharedLayout = () => {
-      hydrateEmbeds();
+      try {
+        hydrateEmbeds();
 
-      const result = parseSharedLayoutHash(window.location.hash);
-      if (result.status === "absent") return;
+        const result = parseSharedLayoutHash(window.location.hash);
+        if (result.status === "absent") return;
 
-      if (result.status === "invalid") {
-        setInvalidLayout(true);
-        return;
+        if (result.status === "invalid") {
+          setInvalidLayout(true);
+          return;
+        }
+
+        if (embeds.get().length > 0) {
+          setPendingLayout(result);
+          return;
+        }
+
+        setEmbeds(createEmbedsFromSharedStreams(result.streams));
+        removeSharedLayoutHash();
+        setShowImportedNotice(true);
+        window.clearTimeout(noticeTimerRef.current);
+        noticeTimerRef.current = window.setTimeout(
+          () => setShowImportedNotice(false),
+          2500,
+        );
+      } finally {
+        workspaceHydrated.set(true);
       }
-
-      if (embeds.get().length > 0) {
-        setPendingLayout(result);
-        return;
-      }
-
-      setEmbeds(createEmbedsFromSharedStreams(result.streams));
-      removeSharedLayoutHash();
-      setShowImportedNotice(true);
-      window.clearTimeout(noticeTimerRef.current);
-      noticeTimerRef.current = window.setTimeout(
-        () => setShowImportedNotice(false),
-        2500,
-      );
     };
 
     readSharedLayout();

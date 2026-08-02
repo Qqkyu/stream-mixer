@@ -17,6 +17,7 @@ const MAX_GRID_ROW = 10_000;
 const MAX_GRID_HEIGHT = 1_000;
 
 export const embeds = atom<Array<Embed>>([]);
+export const workspaceHydrated = atom(false);
 
 export function addEmbed(embed: Embed) {
   embeds.set(embeds.get().toSpliced(embeds.get().length, 0, embed));

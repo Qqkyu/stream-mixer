@@ -70,6 +70,22 @@
   }
 }
 
+.stream-embed-grid > .workspace-loading-state {
+  display: none;
+}
+
+html[data-workspace-pending="true"]
+  .stream-embed-grid[data-workspace-hydrated="false"]
+  > .workspace-empty-state {
+  display: none;
+}
+
+html[data-workspace-pending="true"]
+  .stream-embed-grid[data-workspace-hydrated="false"]
+  > .workspace-loading-state {
+  display: grid;
+}
+
 @theme {
   --color-twitch: #8956fb;
   --color-youtube: #ff0000;

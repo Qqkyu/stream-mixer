@@ -18,6 +18,25 @@ const {
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || url);
+const workspaceLoadingScript = `(() => {
+  let workspacePending = new URLSearchParams(
+    window.location.hash.replace(/^#/, ""),
+  ).has("layout");
+
+  if (!workspacePending) {
+    try {
+      const savedWorkspace = JSON.parse(
+        window.localStorage.getItem("stream-embeds") ?? "[]",
+      );
+      workspacePending =
+        Array.isArray(savedWorkspace) && savedWorkspace.length > 0;
+    } catch {}
+  }
+
+  if (workspacePending) {
+    document.documentElement.dataset.workspacePending = "true";
+  }
+})();`;
 ---
 
 <!doctype html>
@@ -59,6 +78,12 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || url);
 
     <meta name="robots" content="index, follow" />
     <meta name="googlebot" content="index, follow" />
+
+    {
+      Astro.url.pathname === "/" && (
+        <script is:inline set:html={workspaceLoadingScript} />
+      )
+    }
 
     {
       Astro.url.pathname === "/" && (

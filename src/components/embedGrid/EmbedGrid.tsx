@@ -1,6 +1,6 @@
 import { useState, type FC, useRef, useEffect } from "react";
 import { useStore } from "@nanostores/react";
-import { embeds, setEmbeds } from "../../state/embedsStore";
+import { embeds, setEmbeds, workspaceHydrated } from "../../state/embedsStore";
 import { fullscreenEmbed } from "../../state/layoutStore";
 import { Embed } from "./embed/Embed";
 import type { GridStack as GridStackType, GridStackWidget } from "gridstack";
@@ -34,6 +34,7 @@ function getEmbedLabel(embed: EmbedType): string {
 
 const EmbedGrid: FC = () => {
   const embedsStore = useStore(embeds);
+  const workspaceHydratedStore = useStore(workspaceHydrated);
   const fullscreenEmbedStore = useStore(fullscreenEmbed);
   const compactModeStore = useStore(compactMode);
   const pageHeaderHeight = compactModeStore ? 0 : 64;
@@ -378,10 +379,13 @@ const EmbedGrid: FC = () => {
     <>
       <div
         ref={gridRef}
+        data-workspace-hydrated={workspaceHydratedStore}
         className={`grid-stack stream-embed-grid bg-base-200 ${workspaceMinHeightClass}`}
       >
         {!hasVisibleEmbeds && (
-          <div className={`hero bg-base-200 ${workspaceMinHeightClass}`}>
+          <div
+            className={`workspace-empty-state hero bg-base-200 ${workspaceMinHeightClass}`}
+          >
             <div className="hero-content text-center">
               <div className="max-w-4xl">
                 <h1 className="text-4xl font-bold md:text-5xl">
@@ -431,6 +435,16 @@ const EmbedGrid: FC = () => {
                 </p>
               </div>
             </div>
+          </div>
+        )}
+        {!workspaceHydratedStore && (
+          <div
+            className={`workspace-loading-state hero bg-base-200 ${workspaceMinHeightClass}`}
+            role="status"
+            aria-label="Loading saved workspace"
+          >
+            <span className="loading loading-dots loading-sm text-base-content/35" />
+            <span className="sr-only">Loading saved workspace</span>
           </div>
         )}
         {embedsStore.map((embed, idx) =>
