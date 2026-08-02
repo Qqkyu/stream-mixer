@@ -1,64 +1,61 @@
 # Stream Mix
 
-Stream Mix is a free browser-based multistream viewer for watching Twitch,
-YouTube, and Kick streams together in a customizable workspace. No account or
-download is required.
+[![CI](https://github.com/Qqkyu/stream-mixer/actions/workflows/ci.yml/badge.svg)](https://github.com/Qqkyu/stream-mixer/actions/workflows/ci.yml)
+
+Stream Mix is a free, desktop-first multistream viewer for watching Twitch,
+YouTube, and Kick together in one customizable browser workspace. It requires
+no account, installation, or browser extension.
 
 [Open Stream Mix](https://streammix.app) ·
 [Setup guide](https://streammix.app/guides/watch-multiple-streams/) ·
 [FAQ](https://streammix.app/faq/)
 
-[![Stream Mix demo showing streams being added, resized, arranged, and shared](docs/assets/stream-mix-demo.webp)](https://streammix.app)
+[![Stream Mix demo showing streams being added, arranged, minimized, restored, and shared](docs/assets/stream-mix-demo.webp)](https://streammix.app)
 
-## Features
+## Highlights
 
-- Mix Twitch, YouTube, and Kick embeds in one workspace.
-- Show a stream with chat, video only, or chat only.
-- Drag and resize windows in an expanding, automatically compacted grid.
-- Use compact mode to hide the site and embed headers while watching.
-- Open an embed in a fullscreen workspace view.
-- Minimize embeds to an auto-hiding shelf and restore them later.
-- Copy a link that recreates the current streams and grid layout.
-- Preserve streams, positions, sizes, minimized state, and interface preferences
-  in browser `localStorage`.
-- Fill available grid space automatically when adding or restoring windows.
+- Combine Twitch, YouTube, and Kick embeds in the same workspace.
+- Paste a supported URL or enter a channel name or YouTube video ID.
+- Show **Stream + Chat**, **Stream**, or **Chat** in each window.
+- Drag and resize windows in an expanding grid that compacts upward.
+- Minimize windows to an auto-hiding shelf or focus one in fullscreen view.
+- Use compact mode to hide the site and window headers while watching.
+- Copy a link that recreates the streams and their layout for someone else.
+- Restore streams, positions, sizes, minimized windows, and preferences after a
+  reload using browser storage.
+- See a platform-colored loading state while official embeds initialize.
+  Video players request muted autoplay so several streams can start together.
 
-Stream Mix uses each platform's official embedded player and chat. Playback,
-authentication, advertisements, and chat are provided by the respective
-platform rather than proxied by Stream Mix.
+Stream Mix embeds the players and chats supplied by each platform. Playback,
+accounts, advertisements, and chat behavior remain under the platform's and
+browser's control; Stream Mix does not proxy or restream broadcasts.
 
-## Using the app
+## Supported inputs
 
-1. Paste a Twitch, YouTube, or Kick URL. The platform is detected automatically.
-2. Alternatively, select a platform and enter its channel name or video ID.
-3. Choose **Stream + Chat**, **Stream**, or **Chat**.
-4. Select **Add**.
-5. Drag a window by its header and resize it using either bottom corner.
-6. Use the share button to copy a link to the current workspace.
+| Platform | Input                             | Available window modes      |
+| -------- | --------------------------------- | --------------------------- |
+| Twitch   | Channel name or channel URL       | Stream + Chat, Stream, Chat |
+| YouTube  | Video ID, watch URL, or share URL | Stream + Chat, Stream, Chat |
+| Kick     | Channel name or channel URL       | Stream + Chat, Stream, Chat |
 
-The window controls follow the familiar desktop convention:
+## Using the mixer
 
-- Red removes the embed.
-- Yellow minimizes it to the bottom shelf.
-- Green opens and closes the fullscreen workspace view.
+1. Paste a stream URL, channel name, or YouTube video ID into the header.
+2. Choose **Stream + Chat**, **Stream**, or **Chat**, then select **Add**.
+3. Drag windows by their headers and resize them from either bottom corner.
+4. Use the red control to remove a window, yellow to minimize it, and green to
+   focus it in the workspace.
+5. Use the share button to copy a link to the current layout.
 
 Move the pointer to the bottom edge to reveal minimized windows. In compact
-mode, move the pointer to the top edge to reveal the button that restores the
-site header.
-
-## Guides
-
-- [Watch multiple Twitch streams](https://streammix.app/guides/watch-multiple-twitch-streams/)
-- [Watch multiple YouTube live streams](https://streammix.app/guides/watch-multiple-youtube-streams/)
-- [Watch multiple Kick streams](https://streammix.app/guides/watch-multiple-kick-streams/)
-- [Read the complete setup guide](https://streammix.app/guides/watch-multiple-streams/)
+mode, move it to the top edge to reveal the button that restores the header.
 
 ## Local development
 
 Requirements:
 
-- Node.js 20 or newer
-- [pnpm](https://pnpm.io/)
+- Node.js 22.12 or newer
+- pnpm 9.12.1 (the version declared in `package.json`)
 
 Install dependencies and start the development server:
 
@@ -68,38 +65,57 @@ pnpm dev
 ```
 
 The app is served at `http://localhost:4321` by default. Twitch and YouTube
-embed URLs use the active hostname, so embeds work both locally and on the
-production domain.
+embed URLs use the active hostname, so embeds work locally and in production.
 
-Create a production build with:
+Run the production build and Playwright regression tests with:
+
+```sh
+pnpm test
+```
+
+If Playwright cannot find a browser, install Chromium once with:
+
+```sh
+pnpm exec playwright install chromium
+```
+
+Build without running browser tests using:
 
 ```sh
 pnpm build
 ```
 
-To regenerate the README demo, leave the local server running and use:
+CI runs the build and tests for pushes and pull requests to `main`. Dependabot
+checks npm dependencies weekly.
+
+## Regenerating the demo
+
+Leave the local server running, then run:
 
 ```sh
 pnpm capture:demo
 ```
 
-The capture command requires Google Chrome and FFmpeg. Set `CHROME_BIN`,
-`FFMPEG_BIN`, or `STREAM_MIX_DEMO_URL` to override their default commands or
-the local app URL.
+The command writes the README animation and its MP4 source to `docs/assets/`.
+It requires Google Chrome and FFmpeg. Set `CHROME_BIN`, `FFMPEG_BIN`, or
+`STREAM_MIX_DEMO_URL` to override the detected commands or local app URL.
 
 ## Tech stack
 
-- [Astro](https://astro.build)
-- [React](https://react.dev)
+- [Astro](https://astro.build) and [React](https://react.dev)
 - [GridStack](https://gridstackjs.com)
-- [Tailwind CSS](https://tailwindcss.com)
-- [DaisyUI](https://daisyui.com)
+- [Tailwind CSS](https://tailwindcss.com) and [DaisyUI](https://daisyui.com)
 - [Nanostores](https://github.com/nanostores/nanostores)
+- [Playwright](https://playwright.dev) for browser regression tests
 
 ## Data and privacy
 
 Layouts and preferences stay in the current browser's `localStorage`. Shared
 workspace links encode stream identifiers, display modes, and positions in the
-URL fragment; Stream Mix does not upload that data to a server. Stream Mix does
-not provide accounts or automatic synchronization between devices. Clearing
-site data resets the workspace.
+URL fragment; that data is not uploaded to Stream Mix. There are no Stream Mix
+accounts or automatic synchronization between devices. Clearing site data
+resets the workspace.
+
+## License
+
+Stream Mix is available under the [MIT License](LICENSE.txt).

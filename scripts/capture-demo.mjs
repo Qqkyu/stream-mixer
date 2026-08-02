@@ -558,17 +558,27 @@ async function main() {
     await setCursor(WIDTH / 2, HEIGHT / 2);
     await hold(1_200);
 
-    await replaceInput("LCK");
+    await replaceInput("Gorgc");
     await clickElement(addButton);
     await waitFor("document.querySelectorAll('.grid-stack-item').length === 1");
-    await hold(3_000);
+    await hold(1_500);
+    await waitFor(
+      'document.querySelectorAll("[data-embed-ready=true]").length === 1',
+      30_000,
+    );
+    await hold(700);
 
-    await replaceInput("https://www.youtube.com/watch?v=aqz-KE-bpKQ", false);
+    await replaceInput("https://www.youtube.com/watch?v=n61ULEU7CO0", false);
     await waitFor('document.querySelectorAll("select")[0].value === "youtube"');
     await chooseSelectValue(1, "video");
     await clickElement(addButton);
     await waitFor("document.querySelectorAll('.grid-stack-item').length === 2");
-    await hold(3_000);
+    await hold(1_200);
+    await waitFor(
+      'document.querySelectorAll("[data-embed-ready=true]").length === 2',
+      30_000,
+    );
+    await hold(700);
 
     await drag(
       `document.querySelectorAll(".grid-stack-item")[0]?.querySelector(".ui-resizable-se")`,
@@ -576,7 +586,7 @@ async function main() {
       96,
       1_000,
     );
-    await hold(700);
+    await hold(500);
 
     await drag(
       `document.querySelectorAll(".grid-stack-item")[1]?.querySelector(".grid-stack-item-drag-handle")`,
@@ -585,6 +595,31 @@ async function main() {
       1_100,
       { yOffset: 6 },
     );
+    await hold(500);
+
+    await clickElement(
+      `document.querySelectorAll(".grid-stack-item")[1]?.querySelector("button.bg-yellow-500")`,
+    );
+    await waitFor("document.querySelectorAll('.grid-stack-item').length === 1");
+    await hold(900);
+    await moveTo(WIDTH / 2, HEIGHT - 3);
+    await client.call("Input.dispatchMouseEvent", {
+      type: "mouseMoved",
+      x: WIDTH / 2,
+      y: HEIGHT - 3,
+    });
+    await waitFor(
+      'Number.parseFloat(getComputedStyle(document.querySelector("[data-minimized-shelf]")).opacity) > 0.9',
+    );
+    await hold(500);
+    await clickElement(
+      `document.querySelector('[data-minimized-shelf] button[title^="Restore"]')`,
+      false,
+    );
+    await evaluate(
+      `document.querySelector('[data-minimized-shelf] button[title^="Restore"]')?.click()`,
+    );
+    await waitFor("document.querySelectorAll('.grid-stack-item').length === 2");
     await hold(700);
 
     await clickElement(`document.querySelector('input.toggle')`);
