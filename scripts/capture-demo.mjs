@@ -8,7 +8,7 @@ import { join, resolve } from "node:path";
 const WIDTH = 1440;
 const HEIGHT = 810;
 const FRAME_RATE = 10;
-const APP_URL = process.env.STREAM_MIX_DEMO_URL ?? "http://localhost:4321/";
+const APP_URL_OVERRIDE = process.env.STREAM_MIX_DEMO_URL;
 const WINDOWS_CHROME =
   "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe";
 const CHROME_BIN =
@@ -198,11 +198,74 @@ function runCommand(command, args) {
   });
 }
 
-async function main() {
-  const response = await fetch(APP_URL);
-  if (!response.ok) {
-    throw new Error(`${APP_URL} responded with HTTP ${response.status}`);
+async function waitForApp(url, appProcess, getDiagnostics) {
+  const deadline = Date.now() + 20_000;
+
+  while (Date.now() < deadline) {
+    if (appProcess?.exitCode != null) {
+      const diagnostics = getDiagnostics().trim();
+      throw new Error(
+        `Production preview exited with code ${appProcess.exitCode}${diagnostics ? `\n${diagnostics}` : ""}`,
+      );
+    }
+
+    try {
+      const response = await fetch(url);
+      if (response.ok) return;
+    } catch {
+      // The production preview is still starting.
+    }
+
+    await sleep(100);
   }
+
+  const diagnostics = getDiagnostics().trim();
+  throw new Error(
+    `Timed out waiting for ${url}${diagnostics ? `\n${diagnostics}` : ""}`,
+  );
+}
+
+async function startCaptureApp() {
+  if (APP_URL_OVERRIDE) {
+    await waitForApp(APP_URL_OVERRIDE, undefined, () => "");
+    return { appUrl: APP_URL_OVERRIDE, previewProcess: undefined };
+  }
+
+  console.log("Building the production app for demo capture...");
+  await runCommand("pnpm", ["build"]);
+
+  const previewPort = await findAvailablePort();
+  const appUrl = `http://localhost:${previewPort}/`;
+  const previewProcess = spawn(
+    "pnpm",
+    [
+      "exec",
+      "astro",
+      "preview",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      String(previewPort),
+    ],
+    { stdio: ["ignore", "ignore", "pipe"] },
+  );
+  let previewDiagnostics = "";
+  previewProcess.stderr.on("data", (data) => {
+    previewDiagnostics = `${previewDiagnostics}${data}`.slice(-4_000);
+  });
+
+  try {
+    await waitForApp(appUrl, previewProcess, () => previewDiagnostics);
+  } catch (error) {
+    previewProcess.kill("SIGTERM");
+    throw error;
+  }
+
+  return { appUrl, previewProcess };
+}
+
+async function main() {
+  const { appUrl, previewProcess } = await startCaptureApp();
 
   const debugPort = await findAvailablePort();
   const connectionPort = USING_WINDOWS_CHROME
@@ -291,7 +354,7 @@ async function main() {
       media: "screen",
       features: [{ name: "prefers-color-scheme", value: "dark" }],
     });
-    await client.call("Page.navigate", { url: APP_URL });
+    await client.call("Page.navigate", { url: appUrl });
 
     const evaluate = async (expression) => {
       const result = await client.call("Runtime.evaluate", {
@@ -568,7 +631,7 @@ async function main() {
     );
     await hold(700);
 
-    await replaceInput("https://www.youtube.com/watch?v=n61ULEU7CO0", false);
+    await replaceInput("https://www.youtube.com/watch?v=zWUaILxNF9Y", false);
     await waitFor('document.querySelectorAll("select")[0].value === "youtube"');
     await chooseSelectValue(1, "video");
     await clickElement(addButton);
@@ -696,6 +759,9 @@ async function main() {
   } finally {
     client?.close();
     debugProxy?.kill("SIGTERM");
+    if (previewProcess?.exitCode == null) {
+      previewProcess.kill("SIGTERM");
+    }
     if (chromeProcess.exitCode == null) {
       chromeProcess.kill("SIGTERM");
       await Promise.race([

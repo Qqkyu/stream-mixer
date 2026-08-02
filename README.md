@@ -90,15 +90,16 @@ checks npm dependencies weekly.
 
 ## Regenerating the demo
 
-Leave the local server running, then run:
+Run:
 
 ```sh
 pnpm capture:demo
 ```
 
-The command writes the README animation and its MP4 source to `docs/assets/`.
-It requires Google Chrome and FFmpeg. Set `CHROME_BIN`, `FFMPEG_BIN`, or
-`STREAM_MIX_DEMO_URL` to override the detected commands or local app URL.
+The command creates a production build, starts a temporary preview server, and
+writes the README animation and its MP4 source to `docs/assets/`. It requires
+Google Chrome and FFmpeg. Set `CHROME_BIN`, `FFMPEG_BIN`, or
+`STREAM_MIX_DEMO_URL` to override the detected commands or captured URL.
 
 ## Tech stack
 
