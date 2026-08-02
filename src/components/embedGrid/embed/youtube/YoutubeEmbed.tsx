@@ -20,7 +20,7 @@ const YoutubeEmbed: FC<Props> = ({ type, channel }) => {
 
     return (
       <iframe
-        src={`https://www.youtube.com/live_chat?v=${channel}&embed_domain=${encodeURIComponent(hostname)}`}
+        src={`https://www.youtube.com/live_chat?v=${channel}&embed_domain=${encodeURIComponent(hostname)}&dark_theme=1`}
         width="100%"
         height="100%"
       ></iframe>
@@ -36,7 +36,7 @@ const YoutubeEmbed: FC<Props> = ({ type, channel }) => {
 
         {hostname && (
           <iframe
-            src={`https://www.youtube.com/live_chat?v=${channel}&embed_domain=${encodeURIComponent(hostname)}`}
+            src={`https://www.youtube.com/live_chat?v=${channel}&embed_domain=${encodeURIComponent(hostname)}&dark_theme=1`}
             width="100%"
             height="100%"
           ></iframe>
