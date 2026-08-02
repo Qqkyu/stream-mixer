@@ -1,17 +1,26 @@
 import { atom } from "nanostores";
+import {
+  getStorageItem,
+  removeStorageItem,
+  setStorageItem,
+} from "./browserStorage";
 
 const COMPACT_MODE_KEY = "compact-mode";
 
 export const compactMode = atom(false);
 
 export function hydratePreferences(): void {
-  compactMode.set(localStorage.getItem(COMPACT_MODE_KEY) === "true");
+  const storedCompactMode = getStorageItem(COMPACT_MODE_KEY);
+  if (storedCompactMode === "true" || storedCompactMode === "false") {
+    compactMode.set(storedCompactMode === "true");
+    return;
+  }
+
+  compactMode.set(false);
+  if (storedCompactMode != null) removeStorageItem(COMPACT_MODE_KEY);
 }
 
 export function setCompactMode(compact: boolean): void {
   compactMode.set(compact);
-
-  if (typeof window !== "undefined") {
-    localStorage.setItem(COMPACT_MODE_KEY, String(compact));
-  }
+  setStorageItem(COMPACT_MODE_KEY, String(compact));
 }
