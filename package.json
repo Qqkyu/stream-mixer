@@ -6,6 +6,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "test": "astro build && playwright test",
     "capture:demo": "node scripts/capture-demo.mjs",
     "astro": "astro"
   },
@@ -24,6 +25,7 @@
     "tailwindcss": "4.3.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "daisyui": "5.1.13",
     "prettier": "3.6.2",
     "prettier-plugin-astro": "0.14.1"

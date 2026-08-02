@@ -373,6 +373,8 @@ const EmbedGrid: FC = () => {
 
   const minimizedEmbeds = embedsStore.filter(({ minimized }) => minimized);
   const hasVisibleEmbeds = embedsStore.some(({ minimized }) => !minimized);
+  const gridIsLoading =
+    workspaceHydratedStore && hasVisibleEmbeds && !isGridReady;
   const minimizedShelfIsVisible = showMinimizedShelf || showMinimizedShelfHint;
 
   return (
@@ -380,6 +382,7 @@ const EmbedGrid: FC = () => {
       <div
         ref={gridRef}
         data-workspace-hydrated={workspaceHydratedStore}
+        data-grid-loading={gridIsLoading}
         className={`grid-stack stream-embed-grid bg-base-200 ${workspaceMinHeightClass}`}
       >
         {!hasVisibleEmbeds && (
@@ -437,7 +440,7 @@ const EmbedGrid: FC = () => {
             </div>
           </div>
         )}
-        {!workspaceHydratedStore && (
+        {(!workspaceHydratedStore || gridIsLoading) && (
           <div
             className={`workspace-loading-state hero bg-base-200 ${workspaceMinHeightClass}`}
             role="status"
@@ -512,7 +515,7 @@ const EmbedGrid: FC = () => {
               <div
                 className={`grid-stack-item-content ${compactModeStore ? "" : "border-t border-base-300"}`}
               >
-                <Embed {...embed} />
+                {isGridReady && <Embed {...embed} />}
               </div>
             </div>
           ),

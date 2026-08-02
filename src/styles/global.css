@@ -86,6 +86,14 @@ html[data-workspace-pending="true"]
   display: grid;
 }
 
+.stream-embed-grid[data-grid-loading="true"] > .workspace-loading-state {
+  display: grid;
+}
+
+.stream-embed-grid[data-grid-loading="true"] > .grid-stack-item {
+  visibility: hidden;
+}
+
 @theme {
   --color-twitch: #8956fb;
   --color-youtube: #ff0000;
