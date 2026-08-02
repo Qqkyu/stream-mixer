@@ -26,6 +26,7 @@ export default defineConfig({
         resources: [
           { resource: "'self'", kind: "element" },
           { resource: "https://embed.twitch.tv", kind: "element" },
+          { resource: "https://www.youtube.com", kind: "element" },
           { resource: "'none'", kind: "attribute" },
         ],
       },
