@@ -16,6 +16,7 @@ type TwitchPlayer = {
 const STARTUP_FALLBACK_MS = 12_000;
 const PLAYBACK_STABILITY_MS = 1_500;
 const PLAYBACK_RETRY_MS = 500;
+const HOVER_PAUSE_RECOVERY_WINDOW_MS = 1_000;
 
 const TwitchPlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
   const playerContainerId = useId();
@@ -24,12 +25,24 @@ const TwitchPlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
   useEffect(() => {
     if (!hostname) return;
 
+    const playerContainer = document.getElementById(playerContainerId);
+    if (!playerContainer) return;
+
     let active = true;
     let playbackCheckTimeout: number | undefined;
     let playbackRecoveryTimeout: number | undefined;
     let playbackStableTimeout: number | undefined;
     let startupFallbackTimeout: number | undefined;
     let readyReported = false;
+    let hoverSequence = 0;
+    let recoveredHoverSequence = 0;
+    let lastPointerEnterAt = Number.NEGATIVE_INFINITY;
+
+    const handlePointerEnter = () => {
+      hoverSequence += 1;
+      lastPointerEnterAt = performance.now();
+    };
+    playerContainer.addEventListener("pointerenter", handlePointerEnter);
 
     const stabilizePlayback = (player: TwitchPlayer) => {
       const reportReady = () => {
@@ -87,7 +100,18 @@ const TwitchPlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
       };
 
       const handlePause = () => {
-        if (!active || readyReported) return;
+        if (!active) return;
+
+        if (readyReported) {
+          const pauseFollowedHover =
+            performance.now() - lastPointerEnterAt <=
+            HOVER_PAUSE_RECOVERY_WINDOW_MS;
+          if (pauseFollowedHover && recoveredHoverSequence !== hoverSequence) {
+            recoveredHoverSequence = hoverSequence;
+            requestMutedPlayback();
+          }
+          return;
+        }
 
         window.clearTimeout(playbackStableTimeout);
         playbackStableTimeout = undefined;
@@ -145,6 +169,7 @@ const TwitchPlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
 
     return () => {
       active = false;
+      playerContainer.removeEventListener("pointerenter", handlePointerEnter);
       window.clearTimeout(playbackCheckTimeout);
       window.clearTimeout(playbackRecoveryTimeout);
       window.clearTimeout(playbackStableTimeout);

@@ -361,6 +361,48 @@ test("waits for every Twitch player to sustain autoplay independently", async ({
   });
   await expect(firstEmbed).toHaveAttribute("data-embed-ready", "true");
 
+  const playRequestsBeforeHover = await page.evaluate(
+    () =>
+      (
+        window as typeof window & {
+          __getTwitchStates?: () => Array<{ playRequests: number }>;
+        }
+      ).__getTwitchStates?.()[0]?.playRequests ?? 0,
+  );
+  await page
+    .locator('iframe[data-test-twitch-player="0"]')
+    .locator("..")
+    .dispatchEvent("pointerenter");
+  await page.evaluate(() => {
+    (
+      window as typeof window & {
+        __emitTwitchEvent?: (index: number, event: string) => void;
+      }
+    ).__emitTwitchEvent?.(0, "pause");
+  });
+
+  // Activating Twitch's controls on hover can emit a provider PAUSE after
+  // autoplay has stabilized. Recover this hover transition once.
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (
+            window as typeof window & {
+              __getTwitchStates?: () => Array<{ playRequests: number }>;
+            }
+          ).__getTwitchStates?.()[0]?.playRequests,
+      ),
+    )
+    .toBeGreaterThan(playRequestsBeforeHover);
+  await page.evaluate(() => {
+    (
+      window as typeof window & {
+        __emitTwitchEvent?: (index: number, event: string) => void;
+      }
+    ).__emitTwitchEvent?.(0, "playing");
+  });
+
   const states = await page.evaluate(() =>
     (
       window as typeof window & {
