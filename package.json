@@ -11,6 +11,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "test": "astro build && playwright test",
+    "test:live:twitch": "node scripts/verify-live-twitch.mjs",
     "capture:demo": "node scripts/capture-demo.mjs",
     "astro": "astro"
   },

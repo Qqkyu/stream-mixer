@@ -13,7 +13,7 @@ export default defineConfig({
         "default-src 'self'",
         "base-uri 'self'",
         "object-src 'none'",
-        "frame-src https://embed.twitch.tv https://player.twitch.tv https://www.twitch.tv https://player.kick.com https://kick.com https://www.youtube.com",
+        "frame-src https://player.twitch.tv https://www.twitch.tv https://player.kick.com https://kick.com https://www.youtube.com",
         "connect-src 'self' https: wss:",
         "img-src 'self' data: blob:",
         "font-src 'self' data:",
@@ -25,7 +25,6 @@ export default defineConfig({
       scriptDirective: {
         resources: [
           { resource: "'self'", kind: "element" },
-          { resource: "https://embed.twitch.tv", kind: "element" },
           { resource: "https://www.youtube.com", kind: "element" },
           { resource: "'none'", kind: "attribute" },
         ],

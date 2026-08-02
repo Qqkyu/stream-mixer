@@ -13,6 +13,12 @@ const SAVED_WORKSPACE = [
 test("restores saved geometry before mounting the stream player", async ({
   page,
 }) => {
+  await page.route("https://player.twitch.tv/**", async (route) => {
+    await route.fulfill({
+      contentType: "text/html",
+      body: "<!doctype html><title>Fake Twitch player</title>",
+    });
+  });
   await page.route(
     "https://www.twitch.tv/embed/gorgc/chat**",
     async (route) => {
@@ -35,89 +41,13 @@ test("restores saved geometry before mounting the stream player", async ({
 
   await page.addInitScript((workspace) => {
     window.localStorage.setItem("stream-embeds", JSON.stringify(workspace));
-
-    const testWindow = window as typeof window & {
-      Twitch?: unknown;
-      __twitchEmbedMounts?: number;
-      __twitchEmbedOptions?: unknown;
-      __markTwitchReady?: () => void;
-      __twitchMuted?: boolean;
-      __twitchPlayRequests?: number;
-      __markTwitchPlaying?: () => void;
-      __markTwitchPaused?: () => void;
-    };
-    testWindow.__twitchEmbedMounts = 0;
-
-    class FakeTwitchEmbed {
-      static READY = "ready";
-      static VIDEO_READY = "video-ready";
-      static PLAYING = "playing";
-      static PAUSE = "pause";
-      static PLAYBACK_BLOCKED = "playback-blocked";
-      static OFFLINE = "offline";
-
-      private listeners: Record<string, () => void> = {};
-      private paused = true;
-
-      constructor(containerId: string, options: unknown) {
-        testWindow.__twitchEmbedMounts =
-          (testWindow.__twitchEmbedMounts ?? 0) + 1;
-        testWindow.__twitchEmbedOptions = options;
-
-        const iframe = document.createElement("iframe");
-        iframe.dataset.testTwitchEmbed = "true";
-        iframe.src = "about:blank#twitch-test";
-        iframe.style.width = "100%";
-        iframe.style.height = "100%";
-        iframe.style.border = "0";
-        document.getElementById(containerId)?.append(iframe);
-
-        testWindow.__markTwitchReady = () => {
-          this.listeners[FakeTwitchEmbed.READY]?.();
-        };
-        testWindow.__markTwitchPlaying = () => {
-          this.paused = false;
-          this.listeners[FakeTwitchEmbed.PLAYING]?.();
-        };
-        testWindow.__markTwitchPaused = () => {
-          this.paused = true;
-          this.listeners[FakeTwitchEmbed.PAUSE]?.();
-        };
-      }
-
-      addEventListener(event: string, listener: () => void) {
-        this.listeners[event] = listener;
-      }
-
-      getPlayer() {
-        return this;
-      }
-
-      setMuted(muted: boolean) {
-        testWindow.__twitchMuted = muted;
-      }
-
-      play() {
-        testWindow.__twitchPlayRequests =
-          (testWindow.__twitchPlayRequests ?? 0) + 1;
-      }
-
-      isPaused() {
-        return this.paused;
-      }
-    }
-
-    testWindow.Twitch = {
-      Embed: FakeTwitchEmbed,
-      Player: FakeTwitchEmbed,
-    };
   }, SAVED_WORKSPACE);
 
   await page.goto("/", { waitUntil: "domcontentloaded" });
 
   const grid = page.locator(".stream-embed-grid");
   const panel = page.locator("#embed-startup-test");
-  const player = page.locator('iframe[data-test-twitch-embed="true"]');
+  const player = panel.locator('iframe[src^="https://player.twitch.tv/"]');
   const embed = panel.locator("[data-embed-ready]");
 
   await expect(panel).toBeAttached();
@@ -130,7 +60,7 @@ test("restores saved geometry before mounting the stream player", async ({
   await expect(grid).toHaveAttribute("data-grid-loading", "false");
   await expect(panel).toHaveCSS("visibility", "visible");
   await expect(player).toHaveCount(1);
-  await expect(embed).toHaveAttribute("data-embed-ready", "false");
+  await expect(embed).toHaveAttribute("data-embed-ready", "true");
 
   const panelBounds = await panel.boundingBox();
   const playerBounds = await player.boundingBox();
@@ -141,62 +71,24 @@ test("restores saved geometry before mounting the stream player", async ({
 
   await page.waitForTimeout(500);
   await expect(player).toHaveCount(1);
-  await expect
-    .poll(() =>
-      page.evaluate(
-        () =>
-          (window as typeof window & { __twitchEmbedMounts?: number })
-            .__twitchEmbedMounts,
-      ),
-    )
-    .toBe(1);
 
-  const twitchOptions = await page.evaluate(
-    () =>
-      (
-        window as typeof window & {
-          __twitchEmbedOptions?: unknown;
-        }
-      ).__twitchEmbedOptions,
-  );
-  expect(twitchOptions).toMatchObject({ autoplay: true, muted: true });
-
-  await page.evaluate(() => {
-    (
-      window as typeof window & {
-        __markTwitchReady?: () => void;
-      }
-    ).__markTwitchReady?.();
-  });
-  await page.evaluate(() => {
-    (
-      window as typeof window & {
-        __markTwitchPlaying?: () => void;
-      }
-    ).__markTwitchPlaying?.();
-  });
-  await expect(embed).toHaveAttribute("data-embed-ready", "true");
-
-  const twitchPlaybackState = await page.evaluate(() => {
-    const testWindow = window as typeof window & {
-      __twitchMuted?: boolean;
-      __twitchPlayRequests?: number;
-    };
-
-    return {
-      muted: testWindow.__twitchMuted,
-      playRequests: testWindow.__twitchPlayRequests,
-    };
-  });
-  expect(twitchPlaybackState).toEqual({
-    muted: true,
-    playRequests: 1,
-  });
+  const playerUrl = new URL((await player.getAttribute("src")) ?? "");
+  expect(playerUrl.searchParams.get("channel")).toBe("gorgc");
+  expect(playerUrl.searchParams.get("parent")).toBe("127.0.0.1");
+  expect(playerUrl.searchParams.get("autoplay")).toBe("true");
+  expect(playerUrl.searchParams.get("muted")).toBe("true");
+  await expect(player).toHaveAttribute("allow", "autoplay; fullscreen");
 });
 
-test("waits for every Twitch player to sustain autoplay independently", async ({
+test("uses independent direct Twitch players without SDK playback commands", async ({
   page,
 }) => {
+  await page.route("https://player.twitch.tv/**", async (route) => {
+    await route.fulfill({
+      contentType: "text/html",
+      body: "<!doctype html><title>Fake Twitch player</title>",
+    });
+  });
   await page.route("https://www.twitch.tv/embed/**/chat**", async (route) => {
     await route.fulfill({
       contentType: "text/html",
@@ -224,75 +116,6 @@ test("waits for every Twitch player to sustain autoplay independently", async ({
         },
       ]),
     );
-
-    type FakeState = {
-      muted: boolean;
-      paused: boolean;
-      playRequests: number;
-    };
-    const testWindow = window as typeof window & {
-      Twitch?: unknown;
-      __emitTwitchEvent?: (index: number, event: string) => void;
-      __getTwitchStates?: () => FakeState[];
-    };
-    const players: FakeTwitchPlayer[] = [];
-
-    class FakeTwitchPlayer {
-      static READY = "ready";
-      static PLAYING = "playing";
-      static PAUSE = "pause";
-      static PLAYBACK_BLOCKED = "playback-blocked";
-      static OFFLINE = "offline";
-
-      private listeners: Record<string, () => void> = {};
-      private state: FakeState = {
-        muted: false,
-        paused: true,
-        playRequests: 0,
-      };
-
-      constructor(containerId: string) {
-        players.push(this);
-
-        const iframe = document.createElement("iframe");
-        iframe.dataset.testTwitchPlayer = String(players.length - 1);
-        iframe.src = `about:blank#twitch-${players.length}`;
-        document.getElementById(containerId)?.append(iframe);
-      }
-
-      addEventListener(event: string, listener: () => void) {
-        this.listeners[event] = listener;
-      }
-
-      setMuted(muted: boolean) {
-        this.state.muted = muted;
-      }
-
-      play() {
-        this.state.playRequests += 1;
-      }
-
-      isPaused() {
-        return this.state.paused;
-      }
-
-      emit(event: string) {
-        if (event === FakeTwitchPlayer.PLAYING) this.state.paused = false;
-        if (event === FakeTwitchPlayer.PAUSE) this.state.paused = true;
-        this.listeners[event]?.();
-      }
-
-      snapshot(): FakeState {
-        return { ...this.state };
-      }
-    }
-
-    testWindow.__emitTwitchEvent = (index, event) => {
-      players[index]?.emit(event);
-    };
-    testWindow.__getTwitchStates = () =>
-      players.map((player) => player.snapshot());
-    testWindow.Twitch = { Player: FakeTwitchPlayer };
   });
 
   await page.goto("/", { waitUntil: "domcontentloaded" });
@@ -304,120 +127,24 @@ test("waits for every Twitch player to sustain autoplay independently", async ({
     .locator("#embed-twitch-two")
     .locator("[data-embed-ready]");
 
-  await expect(page.locator("iframe[data-test-twitch-player]")).toHaveCount(2);
-  await expect(firstEmbed).toHaveAttribute("data-embed-ready", "false");
-  await expect(secondEmbed).toHaveAttribute("data-embed-ready", "false");
-
-  await page.evaluate(() => {
-    const emit = (
-      window as typeof window & {
-        __emitTwitchEvent?: (index: number, event: string) => void;
-      }
-    ).__emitTwitchEvent;
-    emit?.(0, "ready");
-    emit?.(1, "ready");
-    emit?.(0, "playing");
-    emit?.(1, "playing");
-  });
-
-  // The SDK can briefly claim playback started before pausing again. Neither
-  // loader should disappear on that first transient PLAYING event.
-  await page.waitForTimeout(750);
-  await expect(firstEmbed).toHaveAttribute("data-embed-ready", "false");
-  await expect(secondEmbed).toHaveAttribute("data-embed-ready", "false");
-
-  await page.evaluate(() => {
-    (
-      window as typeof window & {
-        __emitTwitchEvent?: (index: number, event: string) => void;
-      }
-    ).__emitTwitchEvent?.(0, "pause");
-  });
-
-  await expect
-    .poll(() =>
-      page.evaluate(
-        () =>
-          (
-            window as typeof window & {
-              __getTwitchStates?: () => Array<{ playRequests: number }>;
-            }
-          ).__getTwitchStates?.()[0]?.playRequests,
-      ),
-    )
-    .toBeGreaterThan(1);
-  await expect(firstEmbed).toHaveAttribute("data-embed-ready", "false");
-
-  // The second player has remained playing, so it can become ready without
-  // waiting for or being affected by the first player.
+  const players = page.locator('iframe[src^="https://player.twitch.tv/"]');
+  await expect(players).toHaveCount(2);
+  await expect(firstEmbed).toHaveAttribute("data-embed-ready", "true");
   await expect(secondEmbed).toHaveAttribute("data-embed-ready", "true");
 
-  await page.evaluate(() => {
-    (
-      window as typeof window & {
-        __emitTwitchEvent?: (index: number, event: string) => void;
-      }
-    ).__emitTwitchEvent?.(0, "playing");
-  });
-  await expect(firstEmbed).toHaveAttribute("data-embed-ready", "true");
-
-  const playRequestsBeforeHover = await page.evaluate(
-    () =>
-      (
-        window as typeof window & {
-          __getTwitchStates?: () => Array<{ playRequests: number }>;
-        }
-      ).__getTwitchStates?.()[0]?.playRequests ?? 0,
-  );
-  await page
-    .locator('iframe[data-test-twitch-player="0"]')
-    .locator("..")
-    .dispatchEvent("pointerenter");
-  await page.evaluate(() => {
-    (
-      window as typeof window & {
-        __emitTwitchEvent?: (index: number, event: string) => void;
-      }
-    ).__emitTwitchEvent?.(0, "pause");
-  });
-
-  // Activating Twitch's controls on hover can emit a provider PAUSE after
-  // autoplay has stabilized. Recover this hover transition once.
-  await expect
-    .poll(() =>
-      page.evaluate(
-        () =>
-          (
-            window as typeof window & {
-              __getTwitchStates?: () => Array<{ playRequests: number }>;
-            }
-          ).__getTwitchStates?.()[0]?.playRequests,
-      ),
+  const playerUrls = (
+    await players.evaluateAll((iframes) =>
+      iframes.map((iframe) => (iframe as HTMLIFrameElement).src),
     )
-    .toBeGreaterThan(playRequestsBeforeHover);
-  await page.evaluate(() => {
-    (
-      window as typeof window & {
-        __emitTwitchEvent?: (index: number, event: string) => void;
-      }
-    ).__emitTwitchEvent?.(0, "playing");
-  });
-
-  const states = await page.evaluate(() =>
-    (
-      window as typeof window & {
-        __getTwitchStates?: () => Array<{
-          muted: boolean;
-          paused: boolean;
-          playRequests: number;
-        }>;
-      }
-    ).__getTwitchStates?.(),
-  );
-  expect(states).toEqual([
-    expect.objectContaining({ muted: true, paused: false }),
-    expect.objectContaining({ muted: true, paused: false }),
+  ).map((src) => new URL(src));
+  expect(playerUrls.map((url) => url.searchParams.get("channel"))).toEqual([
+    "channel-one",
+    "channel-two",
   ]);
+  for (const url of playerUrls) {
+    expect(url.searchParams.get("autoplay")).toBe("true");
+    expect(url.searchParams.get("muted")).toBe("true");
+  }
 });
 
 test("keeps YouTube covered until muted autoplay is requested", async ({
