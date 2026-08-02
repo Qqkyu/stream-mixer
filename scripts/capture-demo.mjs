@@ -621,7 +621,7 @@ async function main() {
     await setCursor(WIDTH / 2, HEIGHT / 2);
     await hold(1_200);
 
-    await replaceInput("Gorgc");
+    await replaceInput("LCK");
     await clickElement(addButton);
     await waitFor("document.querySelectorAll('.grid-stack-item').length === 1");
     await hold(1_500);
