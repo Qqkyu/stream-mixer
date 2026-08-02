@@ -29,13 +29,15 @@ test("restores saved geometry before mounting the stream player", async ({
     const testWindow = window as typeof window & {
       Twitch?: unknown;
       __twitchEmbedMounts?: number;
+      __twitchEmbedOptions?: unknown;
     };
     testWindow.__twitchEmbedMounts = 0;
 
     class FakeTwitchEmbed {
-      constructor(containerId: string) {
+      constructor(containerId: string, options: unknown) {
         testWindow.__twitchEmbedMounts =
           (testWindow.__twitchEmbedMounts ?? 0) + 1;
+        testWindow.__twitchEmbedOptions = options;
 
         const iframe = document.createElement("iframe");
         iframe.dataset.testTwitchEmbed = "true";
@@ -88,4 +90,14 @@ test("restores saved geometry before mounting the stream player", async ({
       ),
     )
     .toBe(1);
+
+  const twitchOptions = await page.evaluate(
+    () =>
+      (
+        window as typeof window & {
+          __twitchEmbedOptions?: unknown;
+        }
+      ).__twitchEmbedOptions,
+  );
+  expect(twitchOptions).toMatchObject({ autoplay: true, muted: true });
 });

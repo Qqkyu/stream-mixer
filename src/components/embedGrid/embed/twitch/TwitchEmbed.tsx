@@ -19,6 +19,8 @@ const TwitchEmbed: FC<Props> = ({ type, channel }) => {
       height: "100%",
       channel,
       parent: [hostname],
+      autoplay: true,
+      muted: true,
     };
 
     loadTwitchEmbedSdk()
