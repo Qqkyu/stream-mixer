@@ -10,6 +10,19 @@ type Props = Pick<Embed, "type" | "channel"> & { onReady: () => void };
 
 type PlayerProps = Pick<Props, "channel" | "onReady">;
 
+const YOUTUBE_PLAYING_STATE = 1;
+
+function requestMutedPlayback(player: YoutubePlayer) {
+  player
+    .getIframe()
+    .setAttribute(
+      "allow",
+      "autoplay; encrypted-media; picture-in-picture; fullscreen",
+    );
+  player.mute();
+  player.playVideo();
+}
+
 const YoutubePlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
   const playerContainerId = useId();
 
@@ -37,20 +50,32 @@ const YoutubePlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
             onReady: ({ target }) => {
               if (!active) return;
 
-              target
-                .getIframe()
-                .setAttribute(
-                  "allow",
-                  "autoplay; encrypted-media; picture-in-picture; fullscreen",
-                );
-              target.mute();
-              target.playVideo();
+              requestMutedPlayback(target);
               onReady();
             },
-            onAutoplayBlocked: onReady,
+            onStateChange: ({ data, target }) => {
+              if (!active || data !== YOUTUBE_PLAYING_STATE) return;
+
+              // YouTube can update its media state after onReady. Reassert the
+              // startup mute once playback actually begins.
+              target.mute();
+            },
+            onAutoplayBlocked: ({ target }) => {
+              if (!active) return;
+
+              requestMutedPlayback(target);
+              onReady();
+            },
             onError: onReady,
           },
         });
+
+        player
+          .getIframe()
+          .setAttribute(
+            "allow",
+            "autoplay; encrypted-media; picture-in-picture; fullscreen",
+          );
       })
       .catch((error) => {
         console.error(error);
@@ -87,14 +112,17 @@ const YoutubeEmbed: FC<Props> = ({ type, channel, onReady }) => {
     },
     [onReady, readinessKey, type],
   );
+  const markVideoReady = useCallback(
+    () => markPartReady("video"),
+    [markPartReady],
+  );
+  const markChatReady = useCallback(
+    () => markPartReady("chat"),
+    [markPartReady],
+  );
 
   if (type === "video") {
-    return (
-      <YoutubePlayerEmbed
-        channel={channel}
-        onReady={() => markPartReady("video")}
-      />
-    );
+    return <YoutubePlayerEmbed channel={channel} onReady={markVideoReady} />;
   }
 
   if (type === "chat") {
@@ -106,17 +134,14 @@ const YoutubeEmbed: FC<Props> = ({ type, channel, onReady }) => {
         width="100%"
         height="100%"
         title={`${channel} YouTube chat`}
-        onLoad={() => markPartReady("chat")}
+        onLoad={markChatReady}
       />
     );
   }
 
   return (
     <div className="flex h-full w-full">
-      <YoutubePlayerEmbed
-        channel={channel}
-        onReady={() => markPartReady("video")}
-      />
+      <YoutubePlayerEmbed channel={channel} onReady={markVideoReady} />
 
       {hostname && (
         <iframe
@@ -124,7 +149,7 @@ const YoutubeEmbed: FC<Props> = ({ type, channel, onReady }) => {
           width="100%"
           height="100%"
           title={`${channel} YouTube chat`}
-          onLoad={() => markPartReady("chat")}
+          onLoad={markChatReady}
         />
       )}
     </div>

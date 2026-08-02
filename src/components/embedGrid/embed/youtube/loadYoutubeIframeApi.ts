@@ -8,6 +8,7 @@ export type YoutubePlayer = {
 };
 
 type YoutubePlayerEvent = { target: YoutubePlayer };
+type YoutubePlayerStateEvent = YoutubePlayerEvent & { data: number };
 
 export type YoutubePlayerOptions = {
   width: string;
@@ -20,7 +21,8 @@ export type YoutubePlayerOptions = {
   };
   events: {
     onReady: (event: YoutubePlayerEvent) => void;
-    onAutoplayBlocked: () => void;
+    onStateChange: (event: YoutubePlayerStateEvent) => void;
+    onAutoplayBlocked: (event: YoutubePlayerEvent) => void;
     onError: () => void;
   };
 };

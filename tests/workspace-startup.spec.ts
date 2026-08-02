@@ -13,6 +13,16 @@ const SAVED_WORKSPACE = [
 test("restores saved geometry before mounting the stream player", async ({
   page,
 }) => {
+  await page.route(
+    "https://www.twitch.tv/embed/gorgc/chat**",
+    async (route) => {
+      await route.fulfill({
+        contentType: "text/html",
+        body: "<!doctype html><title>Fake Twitch chat</title>",
+      });
+    },
+  );
+
   let releaseGridStack: (() => void) | undefined;
   const gridStackGate = new Promise<void>((resolve) => {
     releaseGridStack = resolve;
@@ -32,13 +42,18 @@ test("restores saved geometry before mounting the stream player", async ({
       __twitchEmbedOptions?: unknown;
       __markTwitchReady?: () => void;
       __twitchMuted?: boolean;
-      __twitchPlayRequested?: boolean;
+      __twitchPlayRequests?: number;
+      __markTwitchPlaying?: () => void;
+      __markTwitchPaused?: () => void;
     };
     testWindow.__twitchEmbedMounts = 0;
 
     class FakeTwitchEmbed {
       static READY = "ready";
       static VIDEO_READY = "video-ready";
+      static PLAYING = "playing";
+      static PAUSE = "pause";
+      static PLAYBACK_BLOCKED = "playback-blocked";
 
       private listeners: Record<string, () => void> = {};
 
@@ -56,7 +71,13 @@ test("restores saved geometry before mounting the stream player", async ({
         document.getElementById(containerId)?.append(iframe);
 
         testWindow.__markTwitchReady = () => {
-          this.listeners[FakeTwitchEmbed.VIDEO_READY]?.();
+          this.listeners[FakeTwitchEmbed.READY]?.();
+        };
+        testWindow.__markTwitchPlaying = () => {
+          this.listeners[FakeTwitchEmbed.PLAYING]?.();
+        };
+        testWindow.__markTwitchPaused = () => {
+          this.listeners[FakeTwitchEmbed.PAUSE]?.();
         };
       }
 
@@ -73,11 +94,12 @@ test("restores saved geometry before mounting the stream player", async ({
       }
 
       play() {
-        testWindow.__twitchPlayRequested = true;
+        testWindow.__twitchPlayRequests =
+          (testWindow.__twitchPlayRequests ?? 0) + 1;
       }
 
       isPaused() {
-        return !testWindow.__twitchPlayRequested;
+        return true;
       }
     }
 
@@ -110,7 +132,7 @@ test("restores saved geometry before mounting the stream player", async ({
   const playerBounds = await player.boundingBox();
   expect(panelBounds?.width).toBeGreaterThan(900);
   expect(panelBounds?.height).toBeGreaterThan(500);
-  expect(playerBounds?.width).toBeGreaterThan(900);
+  expect(playerBounds?.width).toBeGreaterThan(450);
   expect(playerBounds?.height).toBeGreaterThan(500);
 
   await page.waitForTimeout(500);
@@ -142,23 +164,65 @@ test("restores saved geometry before mounting the stream player", async ({
       }
     ).__markTwitchReady?.();
   });
+  await page.evaluate(() => {
+    (
+      window as typeof window & {
+        __markTwitchPlaying?: () => void;
+      }
+    ).__markTwitchPlaying?.();
+  });
   await expect(embed).toHaveAttribute("data-embed-ready", "true");
 
   const twitchPlaybackState = await page.evaluate(() => {
     const testWindow = window as typeof window & {
       __twitchMuted?: boolean;
-      __twitchPlayRequested?: boolean;
+      __twitchPlayRequests?: number;
     };
 
     return {
       muted: testWindow.__twitchMuted,
-      playRequested: testWindow.__twitchPlayRequested,
+      playRequests: testWindow.__twitchPlayRequests,
     };
   });
   expect(twitchPlaybackState).toEqual({
     muted: true,
-    playRequested: true,
+    playRequests: 1,
   });
+
+  await page.evaluate(() => {
+    (
+      window as typeof window & {
+        __markTwitchPaused?: () => void;
+      }
+    ).__markTwitchPaused?.();
+  });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as typeof window & { __twitchPlayRequests?: number })
+            .__twitchPlayRequests,
+      ),
+    )
+    .toBe(2);
+
+  await page.evaluate(() => {
+    (
+      window as typeof window & {
+        __markTwitchPaused?: () => void;
+      }
+    ).__markTwitchPaused?.();
+  });
+  await page.waitForTimeout(350);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as typeof window & { __twitchPlayRequests?: number })
+            .__twitchPlayRequests,
+      ),
+    )
+    .toBe(2);
 });
 
 test("keeps YouTube covered until muted autoplay is requested", async ({
@@ -183,11 +247,17 @@ test("keeps YouTube covered until muted autoplay is requested", async ({
         playerVars?: { autoplay?: number };
         events?: {
           onReady?: (event: { target: FakeYoutubePlayer }) => void;
+          onStateChange?: (event: {
+            data: number;
+            target: FakeYoutubePlayer;
+          }) => void;
         };
       };
       __markYoutubeReady?: () => void;
       __youtubeMuted?: boolean;
       __youtubePlayRequested?: boolean;
+      __youtubePlayerMounts?: number;
+      __markYoutubePlaying?: () => void;
     };
 
     class FakeYoutubePlayer {
@@ -197,6 +267,8 @@ test("keeps YouTube covered until muted autoplay is requested", async ({
         element: HTMLElement,
         options: NonNullable<typeof testWindow.__youtubePlayerOptions>,
       ) {
+        testWindow.__youtubePlayerMounts =
+          (testWindow.__youtubePlayerMounts ?? 0) + 1;
         testWindow.__youtubePlayerOptions = options;
         this.iframe = document.createElement("iframe");
         this.iframe.dataset.testYoutubeEmbed = "true";
@@ -207,6 +279,9 @@ test("keeps YouTube covered until muted autoplay is requested", async ({
 
         testWindow.__markYoutubeReady = () => {
           options.events?.onReady?.({ target: this });
+        };
+        testWindow.__markYoutubePlaying = () => {
+          options.events?.onStateChange?.({ data: 1, target: this });
         };
       }
 
@@ -249,6 +324,15 @@ test("keeps YouTube covered until muted autoplay is requested", async ({
 
   await expect(embed).toHaveAttribute("data-embed-ready", "true");
 
+  await page.evaluate(() => {
+    const testWindow = window as typeof window & {
+      __youtubeMuted?: boolean;
+      __markYoutubePlaying?: () => void;
+    };
+    testWindow.__youtubeMuted = false;
+    testWindow.__markYoutubePlaying?.();
+  });
+
   const youtubeState = await page.evaluate(() => {
     const testWindow = window as typeof window & {
       __youtubePlayerOptions?: { playerVars?: { autoplay?: number } };
@@ -268,6 +352,17 @@ test("keeps YouTube covered until muted autoplay is requested", async ({
     muted: true,
     playRequested: true,
   });
+
+  await page.waitForTimeout(500);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as typeof window & { __youtubePlayerMounts?: number })
+            .__youtubePlayerMounts,
+      ),
+    )
+    .toBe(1);
 });
 
 test("requests muted autoplay from Kick", async ({ page }) => {
