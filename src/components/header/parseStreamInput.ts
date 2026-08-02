@@ -1,4 +1,8 @@
 import type { Embed } from "../embedGrid/EmbedTypes";
+import {
+  isValidEmbedChannel,
+  MAX_STREAM_INPUT_LENGTH,
+} from "../embedGrid/embedIdentifiers";
 
 export type ParsedStreamInput = Pick<Embed, "platform" | "channel">;
 
@@ -19,6 +23,14 @@ function cleanIdentifier(identifier: string | null | undefined): string | null {
   return cleaned || null;
 }
 
+function createParsedStreamInput(
+  platform: Embed["platform"],
+  identifier: string | null | undefined,
+): ParsedStreamInput | null {
+  const channel = cleanIdentifier(identifier);
+  return isValidEmbedChannel(platform, channel) ? { platform, channel } : null;
+}
+
 function parseUrl(input: string): URL | null {
   const candidate = SUPPORTED_HOST_PATTERN.test(input)
     ? `https://${input}`
@@ -36,13 +48,15 @@ function parseTwitchUrl(url: URL): ParsedStreamInput | null {
   const hostname = url.hostname.replace(/^www\./, "").toLowerCase();
 
   if (hostname === "player.twitch.tv") {
-    const channel = cleanIdentifier(url.searchParams.get("channel"));
-    return channel ? { platform: "twitch", channel } : null;
+    return createParsedStreamInput("twitch", url.searchParams.get("channel"));
   }
 
   if (hostname !== "twitch.tv" && hostname !== "m.twitch.tv") return null;
 
-  const channel = cleanIdentifier(url.pathname.split("/").filter(Boolean)[0]);
+  const parsedInput = createParsedStreamInput(
+    "twitch",
+    url.pathname.split("/").filter(Boolean)[0],
+  );
   const reservedPaths = new Set([
     "directory",
     "downloads",
@@ -55,8 +69,8 @@ function parseTwitchUrl(url: URL): ParsedStreamInput | null {
     "wallet",
   ]);
 
-  return channel && !reservedPaths.has(channel.toLowerCase())
-    ? { platform: "twitch", channel }
+  return parsedInput && !reservedPaths.has(parsedInput.channel.toLowerCase())
+    ? parsedInput
     : null;
 }
 
@@ -75,7 +89,7 @@ function parseYoutubeUrl(url: URL): ParsedStreamInput | null {
     }
   }
 
-  return channel ? { platform: "youtube", channel } : null;
+  return createParsedStreamInput("youtube", channel);
 }
 
 function parseKickUrl(url: URL): ParsedStreamInput | null {
@@ -83,7 +97,8 @@ function parseKickUrl(url: URL): ParsedStreamInput | null {
   if (hostname !== "kick.com" && hostname !== "player.kick.com") return null;
 
   const pathParts = url.pathname.split("/").filter(Boolean);
-  const channel = cleanIdentifier(
+  const parsedInput = createParsedStreamInput(
+    "kick",
     pathParts[0] === "popout" ? pathParts[1] : pathParts[0],
   );
   const reservedPaths = new Set([
@@ -94,8 +109,8 @@ function parseKickUrl(url: URL): ParsedStreamInput | null {
     "search",
   ]);
 
-  return channel && !reservedPaths.has(channel.toLowerCase())
-    ? { platform: "kick", channel }
+  return parsedInput && !reservedPaths.has(parsedInput.channel.toLowerCase())
+    ? parsedInput
     : null;
 }
 
@@ -103,6 +118,8 @@ export function parseStreamInput(
   input: string,
   selectedPlatform: Embed["platform"],
 ): ParsedStreamInput | null {
+  if (input.length > MAX_STREAM_INPUT_LENGTH) return null;
+
   const value = input.trim();
   if (!value) return null;
 
@@ -119,6 +136,5 @@ export function parseStreamInput(
     return null;
   }
 
-  const channel = cleanIdentifier(value);
-  return channel ? { platform: selectedPlatform, channel } : null;
+  return createParsedStreamInput(selectedPlatform, value);
 }

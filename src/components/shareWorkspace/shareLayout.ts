@@ -1,10 +1,10 @@
 import type { Embed } from "../embedGrid/EmbedTypes";
+import { isValidEmbedChannel } from "../embedGrid/embedIdentifiers";
 
 const SHARE_LAYOUT_VERSION = 1;
 const SHARE_LAYOUT_KEY = "layout";
 const MAX_SHARED_STREAMS = 20;
 const MAX_ENCODED_LAYOUT_LENGTH = 20_000;
-const MAX_CHANNEL_LENGTH = 200;
 const GRID_COLUMN_COUNT = 12;
 const MAX_GRID_ROW = 10_000;
 const MAX_GRID_HEIGHT = 1_000;
@@ -80,12 +80,7 @@ function parseSharedStream(value: unknown): SharedStream | null {
     return null;
   }
 
-  if (
-    typeof channel !== "string" ||
-    channel.length === 0 ||
-    channel.length > MAX_CHANNEL_LENGTH ||
-    !/^[A-Za-z0-9_-]+$/.test(channel)
-  ) {
+  if (!isValidEmbedChannel(platform, channel)) {
     return null;
   }
 

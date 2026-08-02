@@ -10,7 +10,7 @@ const YoutubeEmbed: FC<Props> = ({ type, channel }) => {
   if (type === "video") {
     return (
       <iframe
-        src={`https://www.youtube.com/embed/${channel}`}
+        src={`https://www.youtube.com/embed/${encodeURIComponent(channel)}`}
         width="100%"
         height="100%"
       ></iframe>
@@ -20,7 +20,7 @@ const YoutubeEmbed: FC<Props> = ({ type, channel }) => {
 
     return (
       <iframe
-        src={`https://www.youtube.com/live_chat?v=${channel}&embed_domain=${encodeURIComponent(hostname)}&dark_theme=1`}
+        src={`https://www.youtube.com/live_chat?v=${encodeURIComponent(channel)}&embed_domain=${encodeURIComponent(hostname)}&dark_theme=1`}
         width="100%"
         height="100%"
       ></iframe>
@@ -29,14 +29,14 @@ const YoutubeEmbed: FC<Props> = ({ type, channel }) => {
     return (
       <div className="flex h-full w-full">
         <iframe
-          src={`https://www.youtube.com/embed/${channel}`}
+          src={`https://www.youtube.com/embed/${encodeURIComponent(channel)}`}
           width="100%"
           height="100%"
         ></iframe>
 
         {hostname && (
           <iframe
-            src={`https://www.youtube.com/live_chat?v=${channel}&embed_domain=${encodeURIComponent(hostname)}&dark_theme=1`}
+            src={`https://www.youtube.com/live_chat?v=${encodeURIComponent(channel)}&embed_domain=${encodeURIComponent(hostname)}&dark_theme=1`}
             width="100%"
             height="100%"
           ></iframe>

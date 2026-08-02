@@ -13,7 +13,7 @@ const KickEmbed: FC<Props> = ({ type, channel }) => {
   if (type === "video") {
     return (
       <iframe
-        src={`https://player.kick.com/${channel}`}
+        src={`https://player.kick.com/${encodeURIComponent(channel)}`}
         width={playerOptions.width}
         height={playerOptions.height}
         allowFullScreen
@@ -22,7 +22,7 @@ const KickEmbed: FC<Props> = ({ type, channel }) => {
   } else if (type === "chat") {
     return (
       <iframe
-        src={`https://kick.com/popout/${channel}/chat`}
+        src={`https://kick.com/popout/${encodeURIComponent(channel)}/chat`}
         width={playerOptions.width}
         height={playerOptions.height}
         allowFullScreen
@@ -32,14 +32,14 @@ const KickEmbed: FC<Props> = ({ type, channel }) => {
     return (
       <div className="flex h-full w-full">
         <iframe
-          src={`https://player.kick.com/${channel}`}
+          src={`https://player.kick.com/${encodeURIComponent(channel)}`}
           width={playerOptions.width}
           height={playerOptions.height}
           allowFullScreen
         ></iframe>
 
         <iframe
-          src={`https://kick.com/popout/${channel}/chat`}
+          src={`https://kick.com/popout/${encodeURIComponent(channel)}/chat`}
           width={playerOptions.width}
           height={playerOptions.height}
           allowFullScreen

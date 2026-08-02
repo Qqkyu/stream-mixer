@@ -1,6 +1,7 @@
 import { atom } from "nanostores";
 import type { Embed } from "../components/embedGrid/EmbedTypes";
 import { DEFAULT_POSITION } from "../components/embedGrid/embed/position";
+import { isValidEmbedChannel } from "../components/embedGrid/embedIdentifiers";
 import {
   getStorageItem,
   removeStorageItem,
@@ -10,7 +11,6 @@ import {
 const EMBEDS_STORAGE_KEY = "stream-embeds";
 const MAX_STORED_EMBEDS = 100;
 const MAX_STORAGE_LENGTH = 1_000_000;
-const MAX_CHANNEL_LENGTH = 200;
 const MAX_ID_LENGTH = 128;
 const GRID_COLUMN_COUNT = 12;
 const MAX_GRID_ROW = 10_000;
@@ -153,13 +153,7 @@ function parseStoredEmbed(value: unknown, usedIds: Set<string>): Embed | null {
   if (typeof channel !== "string") return null;
 
   const normalizedChannel = channel.trim();
-  if (
-    normalizedChannel.length === 0 ||
-    normalizedChannel.length > MAX_CHANNEL_LENGTH ||
-    !/^[A-Za-z0-9_-]+$/.test(normalizedChannel)
-  ) {
-    return null;
-  }
+  if (!isValidEmbedChannel(platform, normalizedChannel)) return null;
 
   return {
     id: createUniqueId(id, usedIds),

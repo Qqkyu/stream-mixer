@@ -45,7 +45,7 @@ const TwitchEmbed: FC<Props> = ({ type, channel }) => {
 
   return type === "chat" ? (
     <iframe
-      src={`https://www.twitch.tv/embed/${channel}/chat?parent=${encodeURIComponent(hostname)}`}
+      src={`https://www.twitch.tv/embed/${encodeURIComponent(channel)}/chat?parent=${encodeURIComponent(hostname)}`}
       height="100%"
       width="100%"
     />

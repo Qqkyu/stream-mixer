@@ -15,6 +15,7 @@ import {
 } from "../../state/preferencesStore";
 import ShareWorkspaceButton from "../shareWorkspace/ShareWorkspaceButton";
 import SharedLayoutImporter from "../shareWorkspace/SharedLayoutImporter";
+import { MAX_STREAM_INPUT_LENGTH } from "../embedGrid/embedIdentifiers";
 
 const Header: React.FC = () => {
   const fullscreenEmbedStore = useStore(fullscreenEmbed);
@@ -118,6 +119,7 @@ const Header: React.FC = () => {
                 <input
                   type="text"
                   required
+                  maxLength={MAX_STREAM_INPUT_LENGTH}
                   placeholder="Channel, video ID, or URL"
                   className="join-item"
                   value={channel}
