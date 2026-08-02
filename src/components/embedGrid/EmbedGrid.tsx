@@ -38,6 +38,7 @@ const EmbedGrid: FC = () => {
   const fullscreenEmbedStore = useStore(fullscreenEmbed);
   const compactModeStore = useStore(compactMode);
   const pageHeaderHeight = compactModeStore ? 0 : 64;
+  const hasVisibleEmbeds = embedsStore.some(({ minimized }) => !minimized);
   const workspaceMinHeightClass = compactModeStore
     ? "min-h-dvh"
     : "min-h-[calc(100dvh-64px)]";
@@ -120,7 +121,13 @@ const EmbedGrid: FC = () => {
   );
 
   useEffect(() => {
-    if (fullscreenEmbedStore != null) return;
+    if (
+      fullscreenEmbedStore != null ||
+      !workspaceHydratedStore ||
+      !hasVisibleEmbeds
+    ) {
+      return;
+    }
 
     let cancelled = false;
     let initializedGrid: GridStackType | null = null;
@@ -211,7 +218,7 @@ const EmbedGrid: FC = () => {
       registeredEmbedIdsRef.current.clear();
       setIsGridReady(false);
     };
-  }, [fullscreenEmbedStore]);
+  }, [fullscreenEmbedStore, hasVisibleEmbeds, workspaceHydratedStore]);
 
   useEffect(() => {
     gridInstanceRef.current?.margin(compactModeStore ? 0 : "44px 0 0 0");
@@ -372,7 +379,6 @@ const EmbedGrid: FC = () => {
   }
 
   const minimizedEmbeds = embedsStore.filter(({ minimized }) => minimized);
-  const hasVisibleEmbeds = embedsStore.some(({ minimized }) => !minimized);
   const gridIsLoading =
     workspaceHydratedStore && hasVisibleEmbeds && !isGridReady;
   const minimizedShelfIsVisible = showMinimizedShelf || showMinimizedShelfHint;
@@ -471,6 +477,8 @@ const EmbedGrid: FC = () => {
                 <div className="flex pl-4 w-22 justify-evenly">
                   <button
                     className="w-3 h-3 rounded-full bg-red-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
+                    aria-label={`Remove ${getEmbedLabel(embed)}`}
+                    title={`Remove ${getEmbedLabel(embed)}`}
                     onClick={() => {
                       setShowControlIcons(false);
                       removeEmbed(idx);
@@ -482,6 +490,8 @@ const EmbedGrid: FC = () => {
                   </button>
                   <button
                     className="w-3 h-3 rounded-full bg-yellow-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
+                    aria-label={`Minimize ${getEmbedLabel(embed)}`}
+                    title={`Minimize ${getEmbedLabel(embed)}`}
                     onClick={() => {
                       setShowControlIcons(false);
                       minimizeEmbed(idx);
@@ -493,6 +503,8 @@ const EmbedGrid: FC = () => {
                   </button>
                   <button
                     className="w-3 h-3 rounded-full bg-green-500 cursor-pointer no-drag flex items-center justify-center text-black text-[10px] font-bold leading-none"
+                    aria-label={`Focus ${getEmbedLabel(embed)}`}
+                    title={`Focus ${getEmbedLabel(embed)}`}
                     onClick={() => {
                       setShowControlIcons(false);
                       fullscreenEmbed.set(idx);
