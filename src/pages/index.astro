@@ -1,10 +1,8 @@
 ---
-import EmbedGrid from "../components/embedGrid/EmbedGrid.tsx";
 import Layout from "../layouts/Layout.astro";
-import Header from "../components/header/Header.tsx";
+import StreamMixerApp from "../components/StreamMixerApp.tsx";
 ---
 
 <Layout>
-	<Header client:load />
-	<EmbedGrid client:idle />
+  <StreamMixerApp client:load />
 </Layout>

@@ -1,7 +1,7 @@
 import { atom } from "nanostores";
 import type { Embed } from "../components/embedGrid/EmbedTypes";
 
-export const embeds = atom<Array<Embed>>(getLocalStorageEmbeds());
+export const embeds = atom<Array<Embed>>([]);
 
 export function addEmbed(embed: Embed) {
   embeds.set(embeds.get().toSpliced(embeds.get().length, 0, embed));
