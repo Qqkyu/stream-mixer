@@ -117,6 +117,11 @@ URL fragment; that data is not uploaded to Stream Mix. There are no Stream Mix
 accounts or automatic synchronization between devices. Clearing site data
 resets the workspace.
 
+Production builds can send sanitized application errors to Sentry when
+`PUBLIC_SENTRY_DSN` is configured. Session replay, performance tracing, and
+analytics are disabled. URL query strings and fragments are removed from error
+reports so shared workspace data is not included.
+
 ## License
 
 Stream Mix is available under the [MIT License](LICENSE.txt).

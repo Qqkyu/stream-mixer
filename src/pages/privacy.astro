@@ -8,9 +8,9 @@ import ContentLayout from "../layouts/ContentLayout.astro";
   heading="Privacy"
 >
   <p>
-    Stream Mix does not require an account and does not operate its own user
-    tracking or analytics system. Your mixer configuration is stored in your
-    browser so it can be restored when you return.
+    Stream Mix does not require an account and does not use behavioral analytics
+    or advertising trackers. Your mixer configuration is stored in your browser
+    so it can be restored when you return.
   </p>
 
   <h2>Information stored locally</h2>
@@ -37,6 +37,21 @@ import ContentLayout from "../layouts/ContentLayout.astro";
     receives the link can read and open the workspace it contains.
   </p>
 
+  <h2>Error monitoring</h2>
+  <p>
+    Stream Mix uses Sentry in production to receive technical reports when the
+    application fails. Reports can include an error message, stack trace,
+    browser and operating-system details, recent technical breadcrumbs, and
+    network information used to deliver the report. Stream Mix removes URL query
+    strings and fragments, request headers, request bodies, cookies, and user
+    fields before sending an event. Session replay, performance tracing, and
+    analytics are not enabled. See <a
+      href="https://sentry.io/privacy/"
+      target="_blank"
+      rel="noreferrer">Sentry’s privacy policy</a
+    > for information about Sentry’s processing.
+  </p>
+
   <h2>Removing saved layouts</h2>
   <p>
     Remove individual streams using their window controls, or clear the site’s
@@ -44,5 +59,5 @@ import ContentLayout from "../layouts/ContentLayout.astro";
     preferences.
   </p>
 
-  <p><em>Last updated: July 18, 2026.</em></p>
+  <p><em>Last updated: August 2, 2026.</em></p>
 </ContentLayout>

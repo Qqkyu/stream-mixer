@@ -40,3 +40,5 @@ jobs:
 
       - name: Build and test
         run: pnpm test
+        env:
+          PUBLIC_SENTRY_DSN: https://0123456789abcdef0123456789abcdef@example.test/1
