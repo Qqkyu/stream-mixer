@@ -11,6 +11,8 @@ type Props = Pick<Embed, "type" | "channel"> & { onReady: () => void };
 type PlayerProps = Pick<Props, "channel" | "onReady">;
 
 const YOUTUBE_PLAYING_STATE = 1;
+const MUTE_GUARD_DURATION_MS = 2_000;
+const MUTE_GUARD_INTERVAL_MS = 250;
 
 function requestMutedPlayback(player: YoutubePlayer) {
   player
@@ -32,6 +34,27 @@ const YoutubePlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
 
     let active = true;
     let player: YoutubePlayer | undefined;
+    let muteGuardTimeout: number | undefined;
+    let muteGuardDeadline = 0;
+
+    const guardMutedState = (target: YoutubePlayer) => {
+      window.clearTimeout(muteGuardTimeout);
+      muteGuardDeadline = Date.now() + MUTE_GUARD_DURATION_MS;
+
+      const checkMutedState = () => {
+        if (!active) return;
+
+        if (!target.isMuted()) target.mute();
+        if (Date.now() < muteGuardDeadline) {
+          muteGuardTimeout = window.setTimeout(
+            checkMutedState,
+            MUTE_GUARD_INTERVAL_MS,
+          );
+        }
+      };
+
+      checkMutedState();
+    };
 
     loadYoutubeIframeApi()
       .then((youtube) => {
@@ -51,19 +74,19 @@ const YoutubePlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
               if (!active) return;
 
               requestMutedPlayback(target);
+              guardMutedState(target);
               onReady();
             },
             onStateChange: ({ data, target }) => {
               if (!active || data !== YOUTUBE_PLAYING_STATE) return;
 
-              // YouTube can update its media state after onReady. Reassert the
-              // startup mute once playback actually begins.
-              target.mute();
+              guardMutedState(target);
             },
             onAutoplayBlocked: ({ target }) => {
               if (!active) return;
 
               requestMutedPlayback(target);
+              guardMutedState(target);
               onReady();
             },
             onError: onReady,
@@ -84,6 +107,7 @@ const YoutubePlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
 
     return () => {
       active = false;
+      window.clearTimeout(muteGuardTimeout);
       player?.destroy();
     };
   }, [channel, onReady, playerContainerId]);

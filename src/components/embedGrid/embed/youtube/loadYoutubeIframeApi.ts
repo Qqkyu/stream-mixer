@@ -3,6 +3,7 @@ const YOUTUBE_IFRAME_API_URL = "https://www.youtube.com/iframe_api";
 export type YoutubePlayer = {
   destroy: () => void;
   getIframe: () => HTMLIFrameElement;
+  isMuted: () => boolean;
   mute: () => void;
   playVideo: () => void;
 };

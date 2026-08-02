@@ -13,8 +13,9 @@ type TwitchPlayer = {
   setMuted: (muted: boolean) => void;
 };
 
-const STARTUP_FALLBACK_MS = 5_000;
-const AUTOPLAY_RECOVERY_WINDOW_MS = 10_000;
+const STARTUP_FALLBACK_MS = 12_000;
+const PLAYBACK_STABILITY_MS = 1_500;
+const PLAYBACK_RETRY_MS = 500;
 
 const TwitchPlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
   const playerContainerId = useId();
@@ -26,20 +27,18 @@ const TwitchPlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
     let active = true;
     let playbackCheckTimeout: number | undefined;
     let playbackRecoveryTimeout: number | undefined;
-    let recoveryWindowTimeout: number | undefined;
+    let playbackStableTimeout: number | undefined;
     let startupFallbackTimeout: number | undefined;
     let readyReported = false;
 
     const stabilizePlayback = (player: TwitchPlayer) => {
-      let playbackStarted = false;
-      let prePlaybackRecoveryAttempts = 0;
-      let recoveredAfterPlayback = false;
-      let recoveryWindowOpen = true;
-
       const reportReady = () => {
         if (!active || readyReported) return;
 
         readyReported = true;
+        window.clearTimeout(playbackCheckTimeout);
+        window.clearTimeout(playbackRecoveryTimeout);
+        window.clearTimeout(playbackStableTimeout);
         window.clearTimeout(startupFallbackTimeout);
         onReady();
       };
@@ -52,28 +51,47 @@ const TwitchPlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
       };
 
       const schedulePlaybackRecovery = () => {
-        if (!active || !recoveryWindowOpen || playbackRecoveryTimeout) return;
+        if (!active || readyReported || playbackRecoveryTimeout) return;
 
-        if (playbackStarted) {
-          if (recoveredAfterPlayback) return;
-          recoveredAfterPlayback = true;
-        } else {
-          if (prePlaybackRecoveryAttempts >= 3) return;
-          prePlaybackRecoveryAttempts += 1;
-        }
+        window.clearTimeout(playbackStableTimeout);
+        playbackStableTimeout = undefined;
 
         playbackRecoveryTimeout = window.setTimeout(() => {
           playbackRecoveryTimeout = undefined;
           requestMutedPlayback();
-        }, 250);
+        }, PLAYBACK_RETRY_MS);
+      };
+
+      const waitForStablePlayback = () => {
+        if (!active || readyReported || playbackStableTimeout) return;
+
+        player.setMuted(true);
+        playbackStableTimeout = window.setTimeout(() => {
+          playbackStableTimeout = undefined;
+
+          if (player.isPaused()) {
+            schedulePlaybackRecovery();
+          } else {
+            player.setMuted(true);
+            reportReady();
+          }
+        }, PLAYBACK_STABILITY_MS);
       };
 
       const handlePlaying = () => {
-        if (!active) return;
+        if (!active || readyReported) return;
 
-        playbackStarted = true;
-        player.setMuted(true);
-        reportReady();
+        window.clearTimeout(playbackRecoveryTimeout);
+        playbackRecoveryTimeout = undefined;
+        waitForStablePlayback();
+      };
+
+      const handlePause = () => {
+        if (!active || readyReported) return;
+
+        window.clearTimeout(playbackStableTimeout);
+        playbackStableTimeout = undefined;
+        schedulePlaybackRecovery();
       };
 
       const checkPlayback = () => {
@@ -81,19 +99,17 @@ const TwitchPlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
 
         player.setMuted(true);
         if (player.isPaused()) {
-          schedulePlaybackRecovery();
-          playbackCheckTimeout = window.setTimeout(checkPlayback, 500);
+          handlePause();
         } else {
-          handlePlaying();
+          waitForStablePlayback();
         }
+        playbackCheckTimeout = window.setTimeout(checkPlayback, 500);
       };
 
       player.addEventListener(Twitch.Player.PLAYING, handlePlaying);
-      player.addEventListener(Twitch.Player.PAUSE, schedulePlaybackRecovery);
-      player.addEventListener(
-        Twitch.Player.PLAYBACK_BLOCKED,
-        schedulePlaybackRecovery,
-      );
+      player.addEventListener(Twitch.Player.PAUSE, handlePause);
+      player.addEventListener(Twitch.Player.PLAYBACK_BLOCKED, handlePause);
+      player.addEventListener(Twitch.Player.OFFLINE, reportReady);
 
       requestMutedPlayback();
       playbackCheckTimeout = window.setTimeout(checkPlayback, 500);
@@ -104,11 +120,6 @@ const TwitchPlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
         reportReady,
         STARTUP_FALLBACK_MS,
       );
-      recoveryWindowTimeout = window.setTimeout(() => {
-        recoveryWindowOpen = false;
-        window.clearTimeout(playbackRecoveryTimeout);
-        playbackRecoveryTimeout = undefined;
-      }, AUTOPLAY_RECOVERY_WINDOW_MS);
     };
 
     loadTwitchEmbedSdk()
@@ -136,7 +147,7 @@ const TwitchPlayerEmbed: FC<PlayerProps> = ({ channel, onReady }) => {
       active = false;
       window.clearTimeout(playbackCheckTimeout);
       window.clearTimeout(playbackRecoveryTimeout);
-      window.clearTimeout(recoveryWindowTimeout);
+      window.clearTimeout(playbackStableTimeout);
       window.clearTimeout(startupFallbackTimeout);
     };
   }, [channel, hostname, onReady, playerContainerId]);
