@@ -18,22 +18,22 @@
   "dependencies": {
     "@astrojs/react": "6.0.2",
     "@astrojs/sitemap": "^3.7.3",
-    "@nanostores/react": "1.0.0",
+    "@nanostores/react": "1.1.0",
     "@sentry/react": "^10.69.0",
     "@tailwindcss/vite": "4.3.3",
-    "@types/react": "19.2.2",
-    "@types/react-dom": "19.2.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
     "astro": "7.1.6",
     "gridstack": "12.3.3",
-    "nanostores": "1.0.1",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "nanostores": "1.4.2",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
     "tailwindcss": "4.3.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
-    "daisyui": "5.1.13",
-    "prettier": "3.6.2",
+    "daisyui": "5.7.9",
+    "prettier": "3.9.6",
     "prettier-plugin-astro": "0.14.1"
   },
   "pnpm": {
