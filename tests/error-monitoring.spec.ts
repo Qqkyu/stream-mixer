@@ -28,7 +28,7 @@ test("removes query strings and workspace fragments from reported URLs", () => {
   });
 });
 
-test("removes request and user data from Sentry events", () => {
+test("keeps only browser context from Sentry request headers", () => {
   const sanitized = sanitizeSentryEvent({
     exception: {
       values: [
@@ -46,7 +46,11 @@ test("removes request and user data from Sentry events", () => {
     },
     request: {
       url: "https://streammix.app/#layout=private-workspace",
-      headers: { cookie: "secret" },
+      headers: {
+        cookie: "secret",
+        referer: "https://streammix.app/?source=secret",
+        "user-agent": "Example Browser 1.0",
+      },
       cookies: { session: "secret" },
       data: { layout: "secret" },
     },
@@ -65,7 +69,7 @@ test("removes request and user data from Sentry events", () => {
     },
     request: {
       url: "https://streammix.app/",
-      headers: undefined,
+      headers: { "User-Agent": "Example Browser 1.0" },
       cookies: undefined,
       data: undefined,
     },

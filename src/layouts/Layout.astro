@@ -1,7 +1,6 @@
 ---
 import "../styles/global.css";
 import "gridstack/dist/gridstack.min.css";
-import HelpModal from "../components/helpModal/HelpModal.astro";
 
 interface Props {
   title?: string;
@@ -130,6 +129,5 @@ const workspaceLoadingScript = `(() => {
   </head>
   <body class="m-0 w-full h-screen">
     <slot />
-    <HelpModal />
   </body>
 </html>

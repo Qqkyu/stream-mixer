@@ -1,6 +1,7 @@
 ---
 import ContentLayout from "../../layouts/ContentLayout.astro";
 import { PLATFORM_STYLES } from "../../components/embedGrid/platformStyles";
+import workspaceImage from "../../../docs/assets/stream-mix-workspace.webp";
 ---
 
 <ContentLayout
@@ -16,6 +17,29 @@ import { PLATFORM_STYLES } from "../../components/embedGrid/platformStyles";
     <span class={PLATFORM_STYLES.kick.text}>Kick</span> broadcasts in one draggable
     browser workspace. No account or download is required.
   </p>
+
+  <h2>A real Stream Mix workspace</h2>
+  <p>
+    This workspace follows two Twitch broadcasts at the same time. Each panel
+    keeps its own player and chat. The larger window is the main view, while the
+    second window keeps another point of view visible.
+  </p>
+  <figure
+    class="mt-6 overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-sm"
+  >
+    <img
+      src={workspaceImage.src}
+      width={workspaceImage.width}
+      height={workspaceImage.height}
+      alt="Stream Mix workspace with two Twitch streams and live chats side by side"
+      class="h-auto w-full"
+      loading="lazy"
+      decoding="async"
+    />
+    <figcaption class="px-4 py-3 text-sm text-base-content/75">
+      Two live broadcasts and their chats in one saved desktop layout.
+    </figcaption>
+  </figure>
 
   <h2>1. Add your streams</h2>
   <ol>
@@ -56,6 +80,23 @@ import { PLATFORM_STYLES } from "../../components/embedGrid/platformStyles";
     confirmation.
   </p>
 
+  <h2>Example: follow a tournament</h2>
+  <ol>
+    <li>Make the official broadcast the largest Stream + Chat panel.</li>
+    <li>Add one or two player views as smaller Stream panels.</li>
+    <li>
+      Use a Chat panel for a conversation that you want to follow closely.
+    </li>
+    <li>
+      Minimize a view between matches. Restore it from the bottom shelf when it
+      becomes useful again.
+    </li>
+  </ol>
+  <p>
+    This keeps the main action clear without losing the other points of view.
+    Stream Mix saves the layout in the current browser as you change it.
+  </p>
+
   <h2>Playback and platform help</h2>
   <p>
     Several video players can use significant bandwidth and processing power. If
@@ -64,26 +105,26 @@ import { PLATFORM_STYLES } from "../../components/embedGrid/platformStyles";
   </p>
   <ul>
     <li>
-      <a href="/guides/watch-multiple-twitch-streams"
+      <a href="/guides/watch-multiple-twitch-streams/"
         >Watch multiple Twitch streams</a
       >{" "}
       for channel URLs and Twitch embed troubleshooting.
     </li>
     <li>
-      <a href="/guides/watch-multiple-youtube-streams"
+      <a href="/guides/watch-multiple-youtube-streams/"
         >Watch multiple YouTube live streams</a
       >{" "}
       for supported URLs and live chat availability.
     </li>
     <li>
-      <a href="/guides/watch-multiple-kick-streams"
+      <a href="/guides/watch-multiple-kick-streams/"
         >Watch multiple Kick streams</a
       >{" "}
       for channel inputs and Kick player behavior.
     </li>
   </ul>
   <p>
-    The <a href="/faq">FAQ</a> covers saved layouts, privacy, sharing, and common
+    The <a href="/faq/">FAQ</a> covers saved layouts, privacy, sharing, and common
     playback issues.
   </p>
 

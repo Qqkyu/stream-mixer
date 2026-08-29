@@ -282,7 +282,7 @@ const EmbedGrid: FC = () => {
     const embed = embeds.get()[idx];
     const element = embed ? document.getElementById(`embed-${embed.id}`) : null;
     if (element) gridInstanceRef.current?.removeWidget(element, false);
-    setEmbeds(embeds.get().toSpliced(idx, 1));
+    setEmbeds(embeds.get().filter((_, currentIdx) => currentIdx !== idx));
   };
 
   const minimizeEmbed = (idx: number) => {

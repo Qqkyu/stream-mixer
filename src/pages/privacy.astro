@@ -43,9 +43,10 @@ import ContentLayout from "../layouts/ContentLayout.astro";
     application fails. Reports can include an error message, stack trace,
     browser and operating-system details, recent technical breadcrumbs, and
     network information used to deliver the report. Stream Mix removes URL query
-    strings and fragments, request headers, request bodies, cookies, and user
-    fields before sending an event. Session replay, performance tracing, and
-    analytics are not enabled. See <a
+    strings and fragments, request bodies, cookies, user fields, and all request
+    headers except the browser’s User-Agent header. This header supplies the
+    browser and operating-system details named above. Session replay,
+    performance tracing, and analytics are not enabled. See <a
       href="https://sentry.io/privacy/"
       target="_blank"
       rel="noreferrer">Sentry’s privacy policy</a
@@ -59,5 +60,5 @@ import ContentLayout from "../layouts/ContentLayout.astro";
     preferences.
   </p>
 
-  <p><em>Last updated: August 2, 2026.</em></p>
+  <p><em>Last updated: August 29, 2026.</em></p>
 </ContentLayout>

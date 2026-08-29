@@ -121,3 +121,30 @@ test("removes a hydrated panel from storage", async ({ page }) => {
     .poll(async () => (await readStoredWorkspace(page)).length)
     .toBe(0);
 });
+
+test("adds and removes a panel without Array.toSpliced", async ({ page }) => {
+  await page.addInitScript(() => {
+    Reflect.deleteProperty(Array.prototype, "toSpliced");
+  });
+  await seedWorkspace(page);
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  await page.locator("select").first().selectOption("kick");
+  await page.getByPlaceholder("Channel, video ID, or URL").fill("test-channel");
+  await page.locator("select").nth(1).selectOption("video");
+  await page.getByRole("button", { name: "Add", exact: true }).click();
+
+  const panel = page
+    .locator(".grid-stack-item")
+    .filter({ hasText: "kick.com/test-channel" });
+  await expect(panel).toBeVisible();
+
+  await page
+    .getByRole("button", { name: "Remove kick.com/test-channel" })
+    .evaluate((button: HTMLButtonElement) => button.click());
+
+  await expect(panel).toHaveCount(0);
+  await expect
+    .poll(async () => (await readStoredWorkspace(page)).length)
+    .toBe(0);
+});

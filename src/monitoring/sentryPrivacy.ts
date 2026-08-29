@@ -37,6 +37,21 @@ type SentryFrame = {
 
 const URL_DATA_KEYS = ["url", "from", "to"] as const;
 
+function getSafeRequestHeaders(
+  headers: unknown,
+): Record<string, string> | undefined {
+  if (typeof headers !== "object" || headers === null) return undefined;
+
+  const userAgent = Object.entries(headers).find(
+    ([key, value]) =>
+      key.toLowerCase() === "user-agent" && typeof value === "string",
+  )?.[1];
+
+  return typeof userAgent === "string"
+    ? { "User-Agent": userAgent }
+    : undefined;
+}
+
 export function removeUrlDetails(value: unknown): unknown {
   if (typeof value !== "string") return value;
 
@@ -86,7 +101,7 @@ export function sanitizeSentryEvent<T extends SentryEvent>(event: T): T {
         ...event.request,
         cookies: undefined,
         data: undefined,
-        headers: undefined,
+        headers: getSafeRequestHeaders(event.request.headers),
         url: removeUrlDetails(event.request.url) as string | undefined,
       }
     : undefined;

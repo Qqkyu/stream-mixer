@@ -1,8 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import StreamMixerApp from "../components/StreamMixerApp.tsx";
+import HelpModal from "../components/helpModal/HelpModal.astro";
 ---
 
 <Layout>
   <StreamMixerApp client:load />
+  <HelpModal />
 </Layout>
